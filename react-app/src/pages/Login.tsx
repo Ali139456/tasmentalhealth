@@ -2,33 +2,69 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { Mail, Lock, AlertCircle, LogIn, ArrowRight, Shield, ArrowLeft, Sparkles } from 'lucide-react'
+import { Mail, Lock, AlertCircle, LogIn, ArrowRight, Shield, ArrowLeft, Sparkles, UserPlus, CheckCircle } from 'lucide-react'
 
 export function Login() {
+  const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const navigate = useNavigate()
   const { refreshUser } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
     setLoading(true)
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      if (isSignUp) {
+        // Sign up flow
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        })
 
-      if (signInError) throw signInError
+        if (signUpError) throw signUpError
 
-      await refreshUser()
-      navigate('/dashboard')
+        if (authData.user) {
+          // Create user record in users table
+          const { error: userError } = await supabase
+            .from('users')
+            .insert({
+              id: authData.user.id,
+              email: authData.user.email!,
+              role: 'lister',
+              email_verified: false,
+            })
+
+          if (userError) {
+            console.error('Error creating user record:', userError)
+            // Don't throw - user is created in auth, we can handle this later
+          }
+
+          setSuccess('Account created! Please check your email to verify your account.')
+          // Clear form
+          setEmail('')
+          setPassword('')
+        }
+      } else {
+        // Sign in flow
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+
+        if (signInError) throw signInError
+
+        await refreshUser()
+        navigate('/dashboard')
+      }
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in')
+      setError(err.message || (isSignUp ? 'Failed to sign up' : 'Failed to sign in'))
     } finally {
       setLoading(false)
     }
@@ -97,9 +133,47 @@ export function Login() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
             <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-primary-400 animate-pulse" />
           </div>
-          <h2 className="text-4xl font-bold mb-3 text-gray-900">Lister Login</h2>
-          <p className="text-lg text-gray-600">Sign in to manage your listing</p>
+          <h2 className="text-4xl font-bold mb-3 text-gray-900">
+            {isSignUp ? 'Create Account' : 'Lister Login'}
+          </h2>
+          <p className="text-lg text-gray-600">
+            {isSignUp ? 'Sign up to get started' : 'Sign in to manage your listing'}
+          </p>
           <div className="w-20 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full mt-4"></div>
+        </div>
+
+        {/* Toggle between Sign In and Sign Up */}
+        <div className="mb-6 flex items-center justify-center gap-4 bg-white/50 backdrop-blur-sm rounded-xl p-1">
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUp(false)
+              setError('')
+              setSuccess('')
+            }}
+            className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
+              !isSignUp
+                ? 'bg-primary-500 text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUp(true)
+              setError('')
+              setSuccess('')
+            }}
+            className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
+              isSignUp
+                ? 'bg-primary-500 text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Sign Up
+          </button>
         </div>
 
         {/* Login Card - Enhanced */}
@@ -112,6 +186,12 @@ export function Login() {
               <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3 shadow-md">
                 <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
                 <span className="text-sm font-medium">{error}</span>
+              </div>
+            )}
+            {success && (
+              <div className="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg flex items-start gap-3 shadow-md">
+                <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                <span className="text-sm font-medium">{success}</span>
               </div>
             )}
 
@@ -148,26 +228,34 @@ export function Login() {
                     id="password"
                     name="password"
                     type="password"
-                    autoComplete="current-password"
+                    autoComplete={isSignUp ? "new-password" : "current-password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="relative w-full pl-12 pr-4 py-3 border-2 border-gray-200 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
                     placeholder="••••••••"
+                    minLength={6}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-primary-600 hover:text-primary-700 font-semibold transition-colors"
-              >
-                Forgot password?
-              </button>
-            </div>
+            {!isSignUp && (
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-sm text-primary-600 hover:text-primary-700 font-semibold transition-colors"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
+            {isSignUp && (
+              <div className="text-sm text-gray-600">
+                <p className="text-xs">Password must be at least 6 characters long.</p>
+              </div>
+            )}
 
             <div>
               <button
@@ -178,26 +266,60 @@ export function Login() {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Signing in...</span>
+                    <span>{isSignUp ? 'Creating account...' : 'Signing in...'}</span>
                   </>
                 ) : (
                   <>
-                    <LogIn className="w-5 h-5" />
-                    <span>Sign in</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    {isSignUp ? (
+                      <>
+                        <UserPlus className="w-5 h-5" />
+                        <span>Create Account</span>
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    ) : (
+                      <>
+                        <LogIn className="w-5 h-5" />
+                        <span>Sign in</span>
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
                   </>
                 )}
               </button>
             </div>
 
-            <div className="text-center pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link to="/get-listed" className="font-semibold text-primary-600 hover:text-primary-700 transition-colors">
-                  Get Listed
-                </Link>
-              </p>
-            </div>
+            {!isSignUp && (
+              <div className="text-center pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsSignUp(true)}
+                    className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
+                  >
+                    Sign up here
+                  </button>
+                  {' or '}
+                  <Link to="/get-listed" className="font-semibold text-primary-600 hover:text-primary-700 transition-colors">
+                    Get Listed
+                  </Link>
+                </p>
+              </div>
+            )}
+            {isSignUp && (
+              <div className="text-center pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600">
+                  Already have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsSignUp(false)}
+                    className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
+                  >
+                    Sign in here
+                  </button>
+                </p>
+              </div>
+            )}
           </form>
         </div>
       </div>
