@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Clock, ArrowRight, BookOpen } from 'lucide-react'
+import { Search, Clock, ArrowRight, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
 import { RESOURCES } from '../lib/resourceContent'
 
-
 const CATEGORIES = ['All', 'For People Seeking Support', 'For Professionals & Clinics', 'For Families & Carers', 'For Professionals & Employers']
+const RESOURCES_PER_PAGE = 6
 
 export function Resources() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
+  const [currentPage, setCurrentPage] = useState(1)
 
   const filteredResources = RESOURCES.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -16,6 +17,43 @@ export function Resources() {
     const matchesCategory = selectedCategory === 'All' || resource.category === selectedCategory
     return matchesSearch && matchesCategory
   })
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, selectedCategory])
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredResources.length / RESOURCES_PER_PAGE)
+  const startIndex = (currentPage - 1) * RESOURCES_PER_PAGE
+  const endIndex = startIndex + RESOURCES_PER_PAGE
+  const paginatedResources = filteredResources.slice(startIndex, endIndex)
+
+  const scrollToResources = () => {
+    const resourcesSection = document.getElementById('resources-grid')
+    if (resourcesSection) {
+      resourcesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page)
+    setTimeout(scrollToResources, 100)
+  }
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+      setTimeout(scrollToResources, 100)
+    }
+  }
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+      setTimeout(scrollToResources, 100)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/20 to-gray-50">
@@ -64,8 +102,8 @@ export function Resources() {
         </div>
 
         {/* Resources Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
-          {filteredResources.map(resource => (
+        <div id="resources-grid" className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
+          {paginatedResources.map(resource => (
             <article key={resource.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1 border border-gray-100">
               <div className="relative overflow-hidden">
                 <img
@@ -112,6 +150,74 @@ export function Resources() {
             </article>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+            <div className="text-sm text-gray-600">
+              Showing {startIndex + 1} to {Math.min(endIndex, filteredResources.length)} of {filteredResources.length} resources
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                  currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600 border border-gray-200 shadow-sm hover:shadow-md'
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => goToPage(page)}
+                        className={`w-10 h-10 rounded-xl font-semibold transition-all ${
+                          currentPage === page
+                            ? 'bg-primary-500 text-white shadow-md'
+                            : 'bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600 border border-gray-200'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  } else if (page === currentPage - 2 || page === currentPage + 2) {
+                    return (
+                      <span key={page} className="px-2 text-gray-400">
+                        ...
+                      </span>
+                    )
+                  }
+                  return null
+                })}
+              </div>
+
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                  currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600 border border-gray-200 shadow-sm hover:shadow-md'
+                }`}
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* CTA */}
         <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl p-6 sm:p-8 md:p-10 text-center text-white shadow-xl">
