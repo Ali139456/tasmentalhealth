@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Search, Menu, X, User, LogOut } from 'lucide-react'
+import { Search, Menu, X, User, LogOut, LogIn } from 'lucide-react'
 import { useState } from 'react'
 
 export function Header() {
@@ -135,8 +135,9 @@ export function Header() {
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-gray-700 rounded-xl text-sm font-semibold hover:text-primary-600 hover:bg-primary-50/50 transition-all"
+                  className="px-4 py-2 text-gray-700 rounded-xl text-sm font-semibold hover:text-primary-600 hover:bg-primary-50/50 transition-all flex items-center gap-2"
                 >
+                  <LogIn className="w-4 h-4" />
                   Lister Login
                 </Link>
                 <Link
@@ -293,8 +294,9 @@ export function Header() {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-gray-700 rounded-xl text-base font-semibold hover:bg-primary-50/50"
+                  className="flex items-center gap-2 px-4 py-3 text-gray-700 rounded-xl text-base font-semibold hover:bg-primary-50/50"
                 >
+                  <LogIn className="w-5 h-5" />
                   Lister Login
                 </Link>
                 <Link
