@@ -711,74 +711,74 @@ export function CrisisSupport() {
         {/* Find Help Tab - Enhanced */}
         {activeTab === 'find-help' && (
           <div className="max-w-6xl mx-auto space-y-8 sm:space-y-10">
-            {/* Emergency Banner - Enhanced with Background */}
-            <div className="relative bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white rounded-2xl p-8 sm:p-10 md:p-12 text-center shadow-2xl overflow-hidden">
+            {/* Emergency Banner - Compact */}
+            <div className="relative bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white rounded-xl p-5 sm:p-6 text-center shadow-xl overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full blur-2xl"></div>
               </div>
               
               <div className="relative z-10">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <AlertTriangle className="w-12 h-12 sm:w-14 sm:h-14 text-white" />
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+                  <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">In an Emergency?</h3>
-                <p className="text-lg sm:text-xl md:text-2xl mb-8 sm:mb-10 text-white/95 max-w-2xl mx-auto">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2">In an Emergency?</h3>
+                <p className="text-sm sm:text-base mb-4 text-white/95 max-w-xl mx-auto">
                   If you or someone else is in immediate danger, do not wait.
                 </p>
                 <a
                   href="tel:000"
-                  className="inline-flex items-center gap-3 px-10 sm:px-12 py-4 sm:py-5 bg-white text-red-600 rounded-xl font-bold text-lg sm:text-xl hover:bg-gray-50 transition-all transform hover:scale-105 shadow-2xl"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-red-600 rounded-lg font-bold text-base hover:bg-gray-50 transition-all transform hover:scale-105 shadow-lg"
                 >
-                  <Phone className="w-6 h-6 sm:w-7 sm:h-7" />
+                  <Phone className="w-5 h-5" />
                   Call 000 Now
                 </a>
               </div>
             </div>
 
-            {/* Helplines Section - Enhanced */}
-            <div className="bg-gradient-to-br from-white via-primary-50/30 to-white rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-primary-100">
-              <div className="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-10">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary-500 rounded-xl flex items-center justify-center shadow-lg">
-                  <Phone className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            {/* Helplines Section - Compact */}
+            <div className="bg-gradient-to-br from-white via-primary-50/30 to-white rounded-xl p-5 sm:p-6 shadow-lg border border-primary-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center shadow-md">
+                  <Phone className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">National 24/7 Support Lines</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mt-1">Free, confidential support available around the clock</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900">National 24/7 Support Lines</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Free, confidential support available around the clock</p>
                 </div>
               </div>
               
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {HELPLINES.map(helpline => (
-                  <div key={helpline.name} className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all p-5 sm:p-6 border-2 border-gray-100 hover:border-primary-300 relative overflow-hidden">
+                  <div key={helpline.name} className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-4 border border-gray-100 hover:border-primary-300 relative overflow-hidden">
                     {/* Decorative gradient on hover */}
                     <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-primary-400/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
                     <div className="relative z-10">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                          <Phone className="w-6 h-6 text-white" />
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <Phone className="w-5 h-5 text-white" />
                         </div>
                       </div>
-                      <h4 className="text-lg sm:text-xl font-bold mb-2 text-gray-900">{helpline.name}</h4>
-                      <p className="text-2xl sm:text-3xl font-bold text-primary-600 mb-3">{helpline.number}</p>
-                      <p className="text-gray-600 text-sm mb-4 leading-relaxed">{helpline.description}</p>
+                      <h4 className="text-base sm:text-lg font-bold mb-1.5 text-gray-900">{helpline.name}</h4>
+                      <p className="text-xl sm:text-2xl font-bold text-primary-600 mb-2">{helpline.number}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm mb-3 leading-relaxed">{helpline.description}</p>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <a
                           href={`tel:${helpline.tel}`}
-                          className="flex-1 px-4 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                          className="flex-1 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
                         >
-                          <Phone className="w-4 h-4" />
+                          <Phone className="w-3.5 h-3.5" />
                           Call
                         </a>
                         <a
                           href={helpline.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 sm:flex-none px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2"
+                          className="flex-1 sm:flex-none px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5"
                         >
-                          <Globe className="w-4 h-4" />
+                          <Globe className="w-3.5 h-3.5" />
                           Website
                         </a>
                       </div>
