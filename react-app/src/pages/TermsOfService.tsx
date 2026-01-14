@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom'
-import { FileText, Mail, CheckCircle2, AlertCircle, Shield, Lock, Users, Eye, FileCheck, Sparkles, ArrowRight } from 'lucide-react'
+import { FileText, Mail, CheckCircle2, AlertCircle, Shield, Lock, Eye, FileCheck, Sparkles, ArrowRight } from 'lucide-react'
 
 export function TermsOfService() {
   const terms = [

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Star, CheckCircle2, ArrowRight, TrendingUp, Shield, Zap, Headphones } from 'lucide-react'
+import { CheckCircle2, ArrowRight, TrendingUp, Shield, Zap, Headphones } from 'lucide-react'
 
 export function FeaturedListings() {
   return (

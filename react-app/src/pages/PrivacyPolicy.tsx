@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Shield, Mail, Lock, Eye, FileCheck, Users, Database, AlertTriangle, CheckCircle2, Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 
 export function PrivacyPolicy() {
