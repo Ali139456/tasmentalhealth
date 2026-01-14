@@ -158,27 +158,27 @@ export function Home() {
           }}
         ></div>
         <div className="container mx-auto px-4 py-12 sm:py-16 md:py-24 lg:py-32 relative z-10">
-          <div className="max-w-4xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-2">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
               Tasmania's Mental Health Directory
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 text-primary-100 font-light px-2">
+            <p className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 text-primary-100 font-light">
               Connecting You to the Right Support
             </p>
-            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-10 text-white/90 max-w-2xl px-2">
+            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-10 text-white/90 max-w-2xl mx-auto">
               Search for trusted mental health professionals across Hobart, Launceston, and beyond - or list your clinic, private practice, or mental health service to grow your visibility.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 px-2">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <a 
                 href="#directory" 
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="w-full sm:w-auto min-w-[200px] px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                 Find a Professional
               </a>
               <Link 
                 to="/get-listed" 
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-primary-700 text-white rounded-xl font-semibold hover:bg-primary-800 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 border-2 border-white/20 text-sm sm:text-base"
+                className="w-full sm:w-auto min-w-[200px] px-6 sm:px-8 py-3 sm:py-4 bg-primary-700 text-white rounded-xl font-semibold hover:bg-primary-800 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 border-2 border-white/20 text-sm sm:text-base"
               >
                 List Your Practice
                 <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />

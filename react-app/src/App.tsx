@@ -13,6 +13,10 @@ import { Events } from './pages/Events'
 import { SearchResults } from './pages/SearchResults'
 import { Dashboard } from './pages/Dashboard'
 import { Admin } from './pages/Admin'
+import { PrivacyPolicy } from './pages/PrivacyPolicy'
+import { TermsOfService } from './pages/TermsOfService'
+import { Sitemap } from './pages/Sitemap'
+import { FeaturedListings } from './pages/FeaturedListings'
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode; requireAdmin?: boolean }) {
   const { user, role, loading } = useAuth()
@@ -51,6 +55,10 @@ function AppRoutes() {
       <Route path="/search" element={<Layout><SearchResults /></Layout>} />
       <Route path="/login" element={<Login />} />
       <Route path="/get-listed" element={<Layout><GetListed /></Layout>} />
+      <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
+      <Route path="/terms-of-service" element={<Layout><TermsOfService /></Layout>} />
+      <Route path="/sitemap" element={<Layout><Sitemap /></Layout>} />
+      <Route path="/featured-listings" element={<Layout><FeaturedListings /></Layout>} />
       <Route
         path="/dashboard"
         element={
