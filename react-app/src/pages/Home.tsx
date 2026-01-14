@@ -436,6 +436,12 @@ export function Home() {
                           </div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
+                          <Link
+                            to={`/listing/${listing.id}`}
+                            className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+                          >
+                            View Profile
+                          </Link>
                           {listing.show_phone_publicly && listing.phone && (
                             <a
                               href={`tel:${listing.phone}`}

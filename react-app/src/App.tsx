@@ -17,6 +17,7 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy'
 import { TermsOfService } from './pages/TermsOfService'
 import { Sitemap } from './pages/Sitemap'
 import { FeaturedListings } from './pages/FeaturedListings'
+import { ListingDetail } from './pages/ListingDetail'
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode; requireAdmin?: boolean }) {
   const { user, role, loading } = useAuth()
@@ -59,6 +60,7 @@ function AppRoutes() {
       <Route path="/terms-of-service" element={<Layout><TermsOfService /></Layout>} />
       <Route path="/sitemap" element={<Layout><Sitemap /></Layout>} />
       <Route path="/featured-listings" element={<Layout><FeaturedListings /></Layout>} />
+      <Route path="/listing/:id" element={<Layout><ListingDetail /></Layout>} />
       <Route
         path="/dashboard"
         element={
