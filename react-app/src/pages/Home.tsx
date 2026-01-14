@@ -96,22 +96,31 @@ export function Home() {
   const endIndex = startIndex + LISTINGS_PER_PAGE
   const paginatedListings = filteredListings.slice(startIndex, endIndex)
 
+  const scrollToDirectory = () => {
+    const directorySection = document.getElementById('directory')
+    if (directorySection) {
+      directorySection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
   const goToPage = (page: number) => {
     setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setTimeout(scrollToDirectory, 100)
   }
 
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setTimeout(scrollToDirectory, 100)
     }
   }
 
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setTimeout(scrollToDirectory, 100)
     }
   }
 
