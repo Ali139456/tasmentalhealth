@@ -1,15 +1,18 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES } from '../lib/constants'
 import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 
+const LISTINGS_PER_PAGE = 3
+
 export function Home() {
   const [listings, setListings] = useState<Listing[]>([])
   const [filteredListings, setFilteredListings] = useState<Listing[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
   const [filters, setFilters] = useState({
     keywords: '',
     location: 'All Locations',
@@ -23,6 +26,7 @@ export function Home() {
 
   useEffect(() => {
     filterListings()
+    setCurrentPage(1) // Reset to first page when filters change
   }, [listings, filters])
 
   const fetchListings = async () => {
@@ -84,6 +88,31 @@ export function Home() {
     }
 
     setFilteredListings(filtered)
+  }
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredListings.length / LISTINGS_PER_PAGE)
+  const startIndex = (currentPage - 1) * LISTINGS_PER_PAGE
+  const endIndex = startIndex + LISTINGS_PER_PAGE
+  const paginatedListings = filteredListings.slice(startIndex, endIndex)
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   return (
@@ -324,7 +353,7 @@ export function Home() {
                       Results <span className="text-primary-600">({filteredListings.length} found)</span>
                     </h3>
                   </div>
-                  {filteredListings.map(listing => (
+                  {paginatedListings.map(listing => (
                     <div
                       key={listing.id}
                       className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all border-l-4 overflow-hidden ${
@@ -404,6 +433,74 @@ export function Home() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
+                      <div className="text-sm text-gray-600">
+                        Showing {startIndex + 1} to {Math.min(endIndex, filteredListings.length)} of {filteredListings.length} listings
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={goToPreviousPage}
+                          disabled={currentPage === 1}
+                          className={`px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                            currentPage === 1
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600 border border-gray-200 shadow-sm hover:shadow-md'
+                          }`}
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                          Previous
+                        </button>
+                        
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                            // Show first page, last page, current page, and pages around current
+                            if (
+                              page === 1 ||
+                              page === totalPages ||
+                              (page >= currentPage - 1 && page <= currentPage + 1)
+                            ) {
+                              return (
+                                <button
+                                  key={page}
+                                  onClick={() => goToPage(page)}
+                                  className={`w-10 h-10 rounded-xl font-semibold transition-all ${
+                                    currentPage === page
+                                      ? 'bg-primary-500 text-white shadow-md'
+                                      : 'bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600 border border-gray-200'
+                                  }`}
+                                >
+                                  {page}
+                                </button>
+                              )
+                            } else if (page === currentPage - 2 || page === currentPage + 2) {
+                              return (
+                                <span key={page} className="px-2 text-gray-400">
+                                  ...
+                                </span>
+                              )
+                            }
+                            return null
+                          })}
+                        </div>
+
+                        <button
+                          onClick={goToNextPage}
+                          disabled={currentPage === totalPages}
+                          className={`px-4 py-2 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                            currentPage === totalPages
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-white text-gray-700 hover:bg-primary-50 hover:text-primary-600 border border-gray-200 shadow-sm hover:shadow-md'
+                          }`}
+                        >
+                          Next
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
