@@ -9,7 +9,6 @@ import {
 
 export function ListingDetail() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const [listing, setListing] = useState<Listing | null>(null)
   const [loading, setLoading] = useState(true)
 
