@@ -57,53 +57,55 @@ export function Header() {
             </div>
           </Link>
 
-          {/* Navigation + Auth - Combined */}
-          <div className="hidden lg:flex items-center flex-1 ml-8 justify-start gap-1">
+          {/* Navigation + Auth + Search - Right Side */}
+          <div className="hidden lg:flex items-center gap-2">
             {/* Navigation Links */}
-            <Link
-              to="/"
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                isActive('/') 
-                  ? 'text-primary-600 bg-primary-50' 
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/crisis-support"
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                isActive('/crisis-support') 
-                  ? 'text-primary-600 bg-primary-50' 
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
-              }`}
-            >
-              Crisis Support
-            </Link>
-            <Link
-              to="/resources"
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                isActive('/resources') 
-                  ? 'text-primary-600 bg-primary-50' 
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
-              }`}
-            >
-              Resources
-            </Link>
-            <Link
-              to="/events"
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                isActive('/events') 
-                  ? 'text-primary-600 bg-primary-50' 
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
-              }`}
-            >
-              Events
-            </Link>
+            <div className="flex items-center gap-1">
+              <Link
+                to="/"
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  isActive('/') 
+                    ? 'text-primary-600 bg-primary-50' 
+                    : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
+                }`}
+              >
+                Home
+              </Link>
+              <Link
+                to="/crisis-support"
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  isActive('/crisis-support') 
+                    ? 'text-primary-600 bg-primary-50' 
+                    : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
+                }`}
+              >
+                Crisis Support
+              </Link>
+              <Link
+                to="/resources"
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  isActive('/resources') 
+                    ? 'text-primary-600 bg-primary-50' 
+                    : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
+                }`}
+              >
+                Resources
+              </Link>
+              <Link
+                to="/events"
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  isActive('/events') 
+                    ? 'text-primary-600 bg-primary-50' 
+                    : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
+                }`}
+              >
+                Events
+              </Link>
+            </div>
 
             {/* Auth Buttons */}
             {user ? (
-              <>
+              <div className="flex items-center gap-2">
                 {role === 'admin' && (
                   <Link
                     to="/admin"
@@ -128,9 +130,9 @@ export function Header() {
                   <LogOut className="w-4 h-4" />
                   Sign Out
                 </button>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <Link
                   to="/login"
                   className="px-4 py-2 text-gray-700 rounded-xl text-sm font-semibold hover:text-primary-600 hover:bg-primary-50/50 transition-all"
@@ -143,11 +145,11 @@ export function Header() {
                 >
                   Get Listed
                 </Link>
-              </>
+              </div>
             )}
 
-            {/* Modern Search Bar - Desktop (After Get Listed) */}
-            <div className="hidden md:flex items-center ml-auto">
+            {/* Modern Search Bar - Desktop (Right Side) */}
+            <div className="hidden md:flex items-center ml-2">
               <form onSubmit={handleSearch} className="w-full">
                 <div className={`relative transition-all duration-300 ${searchFocused ? 'w-80' : 'w-64'}`}>
                   <div className={`absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-400/10 rounded-2xl blur-sm opacity-0 transition-opacity duration-300 ${searchFocused ? 'opacity-100' : ''}`}></div>
