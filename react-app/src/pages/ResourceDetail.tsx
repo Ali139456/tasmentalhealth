@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Clock, Calendar, Users, Share2, Heart, BookOpen, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Clock, Calendar, Users, Share2, Heart, BookOpen, Sparkles, TrendingUp } from 'lucide-react'
 import { RESOURCES } from '../lib/resourceContent'
 
 export function ResourceDetail() {

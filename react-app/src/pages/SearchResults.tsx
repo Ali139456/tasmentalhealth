@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { Search, MapPin, Phone, Globe, BookOpen, FileText, Home, Heart, Shield } from 'lucide-react'
+import { Search, MapPin, Phone, BookOpen, FileText, Home } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { RESOURCES } from '../lib/resourceContent'
 import type { Listing } from '../types'

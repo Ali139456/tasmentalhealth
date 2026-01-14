@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star, CreditCard } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star } from 'lucide-react'
 import { format } from 'date-fns'
 
 export function Dashboard() {

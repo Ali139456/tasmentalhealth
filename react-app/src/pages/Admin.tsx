@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import type { Listing, User, Subscription } from '../types'
+import type { Listing, User } from '../types'
 import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'

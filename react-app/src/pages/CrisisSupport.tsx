@@ -157,7 +157,7 @@ export function CrisisSupport() {
     yPosition += 15
 
     // Sections
-    sections.forEach((section, index) => {
+    sections.forEach((section) => {
       if (yPosition > pageHeight - 40) {
         pdf.addPage()
         yPosition = margin
