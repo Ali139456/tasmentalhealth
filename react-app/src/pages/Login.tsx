@@ -28,26 +28,31 @@ export function Login() {
           password,
         })
 
-        if (signUpError) throw signUpError
+        // Check if it's an email confirmation error (non-critical)
+        const isEmailError = signUpError?.message?.toLowerCase().includes('email') || 
+                            signUpError?.message?.toLowerCase().includes('confirmation')
+
+        if (signUpError && !isEmailError) {
+          throw signUpError
+        }
 
         if (authData.user) {
-          // Create user record in users table
-          const { error: userError } = await supabase
-            .from('users')
-            .insert({
-              id: authData.user.id,
-              email: authData.user.email!,
-              role: 'lister',
-              email_verified: false,
-            })
-
-          if (userError) {
-            console.error('Error creating user record:', userError)
-            // Don't throw - user is created in auth, we can handle this later
+          // User record is automatically created by database trigger (handle_new_user)
+          // So we don't need to manually insert it
+          
+          if (isEmailError) {
+            // Email confirmation failed but user was created
+            setSuccess('Account created successfully! You can sign in now. (Email confirmation is not configured yet)')
+          } else {
+            setSuccess('Account created! Please check your email to verify your account.')
           }
-
-          setSuccess('Account created! Please check your email to verify your account.')
+          
           // Clear form
+          setEmail('')
+          setPassword('')
+        } else if (signUpError && isEmailError) {
+          // User might have been created even with email error
+          setSuccess('Account may have been created. Try signing in, or check Supabase email settings.')
           setEmail('')
           setPassword('')
         }
