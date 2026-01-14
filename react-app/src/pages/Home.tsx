@@ -4,67 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES } from '../lib/constants'
-
-// Sample listings for demo (remove when database is connected)
-const SAMPLE_LISTINGS: Partial<Listing>[] = [
-  {
-    id: '1',
-    practice_name: 'Somnus Psychology',
-    profession: 'Clinical Psychologist',
-    bio: 'Somnus Psychology supports sleep and emotional wellbeing through CBT-I and individual therapy. The clinic is recognised as a local leader in neuromodulation, offering non invasive tDCS for depression, anxiety and mood based concerns.',
-    location: 'Hobart',
-    specialties: ['Sleep', 'Anxiety', 'Neuromodulation', 'Depression', 'Trauma'],
-    is_featured: true,
-    is_telehealth: true,
-    show_phone_publicly: true,
-    show_email_publicly: true,
-    phone: '(03) 6234 5678',
-    email: 'info@somnuspsychology.com.au'
-  },
-  {
-    id: '2',
-    practice_name: 'Dr. Sarah Mitchell',
-    profession: 'Psychologist',
-    bio: 'Experienced psychologist specializing in anxiety, depression, and trauma-informed care. Offering both in-person and telehealth services.',
-    location: 'Hobart',
-    specialties: ['Anxiety', 'Depression', 'Trauma', 'CBT'],
-    is_featured: false,
-    is_telehealth: true,
-    show_phone_publicly: true,
-    show_email_publicly: true,
-    phone: '(03) 6234 5678',
-    email: 'sarah.mitchell@example.com'
-  },
-  {
-    id: '3',
-    practice_name: 'chloe stone',
-    profession: 'psychologist',
-    bio: 'Experienced psychologist providing compassionate mental health support across Tasmania.',
-    location: 'Statewide',
-    specialties: ['Anxiety', 'Depression', 'CBT'],
-    is_featured: false,
-    is_telehealth: true,
-    is_statewide_telehealth: true,
-    show_phone_publicly: false,
-    show_email_publicly: false,
-    phone: '',
-    email: ''
-  },
-  {
-    id: '4',
-    practice_name: 'North West Counselling Practice',
-    profession: 'Counselling Centre',
-    bio: 'A team of experienced counsellors providing support for individuals, couples, and families across the North West Coast.',
-    location: 'Launceston',
-    specialties: ['Family Therapy', 'Relationship Issues', 'Grief and Loss'],
-    is_featured: false,
-    is_telehealth: false,
-    show_phone_publicly: true,
-    show_email_publicly: true,
-    phone: '(03) 6331 2345',
-    email: 'admin@nwcounselling.com.au'
-  }
-]
+import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 
 export function Home() {
   const [listings, setListings] = useState<Listing[]>([])
@@ -99,12 +39,12 @@ export function Home() {
         setListings(data)
       } else {
         // Use sample data if no database listings
-        setListings(SAMPLE_LISTINGS as Listing[])
+        setListings(SAMPLE_LISTINGS)
       }
     } catch (error) {
       console.error('Error fetching listings:', error)
       // Use sample data on error
-      setListings(SAMPLE_LISTINGS as Listing[])
+      setListings(SAMPLE_LISTINGS)
     } finally {
       setLoading(false)
     }

@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
+import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 import { 
   MapPin, Phone, Mail, Globe, Star, Shield, ArrowLeft, 
   CheckCircle2, Building2, Video
@@ -31,34 +32,14 @@ export function ListingDetail() {
       setListing(data)
     } catch (error) {
       console.error('Error fetching listing:', error)
-      // Try sample data if database fails
-      const sampleListing: Listing = {
-        id: id || '1',
-        user_id: '1',
-        practice_name: 'Somnus Psychology',
-        email: 'info@somnuspsychology.com.au',
-        phone: '0362 926 056',
-        website: 'https://somnuspsychology.com.au',
-        profession: 'Psychology Clinic',
-        practice_type: 'group_practice',
-        specialties: ['Sleep', 'Anxiety', 'Neuromodulation', 'Depression', 'Trauma'],
-        location: 'Hobart',
-        postcode: '7000',
-        street_address: '123 Main Street',
-        is_telehealth: true,
-        is_rural_outreach: false,
-        is_statewide_telehealth: false,
-        bio: 'Somnus Psychology supports sleep and emotional wellbeing through CBT-I and individual therapy. The clinic is recognised as a local leader in neuromodulation, offering non invasive tDCS for depression, anxiety and mood based concerns.',
-        status: 'approved',
-        is_featured: true,
-        show_name_publicly: true,
-        show_email_publicly: true,
-        show_phone_publicly: true,
-        show_website_publicly: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+      // Try sample data if database fails - find by ID
+      const sampleListing = SAMPLE_LISTINGS.find(l => l.id === id)
+      if (sampleListing) {
+        setListing(sampleListing)
+      } else {
+        // If ID not found in samples, set to null to show not found
+        setListing(null)
       }
-      setListing(sampleListing)
     } finally {
       setLoading(false)
     }
