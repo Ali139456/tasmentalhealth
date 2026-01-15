@@ -43,7 +43,7 @@ export function Header() {
               <img 
                 src="/images/tashmanian%20full%20%20logo%20%281%29.png" 
                 alt="Tasmanian Mental Health Directory" 
-                className="h-8 w-auto transition-transform group-hover:scale-105"
+                className="h-16 w-auto transition-transform group-hover:scale-105"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'
