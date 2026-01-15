@@ -10,7 +10,7 @@ export function Footer() {
           <div className="sm:col-span-2 md:col-span-1">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
               <img 
-                src="/images/logo.webp" 
+                src="/images/tashmanian%20full%20%20logo.png" 
                 alt="Tasmanian Mental Health Directory" 
                 className="h-10 sm:h-12 w-auto"
                 onError={(e) => {
