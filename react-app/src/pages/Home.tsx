@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight, Camera, Navigation, Lock, FileText, BarChart3, Zap } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight, FileText, BarChart3, Zap } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
