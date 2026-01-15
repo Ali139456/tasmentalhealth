@@ -12,7 +12,7 @@ export function Footer() {
               <img 
                 src="/images/tashmanian%20full%20%20logo.png" 
                 alt="Tasmanian Mental Health Directory" 
-                className="h-10 sm:h-12 w-auto"
+                className="h-14 sm:h-16 w-auto"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'

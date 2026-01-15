@@ -36,14 +36,14 @@ export function Header() {
   return (
     <header className="bg-white/95 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-100">
       <div className="px-4 sm:px-8 md:px-16 lg:px-[200px] xl:px-[200px]">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+        <div className="flex items-center justify-between h-20 sm:h-24 gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center group flex-shrink-0">
             <div className="relative">
               <img 
                 src="/images/tashmanian%20full%20%20logo.png" 
                 alt="Tasmanian Mental Health Directory" 
-                className="h-12 w-auto transition-transform group-hover:scale-105"
+                className="h-16 sm:h-20 w-auto transition-transform group-hover:scale-105"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'
