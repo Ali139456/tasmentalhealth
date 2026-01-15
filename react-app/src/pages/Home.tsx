@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight, Camera, Navigation, Lock, FileText, BarChart3, Zap } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
@@ -161,6 +161,177 @@ export function Home() {
                 List Your Practice
                 <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
               </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Powerful Features Section */}
+      <section className="py-16 sm:py-20 md:py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+              Powerful Features
+            </h2>
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-6 max-w-3xl mx-auto">
+              Everything you need for comprehensive mental health support
+            </p>
+            <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto">
+              Our directory verifies mental health professionals before listing — capturing credentials, specialties, and availability so you can find the right support before making contact.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {/* Feature Card 1 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80)'
+                }}
+              ></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-gray-900/60"></div>
+              <div className="relative p-6 sm:p-8 h-full flex flex-col">
+                <div className="mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                    <Search className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/70 font-medium uppercase tracking-wide">Search</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Verified Professionals</h3>
+                <p className="text-white/90 text-sm sm:text-base mb-6 flex-grow">
+                  Find trusted mental health professionals with verified credentials and detailed profiles
+                </p>
+                <a href="#directory" className="inline-flex items-center gap-2 text-white font-semibold text-sm sm:text-base hover:gap-3 transition-all">
+                  Learn more <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Feature Card 2 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=80)'
+                }}
+              ></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-primary-900 via-primary-800/80 to-primary-800/60"></div>
+              <div className="relative p-6 sm:p-8 h-full flex flex-col">
+                <div className="mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/70 font-medium uppercase tracking-wide">Location</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Location-Based Search</h3>
+                <p className="text-white/90 text-sm sm:text-base mb-6 flex-grow">
+                  Find professionals near you in Hobart, Launceston, or access telehealth services statewide
+                </p>
+                <a href="#directory" className="inline-flex items-center gap-2 text-white font-semibold text-sm sm:text-base hover:gap-3 transition-all">
+                  Learn more <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Feature Card 3 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=80)'
+                }}
+              ></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-emerald-900 via-emerald-800/80 to-emerald-800/60"></div>
+              <div className="relative p-6 sm:p-8 h-full flex flex-col">
+                <div className="mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                    <Shield className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/70 font-medium uppercase tracking-wide">Security</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Secure & Compliant</h3>
+                <p className="text-white/90 text-sm sm:text-base mb-6 flex-grow">
+                  Bank-level security with privacy protection and compliance with Australian health regulations
+                </p>
+                <a href="/privacy-policy" className="inline-flex items-center gap-2 text-white font-semibold text-sm sm:text-base hover:gap-3 transition-all">
+                  Learn more <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Feature Card 4 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&q=80)'
+                }}
+              ></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-blue-800/80 to-blue-800/60"></div>
+              <div className="relative p-6 sm:p-8 h-full flex flex-col">
+                <div className="mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/70 font-medium uppercase tracking-wide">Resources</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Comprehensive Resources</h3>
+                <p className="text-white/90 text-sm sm:text-base mb-6 flex-grow">
+                  Access mental health guides, crisis support information, and educational materials
+                </p>
+                <Link to="/resources" className="inline-flex items-center gap-2 text-white font-semibold text-sm sm:text-base hover:gap-3 transition-all">
+                  Learn more <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Feature Card 5 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80)'
+                }}
+              ></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-purple-900 via-purple-800/80 to-purple-800/60"></div>
+              <div className="relative p-6 sm:p-8 h-full flex flex-col">
+                <div className="mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                    <BarChart3 className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-xs sm:text-sm text-white/70 font-medium uppercase tracking-wide">Analytics</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Detailed Profiles</h3>
+                <p className="text-white/90 text-sm sm:text-base mb-6 flex-grow">
+                  View comprehensive profiles with specialties, availability, and practice information
+                </p>
+                <a href="#directory" className="inline-flex items-center gap-2 text-white font-semibold text-sm sm:text-base hover:gap-3 transition-all">
+                  Learn more <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Feature Card 6 */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80)'
+                }}
+              ></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-orange-900 via-orange-800/80 to-orange-800/60"></div>
+              <div className="relative p-6 sm:p-8 h-full flex flex-col">
+                <div className="mb-4">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                    <Zap className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3">Quick Access</h3>
+                <p className="text-white/90 text-sm sm:text-base mb-6 flex-grow">
+                  Fast and efficient search streamlines finding the right mental health professional, reducing search time by up to 60%
+                </p>
+              </div>
             </div>
           </div>
         </div>
