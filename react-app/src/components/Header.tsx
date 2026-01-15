@@ -41,7 +41,7 @@ export function Header() {
           <Link to="/" className="flex items-center group flex-shrink-0">
             <div className="relative">
               <img 
-                src="/images/tashmanian%20full%20%20logo%20%281%29.png" 
+                src="/images/tashmanian-logo.png" 
                 alt="Tasmanian Mental Health Directory" 
                 className="h-12 sm:h-16 w-auto transition-transform group-hover:scale-105"
                 onError={(e) => {
