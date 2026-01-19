@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight, Video, Radio, BadgeCheck, Sparkles } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
-import { LOCATIONS, SPECIALTIES } from '../lib/constants'
+import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
 import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 
 const LISTINGS_PER_PAGE = 3
@@ -17,7 +17,13 @@ export function Home() {
     keywords: '',
     location: 'All Locations',
     specialty: '',
-    practiceType: 'all'
+    practiceType: 'all',
+    profession: '',
+    telehealth: false,
+    statewideTelehealth: false,
+    ruralOutreach: false,
+    featured: false,
+    verified: false
   })
 
   useEffect(() => {
@@ -84,6 +90,42 @@ export function Home() {
     if (filters.practiceType !== 'all') {
       filtered = filtered.filter(listing =>
         listing.practice_type === filters.practiceType
+      )
+    }
+
+    if (filters.profession) {
+      filtered = filtered.filter(listing =>
+        listing.profession === filters.profession
+      )
+    }
+
+    if (filters.telehealth) {
+      filtered = filtered.filter(listing =>
+        listing.is_telehealth === true
+      )
+    }
+
+    if (filters.statewideTelehealth) {
+      filtered = filtered.filter(listing =>
+        listing.is_statewide_telehealth === true
+      )
+    }
+
+    if (filters.ruralOutreach) {
+      filtered = filtered.filter(listing =>
+        listing.is_rural_outreach === true
+      )
+    }
+
+    if (filters.featured) {
+      filtered = filtered.filter(listing =>
+        listing.is_featured === true
+      )
+    }
+
+    if (filters.verified) {
+      filtered = filtered.filter(listing =>
+        listing.ahpra_number && listing.ahpra_number.trim() !== ''
       )
     }
 
@@ -248,56 +290,68 @@ export function Home() {
           <div className="grid lg:grid-cols-4 gap-6 sm:gap-8">
             {/* Filters Sidebar */}
             <aside className="lg:col-span-1">
-              <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg lg:sticky lg:top-24 border border-gray-100">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2 text-gray-900">
-                  <Filter className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />
-                  Filter Clinicians
-                </h3>
+              <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-5 sm:p-7 rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden">
+                {/* Decorative background elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-200/20 rounded-full blur-2xl -ml-12 -mb-12"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-primary-200">
+                    <div className="p-2.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg">
+                      <Filter className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                      Filter Clinicians & Counsellors
+                    </h3>
+                  </div>
 
-                <div className="space-y-4 sm:space-y-6">
-                  <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Keywords</label>
+                  <div className="space-y-5 sm:space-y-6">
+                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <Search className="w-4 h-4 text-primary-500" />
+                      Keywords
+                    </label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                      <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-4 h-4 sm:w-5 sm:h-5 z-10" />
                       <input
                         type="text"
                         placeholder="Name, condition, therapy..."
                         value={filters.keywords}
                         onChange={(e) => setFilters({ ...filters, keywords: e.target.value })}
-                        className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm sm:text-base"
+                        className="w-full pl-10 sm:pl-12 pr-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all text-sm sm:text-base bg-white/90 shadow-sm hover:shadow-md"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Listing Category</label>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3">Listing Category</label>
+                    <div className="flex flex-wrap gap-2.5">
                       <button
                         onClick={() => setFilters({ ...filters, practiceType: 'all' })}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 ${
                           filters.practiceType === 'all' 
-                            ? 'bg-primary-500 text-white shadow-md' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-200' 
+                            : 'bg-white text-gray-700 hover:bg-primary-50 border-2 border-primary-200 hover:border-primary-300 shadow-sm'
                         }`}
                       >
                         All
                       </button>
                       <button
                         onClick={() => setFilters({ ...filters, practiceType: 'individual' })}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 ${
                           filters.practiceType === 'individual' 
-                            ? 'bg-primary-500 text-white shadow-md' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-200' 
+                            : 'bg-white text-gray-700 hover:bg-primary-50 border-2 border-primary-200 hover:border-primary-300 shadow-sm'
                         }`}
                       >
                         Individual
                       </button>
                       <button
                         onClick={() => setFilters({ ...filters, practiceType: 'group_practice' })}
-                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 ${
                           filters.practiceType === 'group_practice' 
-                            ? 'bg-primary-500 text-white shadow-md' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-200' 
+                            : 'bg-white text-gray-700 hover:bg-primary-50 border-2 border-primary-200 hover:border-primary-300 shadow-sm'
                         }`}
                       >
                         Practice
@@ -305,14 +359,17 @@ export function Home() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Location</label>
+                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-primary-500" />
+                      Location
+                    </label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                      <MapPin className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-4 h-4 sm:w-5 sm:h-5 z-10 pointer-events-none" />
                       <select
                         value={filters.location}
                         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                        className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none bg-white text-sm sm:text-base"
+                        className="w-full pl-10 sm:pl-12 pr-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 appearance-none bg-white/90 shadow-sm hover:shadow-md text-sm sm:text-base cursor-pointer"
                       >
                         {LOCATIONS.map(loc => (
                           <option key={loc} value={loc}>{loc}</option>
@@ -321,18 +378,115 @@ export function Home() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Specialties</label>
+                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3">Specialties</label>
                     <select
                       value={filters.specialty}
                       onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
-                      className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-sm sm:text-base"
+                      className="w-full px-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm sm:text-base cursor-pointer transition-all"
                     >
                       <option value="">All Specialties</option>
                       {SPECIALTIES.map(spec => (
                         <option key={spec} value={spec}>{spec}</option>
                       ))}
                     </select>
+                  </div>
+
+                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3">Professional Role</label>
+                    <select
+                      value={filters.profession}
+                      onChange={(e) => setFilters({ ...filters, profession: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm sm:text-base cursor-pointer transition-all"
+                    >
+                      <option value="">All Professional Roles</option>
+                      {PROFESSIONS.map(prof => (
+                        <option key={prof} value={prof}>{prof}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-emerald-50/50 to-teal-50/30 p-4 rounded-2xl border-2 border-emerald-200/50 shadow-md hover:shadow-lg transition-all">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <div className="p-1 bg-emerald-500 rounded-lg">
+                        <Video className="w-3 h-3 text-white" />
+                      </div>
+                      Service Options
+                    </label>
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={filters.telehealth}
+                          onChange={(e) => setFilters({ ...filters, telehealth: e.target.checked })}
+                          className="w-5 h-5 text-primary-600 border-2 border-primary-300 rounded-md focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 cursor-pointer"
+                        />
+                        <div className="flex items-center gap-2.5 flex-1">
+                          <Video className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Telehealth Available</span>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={filters.statewideTelehealth}
+                          onChange={(e) => setFilters({ ...filters, statewideTelehealth: e.target.checked })}
+                          className="w-5 h-5 text-primary-600 border-2 border-primary-300 rounded-md focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 cursor-pointer"
+                        />
+                        <div className="flex items-center gap-2.5 flex-1">
+                          <Radio className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Statewide Telehealth</span>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={filters.ruralOutreach}
+                          onChange={(e) => setFilters({ ...filters, ruralOutreach: e.target.checked })}
+                          className="w-5 h-5 text-primary-600 border-2 border-primary-300 rounded-md focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 cursor-pointer"
+                        />
+                        <div className="flex items-center gap-2.5 flex-1">
+                          <MapPin className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Rural Outreach</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-yellow-50/50 to-amber-50/30 p-4 rounded-2xl border-2 border-yellow-200/50 shadow-md hover:shadow-lg transition-all">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <div className="p-1 bg-yellow-500 rounded-lg">
+                        <Star className="w-3 h-3 text-white" />
+                      </div>
+                      Listing Features
+                    </label>
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={filters.featured}
+                          onChange={(e) => setFilters({ ...filters, featured: e.target.checked })}
+                          className="w-5 h-5 text-yellow-600 border-2 border-yellow-300 rounded-md focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 cursor-pointer"
+                        />
+                        <div className="flex items-center gap-2.5 flex-1">
+                          <Sparkles className="w-4 h-4 text-yellow-600 group-hover:text-yellow-700 transition-colors" />
+                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-yellow-700 transition-colors">Featured Listings Only</span>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
+                        <input
+                          type="checkbox"
+                          checked={filters.verified}
+                          onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
+                          className="w-5 h-5 text-emerald-600 border-2 border-emerald-300 rounded-md focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 cursor-pointer"
+                        />
+                        <div className="flex items-center gap-2.5 flex-1">
+                          <BadgeCheck className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Verified Professionals</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
