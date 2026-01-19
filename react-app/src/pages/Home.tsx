@@ -177,28 +177,28 @@ export function Home() {
             backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80)'
           }}
         ></div>
-        <div className="container mx-auto px-4 py-12 sm:py-16 md:py-24 lg:py-32 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-28 xl:py-32 relative z-10 max-w-7xl">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
               Tasmania's Mental Health Directory
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 text-primary-100 font-light">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-3 sm:mb-4 text-primary-100 font-light">
               Connecting You to the Right Support
             </p>
-            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-10 text-white/90 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 md:mb-10 text-white/90 max-w-3xl mx-auto px-4">
               Search for trusted mental health professionals across Hobart, Launceston, and beyond - or list your clinic, private practice, or mental health service to grow your visibility.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
               <a 
                 href="#directory" 
-                className="w-full sm:w-auto min-w-[200px] px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="w-full sm:w-auto min-w-[200px] sm:min-w-[220px] px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg"
               >
                 <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                 Find a Professional
               </a>
               <Link 
                 to="/get-listed" 
-                className="w-full sm:w-auto min-w-[200px] px-6 sm:px-8 py-3 sm:py-4 bg-primary-700 text-white rounded-xl font-semibold hover:bg-primary-800 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 border-2 border-white/20 text-sm sm:text-base"
+                className="w-full sm:w-auto min-w-[200px] sm:min-w-[220px] px-6 sm:px-8 py-3 sm:py-4 bg-primary-700 text-white rounded-xl font-semibold hover:bg-primary-800 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 border-2 border-white/20 text-sm sm:text-base md:text-lg"
               >
                 List Your Practice
                 <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -209,9 +209,9 @@ export function Home() {
       </section>
 
       {/* Two Column Section - Enhanced Design */}
-      <section className="py-12 sm:py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
             <div className="bg-gradient-to-br from-primary-50 to-primary-100/50 p-6 sm:p-8 md:p-10 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-primary-200">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary-500 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
                 <Search className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
@@ -278,19 +278,19 @@ export function Home() {
       </section>
 
       {/* Directory Section - Enhanced */}
-      <section id="directory" className="py-12 sm:py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Find Mental Health Support in Tasmania</h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-2">
+      <section id="directory" className="py-12 sm:py-16 md:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Find Mental Health Support in Tasmania</h2>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto px-2">
               Use the filters below to find psychologists, counsellors, and other specialists in your area.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
             {/* Filters Sidebar */}
             <aside className="lg:col-span-1">
-              <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-5 sm:p-7 rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden">
+              <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-5 sm:p-6 md:p-7 rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-200/20 rounded-full blur-2xl -ml-12 -mb-12"></div>
@@ -672,11 +672,11 @@ export function Home() {
       </section>
 
       {/* Resources Preview Section */}
-      <section className="py-12 sm:py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Mental Health Insights & Resources</h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-4 sm:mb-6 px-2">
+      <section className="py-12 sm:py-16 md:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Mental Health Insights & Resources</h2>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
               Expert guides on finding support and growing your practice in Tasmania.
             </p>
             <Link 
@@ -687,7 +687,7 @@ export function Home() {
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </Link>
           </div>
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 max-w-6xl mx-auto">
             <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-100">
               <img 
                 src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=80" 
@@ -740,7 +740,7 @@ export function Home() {
       </section>
 
       {/* About Section - Enhanced */}
-      <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
+      <section className="relative py-16 sm:py-20 md:py-24 lg:py-28 overflow-hidden">
         {/* Background with gradient and pattern */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100/50"></div>
         <div className="absolute inset-0 opacity-5">
@@ -752,13 +752,13 @@ export function Home() {
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary-200/20 rounded-full blur-2xl hidden lg:block"></div>
         <div className="absolute bottom-20 right-10 w-40 h-40 bg-primary-300/20 rounded-full blur-2xl hidden lg:block"></div>
         
-        <div className="container mx-auto px-4 max-w-5xl relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-6xl relative z-10">
           {/* Header with icon */}
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-xl mb-6">
-              <Heart className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+          <div className="text-center mb-12 sm:mb-14 md:mb-16">
+            <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-xl mb-6">
+              <Heart className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-white" />
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-gray-900">
               Connecting You with Mental Health Professionals Across Tasmania
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>

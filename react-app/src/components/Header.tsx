@@ -35,16 +35,15 @@ export function Header() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-100">
-      <div className="px-3 sm:px-6 md:px-8 lg:px-16 xl:px-[200px]">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4 min-w-0">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center group min-w-0 max-w-[40%] sm:max-w-[45%] md:max-w-[50%] lg:max-w-none">
-            <div className="relative flex items-center w-full">
+          <Link to="/" className="flex items-center group flex-shrink-0 min-w-0">
+            <div className="relative">
               <img 
                 src="/images/tashmanian-logo.png" 
                 alt="Tasmanian Mental Health Directory" 
-                className="h-7 w-auto sm:h-10 md:h-12 lg:h-16 max-w-full object-contain transition-transform group-hover:scale-105"
-                style={{ maxWidth: '100%', height: 'auto' }}
+                className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto transition-transform group-hover:scale-105"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.style.display = 'none'
@@ -52,8 +51,8 @@ export function Header() {
                   if (fallback) fallback.style.display = 'flex'
                 }}
               />
-              <div className="w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary-500 rounded-lg flex items-center justify-center hidden flex-shrink-0">
-                <span className="text-white font-bold text-xs sm:text-sm md:text-lg">TM</span>
+              <div className="w-12 h-12 bg-primary-500 rounded-lg flex items-center justify-center hidden">
+                <span className="text-white font-bold text-lg">TM</span>
               </div>
             </div>
           </Link>
@@ -61,7 +60,7 @@ export function Header() {
           {/* Navigation + Auth + Search - Right Side */}
           <div className="hidden lg:flex items-center gap-2 flex-1 justify-end min-w-0">
             {/* Navigation Links */}
-            <div className="flex items-center gap-1 min-w-0">
+            <div className="flex items-center gap-1 flex-shrink-0">
               <Link
                 to="/"
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
@@ -151,9 +150,9 @@ export function Header() {
             )}
 
             {/* Modern Search Bar - Desktop (Right Side) */}
-            <div className="hidden md:flex items-center ml-2 min-w-0">
+            <div className="hidden lg:flex items-center ml-2 min-w-0">
               <form onSubmit={handleSearch} className="w-full min-w-0">
-                <div className={`relative transition-all duration-300 min-w-0 ${searchFocused ? 'w-64 lg:w-80' : 'w-48 lg:w-56 xl:w-64'}`}>
+                <div className={`relative transition-all duration-300 min-w-0 ${searchFocused ? 'w-72 xl:w-80' : 'w-56 xl:w-64'}`}>
                   <div className={`absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-400/10 rounded-2xl blur-sm opacity-0 transition-opacity duration-300 ${searchFocused ? 'opacity-100' : ''}`}></div>
                   <div className="relative bg-gray-50 border-2 border-gray-200 rounded-2xl transition-all duration-300 hover:border-primary-300 hover:bg-white hover:shadow-lg focus-within:border-primary-500 focus-within:bg-white focus-within:shadow-xl">
                     <div className="flex items-center">
