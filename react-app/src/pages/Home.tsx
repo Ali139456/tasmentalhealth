@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, Heart, Users, Shield, TrendingUp, ChevronLeft, ChevronRight, Video, Radio, BadgeCheck, Sparkles } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
 import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 
-const LISTINGS_PER_PAGE = 3
+const LISTINGS_PER_PAGE = 4
 
 export function Home() {
   const [listings, setListings] = useState<Listing[]>([])
@@ -169,14 +169,14 @@ export function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Background Image */}
-      <section className="relative bg-gradient-to-br from-primary-400 via-primary-500 to-primary-600 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative text-white overflow-hidden">
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80)'
+            backgroundImage: 'url(/images/hero-mountain.jpg)'
           }}
         ></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-950/80 to-teal-800/40"></div>
         <div className="container mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-28 xl:py-32 relative z-10 max-w-7xl">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
@@ -212,10 +212,7 @@ export function Home() {
       <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
-            <div className="bg-gradient-to-br from-primary-50 to-primary-100/50 p-6 sm:p-8 md:p-10 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-primary-200">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary-500 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
-                <Search className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              </div>
+            <div className="pr-6 sm:pr-8 md:pr-10 lg:pr-12 border-r border-gray-300">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-900">For People Seeking Support</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
                 Navigating mental health care can be overwhelming. We make it easier to find compassionate help. Whether you are looking for psychologists in Hobart, need anxiety counselling in Tasmania, or want to find a social worker in Tasmania, our directory connects you with verified local experts.
@@ -243,10 +240,7 @@ export function Home() {
               </a>
             </div>
 
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 sm:p-8 md:p-10 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-emerald-200">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-emerald-600 rounded-xl flex items-center justify-center mb-4 sm:mb-6">
-                <Star className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              </div>
+            <div className="pl-6 sm:pl-8 md:pl-10 lg:pl-12">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-900">For Professionals & Clinics</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
                 Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. We help you advertise psychology services in Tasmania effectively to patients actively seeking care.
@@ -279,18 +273,22 @@ export function Home() {
 
       {/* Directory Section - Enhanced */}
       <section id="directory" className="py-12 sm:py-16 md:py-20 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Find Mental Health Support in Tasmania</h2>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto px-2">
               Use the filters below to find psychologists, counsellors, and other specialists in your area.
             </p>
           </div>
+          </div>
 
-          <div className="grid lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+        {/* Full width container for grid to allow screen-edge margin */}
+        <div className="w-full">
+          <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
+            <div className="grid lg:grid-cols-5 gap-0">
             {/* Filters Sidebar */}
-            <aside className="lg:col-span-1">
-              <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-5 sm:p-6 md:p-7 rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden">
+              <aside className="lg:col-span-2 w-full lg:w-auto">
+                <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-200/20 rounded-full blur-2xl -ml-12 -mb-12"></div>
@@ -305,26 +303,26 @@ export function Home() {
                     </h3>
                   </div>
 
-                  <div className="space-y-5 sm:space-y-6">
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                  <div className="space-y-4 sm:space-y-5">
+                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
                       <Search className="w-4 h-4 text-primary-500" />
                       Keywords
                     </label>
                     <div className="relative">
-                      <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-4 h-4 sm:w-5 sm:h-5 z-10" />
+                      <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-3 h-3 z-10" />
                       <input
                         type="text"
-                        placeholder="Name, condition, therapy..."
+                        placeholder="Q Name, condition, therapy..."
                         value={filters.keywords}
                         onChange={(e) => setFilters({ ...filters, keywords: e.target.value })}
-                        className="w-full pl-10 sm:pl-12 pr-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all text-sm sm:text-base bg-white/90 shadow-sm hover:shadow-md"
+                        className="w-full lg:max-w-[350px] pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all text-sm bg-white/90 shadow-sm hover:shadow-md"
                       />
                     </div>
                   </div>
 
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3">Listing Category</label>
+                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Filter by Listing Category</label>
                     <div className="flex flex-wrap gap-2.5">
                       <button
                         onClick={() => setFilters({ ...filters, practiceType: 'all' })}
@@ -359,17 +357,14 @@ export function Home() {
                     </div>
                   </div>
 
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-primary-500" />
-                      Location
-                    </label>
+                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3 uppercase">Select Location (e.g. Hobart)</label>
                     <div className="relative">
-                      <MapPin className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-4 h-4 sm:w-5 sm:h-5 z-10 pointer-events-none" />
+                      <MapPin className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-3 h-3 z-10 pointer-events-none" />
                       <select
                         value={filters.location}
                         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                        className="w-full pl-10 sm:pl-12 pr-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 appearance-none bg-white/90 shadow-sm hover:shadow-md text-sm sm:text-base cursor-pointer"
+                        className="w-full lg:max-w-[350px] pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 appearance-none bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer"
                       >
                         {LOCATIONS.map(loc => (
                           <option key={loc} value={loc}>{loc}</option>
@@ -378,113 +373,49 @@ export function Home() {
                     </div>
                   </div>
 
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3">Specialties</label>
+                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Specialties</label>
+                    <div className="space-y-2">
                     <select
                       value={filters.specialty}
                       onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm sm:text-base cursor-pointer transition-all"
+                        className="w-full lg:max-w-[350px] px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
                     >
-                      <option value="">All Specialties</option>
+                        <option value="">Select specialties below...</option>
                       {SPECIALTIES.map(spec => (
                         <option key={spec} value={spec}>{spec}</option>
                       ))}
                     </select>
+                      <button
+                        type="button"
+                        className="w-full px-3 py-2 border-2 border-primary-300 rounded-lg text-primary-600 hover:bg-primary-50 font-semibold text-xs flex items-center justify-center gap-2 transition-all"
+                      >
+                        <Search className="w-3 h-3" />
+                        Search specialties...
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3">Professional Role</label>
+                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Professional Role</label>
+                    <div className="space-y-2">
                     <select
                       value={filters.profession}
                       onChange={(e) => setFilters({ ...filters, profession: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-primary-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm sm:text-base cursor-pointer transition-all"
+                        className="w-full lg:max-w-[350px] px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
                     >
-                      <option value="">All Professional Roles</option>
+                        <option value="">Select professional role...</option>
                       {PROFESSIONS.map(prof => (
                         <option key={prof} value={prof}>{prof}</option>
                       ))}
                     </select>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-emerald-50/50 to-teal-50/30 p-4 rounded-2xl border-2 border-emerald-200/50 shadow-md hover:shadow-lg transition-all">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                      <div className="p-1 bg-emerald-500 rounded-lg">
-                        <Video className="w-3 h-3 text-white" />
-                      </div>
-                      Service Options
-                    </label>
-                    <div className="space-y-3">
-                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
-                        <input
-                          type="checkbox"
-                          checked={filters.telehealth}
-                          onChange={(e) => setFilters({ ...filters, telehealth: e.target.checked })}
-                          className="w-5 h-5 text-primary-600 border-2 border-primary-300 rounded-md focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 cursor-pointer"
-                        />
-                        <div className="flex items-center gap-2.5 flex-1">
-                          <Video className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
-                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Telehealth Available</span>
-                        </div>
-                      </label>
-                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
-                        <input
-                          type="checkbox"
-                          checked={filters.statewideTelehealth}
-                          onChange={(e) => setFilters({ ...filters, statewideTelehealth: e.target.checked })}
-                          className="w-5 h-5 text-primary-600 border-2 border-primary-300 rounded-md focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 cursor-pointer"
-                        />
-                        <div className="flex items-center gap-2.5 flex-1">
-                          <Radio className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
-                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Statewide Telehealth</span>
-                        </div>
-                      </label>
-                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
-                        <input
-                          type="checkbox"
-                          checked={filters.ruralOutreach}
-                          onChange={(e) => setFilters({ ...filters, ruralOutreach: e.target.checked })}
-                          className="w-5 h-5 text-primary-600 border-2 border-primary-300 rounded-md focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 cursor-pointer"
-                        />
-                        <div className="flex items-center gap-2.5 flex-1">
-                          <MapPin className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
-                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Rural Outreach</span>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-yellow-50/50 to-amber-50/30 p-4 rounded-2xl border-2 border-yellow-200/50 shadow-md hover:shadow-lg transition-all">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                      <div className="p-1 bg-yellow-500 rounded-lg">
-                        <Star className="w-3 h-3 text-white" />
-                      </div>
-                      Listing Features
-                    </label>
-                    <div className="space-y-3">
-                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
-                        <input
-                          type="checkbox"
-                          checked={filters.featured}
-                          onChange={(e) => setFilters({ ...filters, featured: e.target.checked })}
-                          className="w-5 h-5 text-yellow-600 border-2 border-yellow-300 rounded-md focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 cursor-pointer"
-                        />
-                        <div className="flex items-center gap-2.5 flex-1">
-                          <Sparkles className="w-4 h-4 text-yellow-600 group-hover:text-yellow-700 transition-colors" />
-                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-yellow-700 transition-colors">Featured Listings Only</span>
-                        </div>
-                      </label>
-                      <label className="flex items-center gap-3 cursor-pointer group p-2.5 rounded-xl bg-white/60 hover:bg-white/80 transition-all">
-                        <input
-                          type="checkbox"
-                          checked={filters.verified}
-                          onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
-                          className="w-5 h-5 text-emerald-600 border-2 border-emerald-300 rounded-md focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 cursor-pointer"
-                        />
-                        <div className="flex items-center gap-2.5 flex-1">
-                          <BadgeCheck className="w-4 h-4 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
-                          <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">Verified Professionals</span>
-                        </div>
-                      </label>
+                      <button
+                        type="button"
+                        className="w-full px-3 py-2 border-2 border-primary-300 rounded-lg text-primary-600 hover:bg-primary-50 font-semibold text-xs flex items-center justify-center gap-2 transition-all"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Add Professional Role...
+                      </button>
                     </div>
                   </div>
                   </div>
@@ -493,7 +424,8 @@ export function Home() {
             </aside>
 
             {/* Results - Enhanced Cards */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 w-full">
+              <div className="lg:w-[calc(100%+150px)]">
               {loading ? (
                 <div className="text-center py-12 sm:py-20">
                   <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-primary-500 mb-4"></div>
@@ -530,67 +462,95 @@ export function Home() {
                         </div>
                       )}
                       <div className="p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 sm:mb-4 gap-3">
-                          <div className="flex-1">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                        <div className="mb-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                               <h4 className="text-xl sm:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
                               <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs sm:text-sm font-semibold self-start">
                                 {listing.profession}
                               </span>
                             </div>
-                            {listing.bio && (
+                          
+                          {/* Show bio/description only for featured listings */}
+                          {listing.is_featured && listing.bio && (
                               <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{listing.bio}</p>
+                          )}
+                          
+                          <div className="flex items-center gap-2 mb-3 text-sm text-gray-600">
+                            <MapPin className="w-4 h-4 text-primary-500" />
+                            <span>{listing.location}</span>
+                            {listing.is_featured && listing.is_telehealth && (
+                              <>
+                                <span className="mx-2">•</span>
+                                <Phone className="w-4 h-4 text-emerald-600" />
+                                <span>Telehealth</span>
+                              </>
                             )}
-                            <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-                              {listing.specialties.slice(0, 6).map(spec => (
+                          </div>
+                          {/* Show specialties only for featured listings */}
+                          {listing.is_featured && (
+                            <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
+                              {listing.specialties.slice(0, 8).map(spec => (
                                 <span key={spec} className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
                                   {spec}
                                 </span>
                               ))}
-                              {listing.specialties.length > 6 && (
+                              {listing.specialties.length > 8 && (
                                 <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
-                                  +{listing.specialties.length - 6} more
+                                  +{listing.specialties.length - 8} more
                                 </span>
                               )}
                             </div>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-600">
-                              <span className="flex items-center gap-2">
-                                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500" />
-                                <span className="font-medium">{listing.location}</span>
-                              </span>
-                              {listing.is_telehealth && (
-                                <span className="flex items-center gap-2">
-                                  <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
-                                  <span className="font-medium">Telehealth Available</span>
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                          )}
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
-                          <Link
-                            to={`/listing/${listing.id}`}
-                            className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-                          >
-                            View Profile
-                          </Link>
-                          {listing.show_phone_publicly && listing.phone && (
-                            <a
-                              href={`tel:${listing.phone}`}
-                              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-                            >
-                              <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-                              Call Now
-                            </a>
-                          )}
-                          {listing.show_email_publicly && listing.email && (
-                            <a
-                              href={`mailto:${listing.email}`}
-                              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
-                            >
-                              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                              Email
-                            </a>
+                          {listing.is_featured ? (
+                            <>
+                              <Link
+                                to={`/listing/${listing.id}`}
+                                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+                              >
+                                View Profile
+                              </Link>
+                              {listing.show_phone_publicly && listing.phone && (
+                                <a
+                                  href={`tel:${listing.phone}`}
+                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+                                >
+                                  <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
+                                  Call Now
+                                </a>
+                              )}
+                              {listing.show_email_publicly && listing.email && (
+                                <a
+                                  href={`mailto:${listing.email}`}
+                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
+                                >
+                                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                                  Email
+                                </a>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {listing.show_email_publicly && listing.email && (
+                                <a
+                                  href={`mailto:${listing.email}`}
+                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
+                                >
+                                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                                  {listing.email}
+                                </a>
+                              )}
+                              {listing.show_phone_publicly && listing.phone && (
+                                <a
+                                  href={`tel:${listing.phone}`}
+                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+                                >
+                                  <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
+                                  {listing.phone}
+                                </a>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
@@ -666,6 +626,8 @@ export function Home() {
                   )}
                 </div>
               )}
+              </div>
+            </div>
             </div>
           </div>
         </div>
@@ -690,7 +652,7 @@ export function Home() {
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 max-w-6xl mx-auto">
             <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-100">
               <img 
-                src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=80" 
+                src="/images/resource-ocean.jpg" 
                 alt="Calm turquoise ocean water ripples, nature therapy concept" 
                 className="w-full h-48 sm:h-64 object-cover"
               />
@@ -714,7 +676,7 @@ export function Home() {
 
             <article className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-100">
               <img 
-                src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80" 
+                src="/images/resource-forest.jpg" 
                 alt="Peaceful lush green forest ferns in Tasmania" 
                 className="w-full h-48 sm:h-64 object-cover"
               />
@@ -753,68 +715,35 @@ export function Home() {
         <div className="absolute bottom-20 right-10 w-40 h-40 bg-primary-300/20 rounded-full blur-2xl hidden lg:block"></div>
         
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-6xl relative z-10">
-          {/* Header with icon */}
+          {/* Header */}
           <div className="text-center mb-12 sm:mb-14 md:mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-xl mb-6">
-              <Heart className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-white" />
-            </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-gray-900">
               Connecting You with Mental Health Professionals Across Tasmania
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>
           </div>
 
-          {/* Content Cards */}
-          <div className="space-y-8 sm:space-y-10">
-            {/* Welcome Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-primary-100 hover:shadow-2xl transition-all">
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Users className="w-6 h-6 text-primary-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+          {/* Content */}
+          <div className="text-base sm:text-lg text-gray-700 leading-relaxed space-y-6">
+            <p>
                     Welcome to Tasmania's premier resource for mental wellbeing. Our mission is to bridge the gap between those seeking help and the dedicated professionals who provide it. Whether you are searching for experienced psychologists in Hobart, compassionate counsellors in Tasmania, or specialised psychiatrists in Launceston, our directory is designed to help you find the right support close to home.
                   </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Comprehensive Support Card */}
-            <div className="bg-gradient-to-br from-primary-50 to-white rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-primary-200 hover:shadow-2xl transition-all">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <Shield className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
+            
                   <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-900">Comprehensive Support for Every Need</h3>
-                  <p className="text-base sm:text-lg text-gray-700 mb-4 leading-relaxed">
+            <p>
                     We understand that mental health needs are diverse. That's why we list a wide range of professionals. From sleep therapy in Hobart for those struggling with insomnia, to anxiety counselling in Tasmania for stress management, and trauma-informed care for deeper healing. You can also find a social worker in Tasmania who specialises in complex case management and family support.
                   </p>
-                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+            <p>
                     Our directory covers all major regions, ensuring access to mental health support in Tasmania whether you are in the city centres of Hobart and Launceston, or in regional hubs like Devonport, Burnie, and Ulverstone.
                   </p>
-                </div>
-              </div>
-            </div>
-
-            {/* For Clinicians Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-primary-100 hover:shadow-2xl transition-all">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
+            
                   <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-900">For Clinicians: Grow Your Practice</h3>
-                  <p className="text-base sm:text-lg text-gray-700 mb-4 leading-relaxed">
+            <p>
                     If you are a practitioner, visibility is key to helping more people. By choosing to list your mental health practice in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them.
                   </p>
-                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+            <p>
                     This is the effective way to grow your private practice in Hobart or expand your client base in regional areas. Learn how to get mental health clients in Tasmania by leveraging our SEO-optimised online directory for mental health professionals. Join us today and make your services accessible to all Tasmanians.
                   </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

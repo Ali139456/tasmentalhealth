@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
-import { AlertCircle, CheckCircle, ArrowLeft, UserPlus, MapPin, Phone, Mail, Globe, Award, Heart, Sparkles, ArrowRight } from 'lucide-react'
+import { AlertCircle, CheckCircle, ArrowLeft, MapPin, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
 
 export function GetListed() {
   const { user } = useAuth()
@@ -152,9 +152,6 @@ export function GetListed() {
 
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl mb-6 shadow-xl">
-              <UserPlus className="w-10 h-10 text-white" />
-            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
               Join the Tasmanian Mental Health Directory
             </h1>
@@ -182,12 +179,7 @@ export function GetListed() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Contact Information */}
             <section className="bg-white/80 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl border border-primary-100/50">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                  <Phone className="w-6 h-6 text-primary-600" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Contact Information</h2>
-              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -259,12 +251,7 @@ export function GetListed() {
 
             {/* Professional Details */}
             <section className="bg-white/80 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl border border-primary-100/50">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                  <Award className="w-6 h-6 text-primary-600" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Professional Details</h2>
-              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Professional Details</h2>
               <div className="space-y-5">
                 <div className="grid md:grid-cols-2 gap-5">
                   <div>
@@ -318,12 +305,7 @@ export function GetListed() {
 
             {/* Services & Availability */}
             <section className="bg-white/80 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl border border-primary-100/50">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                  <Heart className="w-6 h-6 text-primary-600" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Services & Availability</h2>
-              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Services & Availability</h2>
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -372,12 +354,7 @@ export function GetListed() {
 
             {/* Location */}
             <section className="bg-white/80 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl border border-primary-100/50">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-primary-600" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Location & Details</h2>
-              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Location & Details</h2>
               <div className="space-y-5">
                 <label className="flex items-center space-x-2 cursor-pointer px-4 py-3 rounded-lg hover:bg-primary-50 transition-colors border-2 border-gray-200">
                   <input

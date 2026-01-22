@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Clock, ArrowRight, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { RESOURCES } from '../lib/resourceContent'
 
 const CATEGORIES = ['All', 'For People Seeking Support', 'For Professionals & Clinics', 'For Families & Carers', 'For Professionals & Employers']
@@ -61,9 +61,6 @@ export function Resources() {
       <section className="bg-gradient-to-r from-primary-500 to-primary-600 text-white py-12 sm:py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-            </div>
             <span className="text-primary-100 font-semibold text-sm sm:text-lg mb-2 block">Knowledge Hub</span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">Mental Health Insights & Resources</h1>
             <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 px-2">
@@ -112,7 +109,7 @@ export function Resources() {
                   className="w-full h-40 sm:h-48 md:h-56 object-cover transition-transform duration-300 hover:scale-110"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
-                    target.src = 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80'
+                    target.src = '/images/resource-ocean.jpg'
                   }}
                 />
                 <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
@@ -134,8 +131,7 @@ export function Resources() {
                 </h3>
                 <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">{resource.excerpt}</p>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 pt-3 sm:pt-4 border-t border-gray-100">
-                  <span className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm text-gray-500">
                     {resource.readTime} min read
                   </span>
                   <Link

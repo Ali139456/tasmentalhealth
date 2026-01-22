@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CheckCircle2, ArrowRight, TrendingUp, Shield, Zap, Headphones } from 'lucide-react'
+import { CheckCircle2, ArrowRight } from 'lucide-react'
 
 export function FeaturedListings() {
   return (
@@ -27,9 +27,6 @@ export function FeaturedListings() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             <div className="bg-gradient-to-br from-primary-50 to-white p-6 rounded-2xl shadow-lg border border-primary-100">
-              <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">Top of Search Results</h3>
               <p className="text-gray-700">
                 Your profile appears first when clients search for terms like 'clinicians Hobart' or 'therapy near me Tasmania'.
@@ -37,9 +34,6 @@ export function FeaturedListings() {
             </div>
 
             <div className="bg-gradient-to-br from-primary-50 to-white p-6 rounded-2xl shadow-lg border border-primary-100">
-              <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center mb-4">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">Verified Badge</h3>
               <p className="text-gray-700">
                 Stand out with a 'Verified Professional' badge that builds instant trust with potential clients in Launceston, Devonport & Burnie.
@@ -47,9 +41,6 @@ export function FeaturedListings() {
             </div>
 
             <div className="bg-gradient-to-br from-primary-50 to-white p-6 rounded-2xl shadow-lg border border-primary-100">
-              <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">Enhanced Profile</h3>
               <p className="text-gray-700">
                 Add video introductions, unlimited photos, and detailed service descriptions to showcase your practice.
@@ -57,9 +48,6 @@ export function FeaturedListings() {
             </div>
 
             <div className="bg-gradient-to-br from-primary-50 to-white p-6 rounded-2xl shadow-lg border border-primary-100">
-              <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center mb-4">
-                <Headphones className="w-6 h-6 text-white" />
-              </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">Priority Support</h3>
               <p className="text-gray-700">
                 Get direct access to our support team for profile optimisation tips to reach more Tasmanian clients.
@@ -150,8 +138,7 @@ export function FeaturedListings() {
                   Become a Featured Lister
                   <ArrowRight className="w-5 h-5" />
                 </Link>
-                <div className="mt-4 flex items-center justify-center gap-2 text-primary-100 text-sm">
-                  <Shield className="w-4 h-4" />
+                <div className="mt-4 flex items-center justify-center text-primary-100 text-sm">
                   <span>Secure payment via Stripe</span>
                 </div>
               </div>

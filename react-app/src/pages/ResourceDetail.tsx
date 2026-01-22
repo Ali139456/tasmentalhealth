@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Clock, Calendar, Users, Share2, Heart, BookOpen, Sparkles, TrendingUp } from 'lucide-react'
+import { ArrowLeft, Clock, Calendar, Users, Share2 } from 'lucide-react'
 import { RESOURCES } from '../lib/resourceContent'
 
 export function ResourceDetail() {
@@ -94,148 +94,115 @@ export function ResourceDetail() {
         <div className="grid lg:grid-cols-12 gap-8 max-w-full">
           {/* Main Content */}
           <div className="lg:col-span-8">
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
-              {resource.image && (
-                <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden">
-                  <img
-                    src={resource.image}
-                    alt={resource.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.src = 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&q=80'
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="flex items-center gap-2 text-white text-sm">
-                      <Sparkles className="w-4 h-4" />
-                      <span className="font-medium">Featured Article</span>
-                    </div>
+            {resource.image && (
+              <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden mb-8">
+                <img
+                  src={resource.image}
+                  alt={resource.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.src = '/images/resource-ocean.jpg'
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="text-white text-sm">
+                    <span className="font-medium">Featured Article</span>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              <div className="p-8 sm:p-10 md:p-12">
-                {/* Article Meta - Enhanced */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-8 border-b-2 border-gray-100">
-                  <div className="flex items-center gap-4">
-                    <button className="flex items-center gap-2 px-5 py-3 bg-primary-50 text-primary-600 rounded-xl hover:bg-primary-100 transition-all shadow-md hover:shadow-lg group">
-                      <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                      <span className="text-sm font-semibold">Share Article</span>
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <BookOpen className="w-4 h-4" />
-                      {resource.readTime} min
-                    </span>
-                    <span>•</span>
-                    <span>{resource.updated || 'Jan 2026'}</span>
-                  </div>
-                </div>
+            {/* Article Meta */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-8 border-b-2 border-gray-100">
+              <div className="flex items-center gap-4">
+                <button className="flex items-center gap-2 px-5 py-3 bg-primary-50 text-primary-600 rounded-xl hover:bg-primary-100 transition-all shadow-md hover:shadow-lg group">
+                  <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-semibold">Share Article</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-500">
+                <span>{resource.readTime} min</span>
+                <span>•</span>
+                <span>{resource.updated || 'Jan 2026'}</span>
+              </div>
+            </div>
 
-                {/* Article Body - Enhanced */}
-                <div className="prose prose-lg max-w-none">
-                  <div className="bg-gradient-to-r from-primary-50 to-primary-100/50 rounded-2xl p-6 sm:p-8 mb-10 border-l-4 border-primary-500">
-                    <p className="text-xl sm:text-2xl text-gray-800 leading-relaxed font-semibold mb-0">
-                      {resource.excerpt}
-                    </p>
-                  </div>
+            {/* Article Body */}
+            <div className="prose prose-lg max-w-none">
+              <p className="text-xl sm:text-2xl text-gray-800 leading-relaxed font-semibold mb-10">
+                {resource.excerpt}
+              </p>
 
-                  {resource.content && (
-                    <div className="space-y-8 sm:space-y-10">
-                      {resource.content.map((section, index) => (
-                        <div key={index} className="relative">
-                          {/* Decorative element */}
-                          <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-primary-500 to-primary-300 rounded-full hidden lg:block"></div>
-                          
-                          <div className="bg-white rounded-xl p-6 sm:p-8 border border-gray-100 hover:border-primary-200 transition-all hover:shadow-lg">
-                            {section.heading && (
-                              <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
-                                  <span className="text-white font-bold text-lg">{index + 1}</span>
-                                </div>
-                                <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                                  {section.heading}
-                                </h3>
-                              </div>
-                            )}
-                            {section.paragraphs && section.paragraphs.map((para, pIndex) => (
-                              <div key={pIndex} className="mb-6 last:mb-0">
-                                <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
-                                  {para}
-                                </p>
-                              </div>
-                            ))}
+              {resource.content && (
+                <div className="space-y-8 sm:space-y-10">
+                  {resource.content.map((section, index) => (
+                    <div key={index}>
+                      {section.heading && (
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                            <span className="text-white font-bold text-lg">{index + 1}</span>
                           </div>
+                          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                            {section.heading.replace(/^\d+\.\s*/, '')}
+                          </h3>
+                        </div>
+                      )}
+                      {section.paragraphs && section.paragraphs.map((para, pIndex) => (
+                        <div key={pIndex} className="mb-6 last:mb-0">
+                          <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+                            {para}
+                          </p>
                         </div>
                       ))}
                     </div>
-                  )}
+                  ))}
                 </div>
+              )}
+            </div>
 
-                {/* Enhanced CTA Section */}
-                <div className="mt-12 sm:mt-16 pt-10 border-t-2 border-gray-100">
-                  <div className="relative bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 rounded-2xl p-8 sm:p-10 md:p-12 text-center text-white overflow-hidden">
-                    {/* Background decorative elements */}
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-                      <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-                    </div>
-                    
-                    <div className="relative z-10">
-                      <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-                        <Heart className="w-10 h-10 text-white" />
-                      </div>
-                      <h3 className="text-3xl sm:text-4xl font-bold mb-4">Need to talk to someone?</h3>
-                      <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                        Browse our directory to find a professional near you.
-                      </p>
-                      <Link
-                        to="/"
-                        className="inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-white text-primary-600 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all shadow-2xl hover:shadow-3xl transform hover:scale-105"
-                      >
-                        <TrendingUp className="w-5 h-5" />
-                        Find Support
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+            {/* CTA Section */}
+            <div className="mt-12 sm:mt-16 pt-10 border-t-2 border-gray-100">
+              <div className="text-center">
+                <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900">Need to talk to someone?</h3>
+                <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                  Browse our directory to find a professional near you.
+                </p>
+                <Link
+                  to="/"
+                  className="inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-primary-500 text-white rounded-xl font-bold text-lg hover:bg-primary-600 transition-all"
+                >
+                  Find Support
+                </Link>
               </div>
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 lg:self-start">
-            {/* Quick Stats Card */}
-            <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6" />
-                </div>
-                <h4 className="text-xl font-bold">Article Info</h4>
-              </div>
+            {/* Article Info */}
+            <div>
+              <h4 className="text-xl font-bold mb-6 text-gray-900">Article Info</h4>
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-white/20">
-                  <span className="text-white/90">Read Time</span>
-                  <span className="font-bold text-lg">{resource.readTime} min</span>
+                <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                  <span className="text-gray-600">Read Time</span>
+                  <span className="font-bold text-lg text-gray-900">{resource.readTime} min</span>
                 </div>
-                <div className="flex items-center justify-between pb-3 border-b border-white/20">
-                  <span className="text-white/90">Category</span>
-                  <span className="font-bold text-sm">{resource.category.split(' ')[0]}</span>
+                <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                  <span className="text-gray-600">Category</span>
+                  <span className="font-bold text-sm text-gray-900">{resource.category.split(' ')[0]}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-white/90">Updated</span>
-                  <span className="font-bold text-sm">{resource.updated || 'Jan 2026'}</span>
+                  <span className="text-gray-600">Updated</span>
+                  <span className="font-bold text-sm text-gray-900">{resource.updated || 'Jan 2026'}</span>
                 </div>
               </div>
             </div>
 
             {/* Related Resources */}
-            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100">
-              <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-primary-600" />
+            <div>
+              <h4 className="text-xl font-bold text-gray-900 mb-6">
                 Related Articles
               </h4>
               <div className="space-y-4">
@@ -243,13 +210,12 @@ export function ResourceDetail() {
                   <Link
                     key={related.id}
                     to={`/resources/${related.slug}`}
-                    className="block p-4 rounded-xl border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-all group"
+                    className="block p-4 hover:bg-primary-50 transition-all group"
                   >
                     <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
                       {related.title}
                     </h5>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Clock className="w-3 h-3" />
+                    <div className="text-xs text-gray-500">
                       <span>{related.readTime} min read</span>
                     </div>
                   </Link>
@@ -257,8 +223,8 @@ export function ResourceDetail() {
               </div>
             </div>
 
-            {/* Tags Card */}
-            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100">
+            {/* Tags */}
+            <div>
               <h4 className="text-xl font-bold text-gray-900 mb-4">Tags</h4>
               <div className="flex flex-wrap gap-2">
                 {resource.tags.map(tag => (
