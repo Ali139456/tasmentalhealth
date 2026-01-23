@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
 
 export function Dashboard() {
-  const { user, role, refreshUser } = useAuth()
+  const { user } = useAuth()
   const [listings, setListings] = useState<Listing[]>([])
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [loading, setLoading] = useState(true)

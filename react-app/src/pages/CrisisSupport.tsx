@@ -607,7 +607,6 @@ export function CrisisSupport() {
 
               <div className="space-y-6 sm:space-y-8">
                 {sections.map(section => {
-                  const Icon = section.icon
                   return (
                     <div key={section.key} className="bg-gradient-to-r from-primary-50 to-white rounded-xl p-4 sm:p-6 border-l-4 border-primary-500 shadow-sm">
                       <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">

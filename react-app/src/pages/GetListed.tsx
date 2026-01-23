@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
-import { AlertCircle, CheckCircle, ArrowLeft, MapPin, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
+import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
 
 export function GetListed() {
   const { user } = useAuth()
