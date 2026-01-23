@@ -44,11 +44,38 @@ export function Home() {
         .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false })
 
-      if (error) throw error
-      if (data && data.length > 0) {
-        setListings(data)
+      if (error) {
+        console.error('Error fetching listings:', error)
+        // Use sample data on error
+        setListings(SAMPLE_LISTINGS)
+        return
+      }
+
+      // Combine database listings with sample listings (avoid duplicates)
+      const dbListings = data || []
+      const sampleListings = SAMPLE_LISTINGS.filter(
+        sample => !dbListings.some(db => db.id === sample.id || db.practice_name === sample.practice_name)
+      )
+      
+      // Merge: database listings first, then sample listings
+      const allListings = [...dbListings, ...sampleListings]
+      
+      // Sort: Featured first (newest first), then non-featured (newest first)
+      allListings.sort((a, b) => {
+        // Featured listings come first
+        if (a.is_featured && !b.is_featured) return -1
+        if (!a.is_featured && b.is_featured) return 1
+        
+        // Within same featured status, sort by date (newest first)
+        const dateA = new Date(a.created_at).getTime()
+        const dateB = new Date(b.created_at).getTime()
+        return dateB - dateA
+      })
+      
+      if (allListings.length > 0) {
+        setListings(allListings)
       } else {
-        // Use sample data if no database listings
+        // Fallback to just sample data
         setListings(SAMPLE_LISTINGS)
       }
     } catch (error) {
@@ -473,7 +500,7 @@ export function Home() {
                           {/* Show bio/description only for featured listings */}
                           {listing.is_featured && listing.bio && (
                               <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{listing.bio}</p>
-                          )}
+                            )}
                           
                           <div className="flex items-center gap-2 mb-3 text-sm text-gray-600">
                             <MapPin className="w-4 h-4 text-primary-500" />
@@ -505,29 +532,29 @@ export function Home() {
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
                           {listing.is_featured ? (
                             <>
-                              <Link
-                                to={`/listing/${listing.id}`}
-                                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-                              >
-                                View Profile
-                              </Link>
-                              {listing.show_phone_publicly && listing.phone && (
-                                <a
-                                  href={`tel:${listing.phone}`}
-                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-                                >
-                                  <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-                                  Call Now
-                                </a>
-                              )}
-                              {listing.show_email_publicly && listing.email && (
-                                <a
-                                  href={`mailto:${listing.email}`}
-                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
-                                >
-                                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                                  Email
-                                </a>
+                          <Link
+                            to={`/listing/${listing.id}`}
+                            className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+                          >
+                            View Profile
+                          </Link>
+                          {listing.show_phone_publicly && listing.phone && (
+                            <a
+                              href={`tel:${listing.phone}`}
+                              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
+                            >
+                              <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
+                              Call Now
+                            </a>
+                          )}
+                          {listing.show_email_publicly && listing.email && (
+                            <a
+                              href={`mailto:${listing.email}`}
+                              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
+                            >
+                              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                              Email
+                            </a>
                               )}
                             </>
                           ) : (

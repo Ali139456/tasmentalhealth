@@ -599,10 +599,10 @@ export function CrisisSupport() {
 
             <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
               <div className="mb-6 sm:mb-8">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900">My Safety Plan</h2>
-                <p className="text-sm sm:text-base md:text-lg text-gray-600">
-                  Based on the Stanley-Brown Safety Planning Intervention. This plan belongs to you. It's designed to help you navigate through a crisis until it passes.
-                </p>
+                  <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900">My Safety Plan</h2>
+                  <p className="text-sm sm:text-base md:text-lg text-gray-600">
+                    Based on the Stanley-Brown Safety Planning Intervention. This plan belongs to you. It's designed to help you navigate through a crisis until it passes.
+                  </p>
               </div>
 
               <div className="space-y-6 sm:space-y-8">
@@ -732,33 +732,33 @@ export function CrisisSupport() {
             {/* Helplines Section - Compact */}
             <div className="bg-gradient-to-br from-white via-primary-50/30 to-white rounded-xl p-5 sm:p-6 shadow-lg border border-primary-100">
               <div className="mb-6">
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">National 24/7 Support Lines</h3>
-                <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Free, confidential support available around the clock</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900">National 24/7 Support Lines</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Free, confidential support available around the clock</p>
               </div>
               
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {HELPLINES.map(helpline => (
                   <div key={helpline.name} className="p-4">
-                    <h4 className="text-base sm:text-lg font-bold mb-1.5 text-gray-900">{helpline.name}</h4>
-                    <p className="text-xl sm:text-2xl font-bold text-primary-600 mb-2">{helpline.number}</p>
-                    <p className="text-gray-600 text-xs sm:text-sm mb-3 leading-relaxed">{helpline.description}</p>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <a
-                        href={`tel:${helpline.tel}`}
-                        className="flex-1 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
-                        Call
-                      </a>
-                      <a
-                        href={helpline.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 sm:flex-none px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5"
-                      >
-                        <Globe className="w-3.5 h-3.5" />
-                        Website
-                      </a>
+                      <h4 className="text-base sm:text-lg font-bold mb-1.5 text-gray-900">{helpline.name}</h4>
+                      <p className="text-xl sm:text-2xl font-bold text-primary-600 mb-2">{helpline.number}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm mb-3 leading-relaxed">{helpline.description}</p>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <a
+                          href={`tel:${helpline.tel}`}
+                          className="flex-1 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          Call
+                        </a>
+                        <a
+                          href={helpline.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 sm:flex-none px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5"
+                        >
+                          <Globe className="w-3.5 h-3.5" />
+                          Website
+                        </a>
                     </div>
                   </div>
                 ))}
@@ -768,8 +768,8 @@ export function CrisisSupport() {
             {/* State & Territory Resources Section */}
             <div className="bg-gradient-to-br from-gray-50 via-white to-primary-50/20 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-gray-200">
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">State & Territory Resources</h3>
-                <p className="text-sm sm:text-base text-gray-600 mt-1">Select your state to see local crisis lines and hospital emergency departments</p>
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">State & Territory Resources</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mt-1">Select your state to see local crisis lines and hospital emergency departments</p>
               </div>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">

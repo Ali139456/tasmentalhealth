@@ -1,4 +1,5 @@
 import { loadStripe, type Stripe } from '@stripe/stripe-js'
+import { supabase } from './supabase'
 
 let stripePromise: Promise<Stripe | null>
 
@@ -7,47 +8,74 @@ export const getStripe = () => {
     const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
     if (!stripeKey) {
       console.warn('Stripe publishable key not found')
-      return null
+      return Promise.resolve(null)
     }
     stripePromise = loadStripe(stripeKey)
   }
   return stripePromise
 }
 
-export async function createCheckoutSession(listingId: string, userId: string) {
+export async function createCheckoutSession(listingId: string) {
   try {
-    const response = await fetch('/api/stripe/create-checkout-session', {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      throw new Error('You must be logged in to create a checkout session')
+    }
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const functionUrl = `${supabaseUrl}/functions/v1/stripe-create-checkout`
+
+    const response = await fetch(functionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
       },
-      body: JSON.stringify({ listingId, userId }),
+      body: JSON.stringify({ listingId }),
     })
     
     if (!response.ok) {
-      throw new Error('Failed to create checkout session')
+      const error = await response.json()
+      throw new Error(error.error || 'Failed to create checkout session')
     }
     
-    const { sessionId } = await response.json()
-    return sessionId
+    const { sessionId, url } = await response.json()
+    
+    // If we have a direct URL, return it, otherwise return sessionId for redirect
+    if (url) {
+      return { url, sessionId }
+    }
+    
+    return { sessionId, url: null }
   } catch (error) {
     console.error('Error creating checkout session:', error)
     throw error
   }
 }
 
-export async function createPortalSession(customerId: string) {
+export async function createPortalSession() {
   try {
-    const response = await fetch('/api/stripe/create-portal-session', {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      throw new Error('You must be logged in to access the customer portal')
+    }
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const functionUrl = `${supabaseUrl}/functions/v1/stripe-create-portal`
+
+    const response = await fetch(functionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
       },
-      body: JSON.stringify({ customerId }),
     })
     
     if (!response.ok) {
-      throw new Error('Failed to create portal session')
+      const error = await response.json()
+      throw new Error(error.error || 'Failed to create portal session')
     }
     
     const { url } = await response.json()

@@ -24,23 +24,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // Add timeout to prevent hanging
+      const queryPromise = supabase
         .from('users')
-        .select('role')
+        .select('role, email')
         .eq('id', userId)
         .single()
 
-      if (error) throw error
-      return data?.role as UserRole || 'public'
-    } catch (error) {
-      console.error('Error fetching user role:', error)
-      return 'public'
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 3000)
+      )
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return 'lister'
+        }
+        throw error
+      }
+      
+      return data?.role as UserRole || 'lister'
+    } catch (error: any) {
+      return 'lister'
     }
   }
 
   const refreshUser = async () => {
     try {
+      setLoading(true)
       const { data: { session }, error } = await supabase.auth.getSession()
+      
       if (error) throw error
 
       setSession(session)
@@ -53,7 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(null)
       }
     } catch (error) {
-      console.error('Error refreshing user:', error)
     } finally {
       setLoading(false)
     }
@@ -84,10 +97,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    setSession(null)
-    setRole(null)
+    try {
+      await supabase.auth.signOut()
+      setUser(null)
+      setSession(null)
+      setRole(null)
+    } catch (error) {
+      setUser(null)
+      setSession(null)
+      setRole(null)
+    }
   }
 
   return (

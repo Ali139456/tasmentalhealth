@@ -7,18 +7,23 @@ import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 
 export function Admin() {
-  const { user } = useAuth()
+  const { user, role } = useAuth()
   const [listings, setListings] = useState<Listing[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'listings' | 'users' | 'subscriptions'>('listings')
   const [searchQuery, setSearchQuery] = useState('')
+  const [userSearchQuery, setUserSearchQuery] = useState('')
+  const [editingUserId, setEditingUserId] = useState<string | null>(null)
+  const [editingRole, setEditingRole] = useState<'admin' | 'lister' | 'public'>('lister')
 
   useEffect(() => {
-    if (user) {
+    if (user && role === 'admin') {
       fetchData()
+    } else if (user && role !== 'admin') {
+      setLoading(false)
     }
-  }, [user, activeTab])
+  }, [user, role, activeTab])
 
   const fetchData = async () => {
     try {
@@ -125,10 +130,44 @@ export function Admin() {
     listing.email.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const filteredUsers = users.filter(user =>
+    user.email.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+    user.role.toLowerCase().includes(userSearchQuery.toLowerCase())
+  )
+
+  const handleUpdateUserRole = async (userId: string, newRole: 'admin' | 'lister' | 'public') => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ role: newRole })
+        .eq('id', userId)
+
+      if (error) throw error
+      await fetchData()
+      setEditingUserId(null)
+      alert('User role updated successfully!')
+    } catch (error: any) {
+      console.error('Error updating user role:', error)
+      alert(`Failed to update user role: ${error.message}`)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (!user || role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+          <p className="text-gray-600 mb-4">You must be an admin to access this page.</p>
+          <a href="/" className="text-primary-600 hover:text-primary-700">Return to Home</a>
+        </div>
       </div>
     )
   }
@@ -192,20 +231,25 @@ export function Admin() {
             </div>
 
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Practice Name</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredListings.map(listing => (
+              {filteredListings.length === 0 ? (
+                <div className="p-12 text-center">
+                  <p className="text-gray-600">No listings found.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Practice Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredListings.map(listing => (
                       <tr key={listing.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{listing.practice_name}</div>
@@ -276,55 +320,123 @@ export function Admin() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Verified</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map(userItem => (
-                    <tr key={userItem.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {userItem.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {userItem.role}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {userItem.email_verified ? (
-                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                            Verified
-                          </span>
-                        ) : (
-                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Pending
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {format(new Date(userItem.created_at), 'MMM dd, yyyy')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900">Edit</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div>
+            <div className="mb-6 flex gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search users by email or role..."
+                  value={userSearchQuery}
+                  onChange={(e) => setUserSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+              {filteredUsers.length === 0 ? (
+                <div className="p-12 text-center">
+                  <p className="text-gray-600">No users found.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Verified</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredUsers.map(userItem => (
+                      <tr key={userItem.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {userItem.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {editingUserId === userItem.id ? (
+                            <select
+                              value={editingRole}
+                              onChange={(e) => setEditingRole(e.target.value as 'admin' | 'lister' | 'public')}
+                              className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="admin">Admin</option>
+                              <option value="lister">Lister</option>
+                              <option value="public">Public</option>
+                            </select>
+                          ) : (
+                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                              userItem.role === 'admin' ? 'bg-red-100 text-red-800' :
+                              userItem.role === 'lister' ? 'bg-blue-100 text-blue-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {userItem.role}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {userItem.email_verified ? (
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                              Verified
+                            </span>
+                          ) : (
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                              Pending
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {format(new Date(userItem.created_at), 'MMM dd, yyyy')}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          {editingUserId === userItem.id ? (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleUpdateUserRole(userItem.id, editingRole)}
+                                className="text-green-600 hover:text-green-900"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingUserId(null)
+                                  setEditingRole('lister')
+                                }}
+                                className="text-gray-600 hover:text-gray-900"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setEditingUserId(userItem.id)
+                                setEditingRole(userItem.role as 'admin' | 'lister' | 'public')
+                              }}
+                              className="text-blue-600 hover:text-blue-900"
+                            >
+                              Edit Role
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                </div>
+              )}
             </div>
           </div>
         )}

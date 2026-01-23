@@ -2,20 +2,42 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
+import { useSearchParams } from 'react-router-dom'
+import { createCheckoutSession, createPortalSession } from '../lib/stripe'
 
 export function Dashboard() {
-  const { user } = useAuth()
+  const { user, role, refreshUser } = useAuth()
   const [listings, setListings] = useState<Listing[]>([])
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [loading, setLoading] = useState(true)
+  const [processingListingId, setProcessingListingId] = useState<string | null>(null)
+  const [processingPortal, setProcessingPortal] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   useEffect(() => {
     if (user) {
       fetchData()
     }
   }, [user])
+
+  // Check for success/cancel messages from Stripe redirect
+  useEffect(() => {
+    const success = searchParams.get('success')
+    const canceled = searchParams.get('canceled')
+    
+    if (success === 'true') {
+      // Refresh data to show updated subscription
+      fetchData()
+      // Remove query param
+      setSearchParams({})
+      alert('Payment successful! Your listing is now featured.')
+    } else if (canceled === 'true') {
+      setSearchParams({})
+      alert('Payment was canceled.')
+    }
+  }, [searchParams, setSearchParams])
 
   const fetchData = async () => {
     try {
@@ -46,6 +68,42 @@ export function Dashboard() {
       console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleUpgradeToFeatured = async (listingId: string) => {
+    try {
+      setProcessingListingId(listingId)
+      const { url } = await createCheckoutSession(listingId)
+      
+      if (url) {
+        // Redirect to Stripe Checkout
+        window.location.href = url
+      } else {
+        throw new Error('No checkout URL received')
+      }
+    } catch (error: any) {
+      console.error('Error creating checkout session:', error)
+      alert(error.message || 'Failed to start checkout. Please try again.')
+      setProcessingListingId(null)
+    }
+  }
+
+  const handleManageSubscription = async () => {
+    try {
+      setProcessingPortal(true)
+      const url = await createPortalSession()
+      
+      if (url) {
+        // Redirect to Stripe Customer Portal
+        window.location.href = url
+      } else {
+        throw new Error('No portal URL received')
+      }
+    } catch (error: any) {
+      console.error('Error creating portal session:', error)
+      alert(error.message || 'Failed to open customer portal. Please try again.')
+      setProcessingPortal(false)
     }
   }
 
@@ -97,9 +155,59 @@ export function Dashboard() {
                   </p>
                 </div>
               </div>
-              <button className="px-4 py-2 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-yellow-50 transition-colors">
-                Manage Subscription
+              <button 
+                onClick={handleManageSubscription}
+                disabled={processingPortal}
+                className="px-4 py-2 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-yellow-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {processingPortal ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  'Manage Subscription'
+                )}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Upgrade to Featured CTA - Show if no active subscription */}
+        {!subscription && listings.length > 0 && listings.some(l => l.status === 'approved' && !l.is_featured) && (
+          <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg p-6 mb-8">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h3 className="text-xl font-bold mb-2">Upgrade to Featured Listing</h3>
+                <p className="text-yellow-100">
+                  Get top placement, verified badge, and enhanced profile for just $29/month
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {listings
+                  .filter(l => l.status === 'approved' && !l.is_featured)
+                  .slice(0, 1)
+                  .map(listing => (
+                    <button
+                      key={listing.id}
+                      onClick={() => handleUpgradeToFeatured(listing.id)}
+                      disabled={processingListingId === listing.id}
+                      className="px-6 py-3 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-yellow-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {processingListingId === listing.id ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Star className="w-5 h-5" />
+                          Upgrade Now - $29/month
+                        </>
+                      )}
+                    </button>
+                  ))}
+              </div>
             </div>
           </div>
         )}
@@ -122,6 +230,9 @@ export function Dashboard() {
             {listings.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-600 mb-4">You don't have any listings yet.</p>
+                <p className="text-sm text-gray-500 mb-6">
+                  Create a listing first, then upgrade to featured for $29/month to get top placement and premium features.
+                </p>
                 <a
                   href="/get-listed"
                   className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -168,15 +279,38 @@ export function Dashboard() {
                         )}
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
                         Edit
                       </button>
                       {listing.status === 'approved' && !listing.is_featured && (
-                        <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors flex items-center">
-                          <Star className="w-4 h-4 mr-2" />
-                          Upgrade to Featured
+                        <button 
+                          onClick={() => handleUpgradeToFeatured(listing.id)}
+                          disabled={processingListingId === listing.id}
+                          className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                        >
+                          {processingListingId === listing.id ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <Star className="w-4 h-4 mr-2" />
+                              Upgrade to Featured - $29/month
+                            </>
+                          )}
                         </button>
+                      )}
+                      {listing.status === 'pending' && (
+                        <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                          <p>Once approved, you can upgrade to featured listing</p>
+                        </div>
+                      )}
+                      {listing.status === 'needs_changes' && (
+                        <div className="px-4 py-2 bg-orange-50 text-orange-700 rounded-lg text-sm">
+                          <p>Please make the required changes to proceed</p>
+                        </div>
                       )}
                     </div>
                   </div>

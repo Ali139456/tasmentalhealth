@@ -28,48 +28,95 @@ export function Login() {
           password,
         })
 
-        // Check if it's an email confirmation error (non-critical)
-        const isEmailError = signUpError?.message?.toLowerCase().includes('email') || 
-                            signUpError?.message?.toLowerCase().includes('confirmation')
-
-        if (signUpError && !isEmailError) {
+        if (signUpError) {
+          // Provide helpful error messages
+          const errorMsg = signUpError.message?.toLowerCase() || ''
+          
+          if (errorMsg.includes('user already registered')) {
+            throw new Error('An account with this email already exists. Please sign in instead.')
+          } else if (errorMsg.includes('password')) {
+            throw new Error('Password does not meet requirements. Please use at least 6 characters.')
+          } else if (errorMsg.includes('email')) {
+            throw new Error('Invalid email address. Please check and try again.')
+          }
+          
           throw signUpError
         }
 
         if (authData.user) {
-          // User record is automatically created by database trigger (handle_new_user)
-          // So we don't need to manually insert it
-          
-          if (isEmailError) {
-            // Email confirmation failed but user was created
-            setSuccess('Account created successfully! You can sign in now. (Email confirmation is not configured yet)')
+          if (authData.user.email_confirmed_at || authData.session) {
+            setSuccess('Account created successfully! Signing you in...')
+            setTimeout(() => {
+              navigate('/dashboard')
+              refreshUser().catch(() => {})
+            }, 500)
           } else {
-            setSuccess('Account created! Please check your email to verify your account.')
+            setSuccess('Account created! Attempting to sign you in...')
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            })
+            
+            if (signInData?.user && !signInError) {
+              setTimeout(() => {
+                navigate('/dashboard')
+                refreshUser().catch(() => {})
+              }, 500)
+            } else {
+              setSuccess('Account created! Please check your email to verify your account, or sign in directly if email confirmation is disabled.')
+              setIsSignUp(false)
+            }
           }
-          
-          // Clear form
-          setEmail('')
           setPassword('')
-        } else if (signUpError && isEmailError) {
-          // User might have been created even with email error
-          setSuccess('Account may have been created. Try signing in, or check Supabase email settings.')
-          setEmail('')
-          setPassword('')
+        } else {
+          throw new Error('Failed to create account. Please try again.')
         }
       } else {
         // Sign in flow
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+        
+        if (!supabaseUrl || !supabaseKey || supabaseUrl === '' || supabaseKey === '') {
+          throw new Error('Supabase is not configured. Please check your environment variables (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY).')
+        }
+        
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
-        if (signInError) throw signInError
+        if (signInError) {
+          const errorMsg = signInError.message?.toLowerCase() || ''
+          
+          if (errorMsg.includes('email') && (errorMsg.includes('confirm') || errorMsg.includes('verify'))) {
+            throw new Error('Email not confirmed. Please check your inbox for a confirmation email.')
+          } else if (errorMsg.includes('invalid') || errorMsg.includes('credentials')) {
+            throw new Error('Invalid email or password. Please check your credentials and try again.')
+          } else if (errorMsg.includes('too many requests')) {
+            throw new Error('Too many login attempts. Please wait a moment and try again.')
+          }
+          
+          throw signInError
+        }
 
-        await refreshUser()
-        navigate('/dashboard')
+        if (signInData?.user) {
+          navigate('/dashboard')
+          setTimeout(() => refreshUser().catch(() => {}), 100)
+        } else {
+          throw new Error('Sign in failed. Please try again.')
+        }
       }
     } catch (err: any) {
-      setError(err.message || (isSignUp ? 'Failed to sign up' : 'Failed to sign in'))
+      console.error('Auth error:', err)
+      const errorMessage = err.message || (isSignUp ? 'Failed to sign up' : 'Failed to sign in')
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+      
+      if (!supabaseUrl || !supabaseKey || supabaseUrl === '' || supabaseKey === '') {
+        setError('Supabase is not configured. Please check your environment variables (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY).')
+      } else {
+        setError(errorMessage)
+      }
     } finally {
       setLoading(false)
     }

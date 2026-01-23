@@ -15,8 +15,17 @@ export function Header() {
   const isActive = (path: string) => location.pathname === path
 
   const handleSignOut = async () => {
-    await signOut()
-    setMobileMenuOpen(false)
+    try {
+      await signOut()
+      setMobileMenuOpen(false)
+      navigate('/')
+      window.location.reload() // Force reload to clear all state
+    } catch (error) {
+      console.error('Error signing out:', error)
+      // Still navigate even if there's an error
+      navigate('/')
+      window.location.reload()
+    }
   }
 
   const handleSearch = (e: React.FormEvent) => {
@@ -108,12 +117,21 @@ export function Header() {
             {user ? (
               <div className={`flex items-center gap-2 ${searchExpanded ? 'xl:flex hidden' : ''}`}>
                 {role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
-                  >
-                    Admin
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin"
+                      className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
+                    >
+                      Admin
+                    </Link>
+                    <Link
+                      to="/dashboard"
+                      className="px-4 py-2 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                    >
+                      <User className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                  </>
                 )}
                 {role === 'lister' && (
                   <Link
@@ -163,18 +181,18 @@ export function Header() {
               
               {/* Full search bar - always visible on xl screens, expandable on lg */}
               <div className={`${searchExpanded ? 'flex' : 'hidden'} xl:flex items-center`}>
-                <form onSubmit={handleSearch} className="w-full min-w-0">
+              <form onSubmit={handleSearch} className="w-full min-w-0">
                   <div className={`relative transition-all duration-300 min-w-0 ${searchExpanded ? 'w-80 xl:w-64' : searchFocused ? 'w-72 xl:w-80' : 'w-56 xl:w-64'}`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-400/10 rounded-2xl blur-sm opacity-0 transition-opacity duration-300 ${searchFocused ? 'opacity-100' : ''}`}></div>
-                    <div className="relative bg-gray-50 border-2 border-gray-200 rounded-2xl transition-all duration-300 hover:border-primary-300 hover:bg-white hover:shadow-lg focus-within:border-primary-500 focus-within:bg-white focus-within:shadow-xl">
-                      <div className="flex items-center">
-                        <Search className={`absolute left-4 text-gray-400 transition-colors duration-300 ${searchFocused ? 'text-primary-500' : ''} w-5 h-5`} />
-                        <input
-                          type="text"
-                          placeholder="Search entire site..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          onKeyDown={handleSearchKeyDown}
+                  <div className={`absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-400/10 rounded-2xl blur-sm opacity-0 transition-opacity duration-300 ${searchFocused ? 'opacity-100' : ''}`}></div>
+                  <div className="relative bg-gray-50 border-2 border-gray-200 rounded-2xl transition-all duration-300 hover:border-primary-300 hover:bg-white hover:shadow-lg focus-within:border-primary-500 focus-within:bg-white focus-within:shadow-xl">
+                    <div className="flex items-center">
+                      <Search className={`absolute left-4 text-gray-400 transition-colors duration-300 ${searchFocused ? 'text-primary-500' : ''} w-5 h-5`} />
+                      <input
+                        type="text"
+                        placeholder="Search entire site..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleSearchKeyDown}
                           onFocus={() => {
                             setSearchFocused(true)
                             setSearchExpanded(true)
@@ -185,22 +203,22 @@ export function Header() {
                               setTimeout(() => setSearchExpanded(false), 200)
                             }
                           }}
-                          className="w-full pl-12 pr-4 py-2.5 bg-transparent border-0 rounded-2xl focus:outline-none text-sm placeholder-gray-400 text-gray-700"
+                        className="w-full pl-12 pr-4 py-2.5 bg-transparent border-0 rounded-2xl focus:outline-none text-sm placeholder-gray-400 text-gray-700"
                           autoFocus={searchExpanded}
-                        />
-                        {searchQuery && (
-                          <button
-                            type="button"
-                            onClick={() => setSearchQuery('')}
-                            className="absolute right-3 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-3 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
-                </form>
+                </div>
+              </form>
               </div>
             </div>
           </div>
@@ -287,13 +305,22 @@ export function Header() {
             {user ? (
               <>
                 {role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-3 bg-red-600 text-white rounded-xl text-base font-semibold"
-                  >
-                    Admin
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-3 bg-red-600 text-white rounded-xl text-base font-semibold"
+                    >
+                      Admin
+                    </Link>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-3 bg-primary-500 text-white rounded-xl text-base font-semibold"
+                    >
+                      Dashboard
+                    </Link>
+                  </>
                 )}
                 {role === 'lister' && (
                   <Link

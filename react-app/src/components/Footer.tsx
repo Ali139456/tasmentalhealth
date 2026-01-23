@@ -105,7 +105,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/admin" className="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
+                <Link to="/login" className="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
                   Admin Login
                 </Link>

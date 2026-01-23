@@ -94,87 +94,87 @@ export function ResourceDetail() {
         <div className="grid lg:grid-cols-12 gap-8 max-w-full">
           {/* Main Content */}
           <div className="lg:col-span-8">
-            {resource.image && (
+              {resource.image && (
               <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden mb-8">
-                <img
-                  src={resource.image}
-                  alt={resource.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
+                  <img
+                    src={resource.image}
+                    alt={resource.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
                     target.src = '/images/resource-ocean.jpg'
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
-                <div className="absolute bottom-6 left-6 right-6">
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 right-6">
                   <div className="text-white text-sm">
-                    <span className="font-medium">Featured Article</span>
+                      <span className="font-medium">Featured Article</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Article Meta */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-8 border-b-2 border-gray-100">
-              <div className="flex items-center gap-4">
-                <button className="flex items-center gap-2 px-5 py-3 bg-primary-50 text-primary-600 rounded-xl hover:bg-primary-100 transition-all shadow-md hover:shadow-lg group">
-                  <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-semibold">Share Article</span>
-                </button>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-500">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-8 border-b-2 border-gray-100">
+                  <div className="flex items-center gap-4">
+                    <button className="flex items-center gap-2 px-5 py-3 bg-primary-50 text-primary-600 rounded-xl hover:bg-primary-100 transition-all shadow-md hover:shadow-lg group">
+                      <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                      <span className="text-sm font-semibold">Share Article</span>
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
                 <span>{resource.readTime} min</span>
-                <span>•</span>
-                <span>{resource.updated || 'Jan 2026'}</span>
-              </div>
-            </div>
+                    <span>•</span>
+                    <span>{resource.updated || 'Jan 2026'}</span>
+                  </div>
+                </div>
 
             {/* Article Body */}
-            <div className="prose prose-lg max-w-none">
+                <div className="prose prose-lg max-w-none">
               <p className="text-xl sm:text-2xl text-gray-800 leading-relaxed font-semibold mb-10">
-                {resource.excerpt}
-              </p>
+                      {resource.excerpt}
+                    </p>
 
-              {resource.content && (
-                <div className="space-y-8 sm:space-y-10">
-                  {resource.content.map((section, index) => (
+                  {resource.content && (
+                    <div className="space-y-8 sm:space-y-10">
+                      {resource.content.map((section, index) => (
                     <div key={index}>
-                      {section.heading && (
-                        <div className="flex items-center gap-3 mb-6">
-                          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
-                            <span className="text-white font-bold text-lg">{index + 1}</span>
-                          </div>
-                          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                            {section.heading && (
+                              <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                                  <span className="text-white font-bold text-lg">{index + 1}</span>
+                                </div>
+                                <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
                             {section.heading.replace(/^\d+\.\s*/, '')}
-                          </h3>
-                        </div>
-                      )}
-                      {section.paragraphs && section.paragraphs.map((para, pIndex) => (
-                        <div key={pIndex} className="mb-6 last:mb-0">
-                          <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
-                            {para}
-                          </p>
+                                </h3>
+                              </div>
+                            )}
+                            {section.paragraphs && section.paragraphs.map((para, pIndex) => (
+                              <div key={pIndex} className="mb-6 last:mb-0">
+                                <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+                                  {para}
+                                </p>
+                              </div>
+                            ))}
                         </div>
                       ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
 
             {/* CTA Section */}
-            <div className="mt-12 sm:mt-16 pt-10 border-t-2 border-gray-100">
+                <div className="mt-12 sm:mt-16 pt-10 border-t-2 border-gray-100">
               <div className="text-center">
                 <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900">Need to talk to someone?</h3>
                 <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                  Browse our directory to find a professional near you.
-                </p>
-                <Link
-                  to="/"
+                        Browse our directory to find a professional near you.
+                      </p>
+                      <Link
+                        to="/"
                   className="inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-primary-500 text-white rounded-xl font-bold text-lg hover:bg-primary-600 transition-all"
-                >
-                  Find Support
-                </Link>
+                      >
+                        Find Support
+                      </Link>
               </div>
             </div>
           </div>
