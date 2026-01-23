@@ -51,14 +51,15 @@ export function Dashboard() {
       if (listingsError) throw listingsError
       setListings(listingsData || [])
 
-      // Fetch subscription
+      // Fetch subscription (don't use .single() as it fails with 406 if no results)
       if (listingsData && listingsData.length > 0) {
         const { data: subData, error: subError } = await supabase
           .from('subscriptions')
           .select('*')
           .eq('user_id', user?.id)
           .eq('status', 'active')
-          .single()
+          .limit(1)
+          .maybeSingle()
 
         if (!subError && subData) {
           setSubscription(subData)
