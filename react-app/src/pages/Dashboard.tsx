@@ -140,7 +140,6 @@ export function Dashboard() {
       show_website_publicly: listing.show_website_publicly,
     })
     setAvatarPreview(listing.avatar_url || null)
-    setAvatarFile(null)
   }
 
   const handleSaveEdit = async () => {
