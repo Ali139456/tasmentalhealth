@@ -1,8 +1,8 @@
 {
-  "buildCommand": "cd react-app && npm run build",
+  "buildCommand": "cd react-app && npm install && npm run build",
   "outputDirectory": "react-app/dist",
-  "devCommand": "cd react-app && npm run dev",
   "installCommand": "cd react-app && npm install",
+  "framework": null,
   "rewrites": [
     {
       "source": "/(.*)",
