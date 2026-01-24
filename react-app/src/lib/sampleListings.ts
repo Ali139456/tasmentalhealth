@@ -19,6 +19,7 @@ export const SAMPLE_LISTINGS: Listing[] = [
     is_rural_outreach: false,
     is_statewide_telehealth: false,
     bio: 'Somnus Psychology supports sleep and emotional wellbeing through CBT-I and individual therapy. The clinic is recognised as a local leader in neuromodulation, offering non invasive tDCS for depression, anxiety and mood based concerns.',
+    avatar_url: '/8pa0uv4gu5y-1764918534077.png',
     status: 'approved',
     is_featured: true,
     show_name_publicly: true,
