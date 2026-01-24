@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, User } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 
@@ -20,6 +20,7 @@ export function Admin() {
   const [editingRole, setEditingRole] = useState<'admin' | 'lister' | 'public'>('lister')
   const [currentListingsPage, setCurrentListingsPage] = useState(1)
   const [currentUsersPage, setCurrentUsersPage] = useState(1)
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
 
   useEffect(() => {
     if (user && role === 'admin') {
@@ -182,6 +183,58 @@ export function Admin() {
     } catch (error: any) {
       console.error('Error updating user role:', error)
       alert(`Failed to update user role: ${error.message}`)
+    }
+  }
+
+  const handleDeleteUser = async (userId: string, userEmail: string) => {
+    // Prevent deleting yourself
+    if (userId === user?.id) {
+      alert('You cannot delete your own account.')
+      return
+    }
+
+    // Confirmation dialog
+    const confirmed = window.confirm(
+      `Are you sure you want to delete user "${userEmail}"?\n\nThis will permanently delete:\n- User account\n- All their listings\n- All their subscriptions\n\nThis action cannot be undone!`
+    )
+
+    if (!confirmed) return
+
+    setDeletingUserId(userId)
+    try {
+      // Delete user from auth.users (this will cascade delete from public.users due to foreign key)
+      // We need to use admin API for this, so we'll call an edge function
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        throw new Error('Not authenticated')
+      }
+
+      const functionUrl = `${supabaseUrl}/functions/v1/admin-delete-user`
+
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+        },
+        body: JSON.stringify({ userId }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to delete user')
+      }
+
+      await fetchData()
+      alert('User deleted successfully!')
+    } catch (error: any) {
+      console.error('Error deleting user:', error)
+      alert(`Failed to delete user: ${error.message}`)
+    } finally {
+      setDeletingUserId(null)
     }
   }
 
@@ -489,35 +542,57 @@ export function Admin() {
                           {format(new Date(userItem.created_at), 'MMM dd, yyyy')}
                         </td>
                         <td className="px-6 py-4 text-sm font-medium">
-                          {editingUserId === userItem.id ? (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleUpdateUserRole(userItem.id, editingRole)}
-                                className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold text-xs"
-                              >
-                                Save
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setEditingUserId(null)
-                                  setEditingRole('lister')
-                                }}
-                                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold text-xs"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                setEditingUserId(userItem.id)
-                                setEditingRole(userItem.role as 'admin' | 'lister' | 'public')
-                              }}
-                              className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-semibold text-xs"
-                            >
-                              Edit Role
-                            </button>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {editingUserId === userItem.id ? (
+                              <>
+                                <button
+                                  onClick={() => handleUpdateUserRole(userItem.id, editingRole)}
+                                  className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold text-xs"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setEditingUserId(null)
+                                    setEditingRole('lister')
+                                  }}
+                                  className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold text-xs"
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    setEditingUserId(userItem.id)
+                                    setEditingRole(userItem.role as 'admin' | 'lister' | 'public')
+                                  }}
+                                  className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-semibold text-xs"
+                                >
+                                  Edit Role
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(userItem.id, userItem.email)}
+                                  disabled={deletingUserId === userItem.id || userItem.id === user?.id}
+                                  className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                  title={userItem.id === user?.id ? "Cannot delete your own account" : "Delete user"}
+                                >
+                                  {deletingUserId === userItem.id ? (
+                                    <>
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                      Deleting...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Trash2 className="w-3 h-3" />
+                                      Delete
+                                    </>
+                                  )}
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
