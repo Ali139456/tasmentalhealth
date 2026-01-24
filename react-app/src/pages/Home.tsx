@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video } from 'lucide-react'
+import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video, X, Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
@@ -16,15 +16,19 @@ export function Home() {
   const [filters, setFilters] = useState({
     keywords: '',
     location: 'All Locations',
-    specialty: '',
+    specialties: [] as string[],
     practiceType: 'all',
-    profession: '',
+    professions: [] as string[],
     telehealth: false,
     statewideTelehealth: false,
     ruralOutreach: false,
     featured: false,
     verified: false
   })
+  const [professionSearch, setProfessionSearch] = useState('')
+  const [specialtySearch, setSpecialtySearch] = useState('')
+  const [showProfessionDropdown, setShowProfessionDropdown] = useState(false)
+  const [showSpecialtyDropdown, setShowSpecialtyDropdown] = useState(false)
 
   useEffect(() => {
     fetchListings()
@@ -34,6 +38,19 @@ export function Home() {
     filterListings()
     setCurrentPage(1) // Reset to first page when filters change
   }, [listings, filters])
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('[data-dropdown]')) {
+        setShowProfessionDropdown(false)
+        setShowSpecialtyDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const fetchListings = async () => {
     // Show sample data immediately for instant UI
@@ -146,9 +163,11 @@ export function Home() {
       )
     }
 
-    if (filters.specialty) {
+    if (filters.specialties.length > 0) {
       filtered = filtered.filter(listing =>
-        listing.specialties.includes(filters.specialty)
+        filters.specialties.some(selectedSpec => 
+          listing.specialties.includes(selectedSpec)
+        )
       )
     }
 
@@ -158,9 +177,9 @@ export function Home() {
       )
     }
 
-    if (filters.profession) {
+    if (filters.professions.length > 0) {
       filtered = filtered.filter(listing =>
-        listing.profession === filters.profession
+        filters.professions.includes(listing.profession)
       )
     }
 
@@ -420,24 +439,102 @@ export function Home() {
                   </div>
 
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Professional Role</label>
-                    <div className="relative">
-                      <select
-                        value={filters.profession}
-                        onChange={(e) => setFilters({ ...filters, profession: e.target.value })}
-                        className="w-full lg:max-w-[350px] px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-md hover:shadow-lg text-sm font-medium text-gray-700 cursor-pointer transition-all appearance-none"
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
-                          backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'right 14px center',
-                          paddingRight: '44px'
-                        }}
-                      >
-                        <option value="">Select professional role...</option>
-                        {PROFESSIONS.map(prof => (
-                          <option key={prof} value={prof}>{prof}</option>
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+                      Professional Role{filters.professions.length > 0 && ` (${filters.professions.length})`}
+                    </label>
+                    {filters.professions.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {filters.professions.map(prof => (
+                          <span
+                            key={prof}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-semibold"
+                          >
+                            {prof}
+                            <button
+                              onClick={() => setFilters({ 
+                                ...filters, 
+                                professions: filters.professions.filter(p => p !== prof)
+                              })}
+                              className="hover:bg-purple-200 rounded-full p-0.5 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
                         ))}
-                      </select>
+                      </div>
+                    )}
+                    <div className="relative" data-dropdown>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowProfessionDropdown(!showProfessionDropdown)
+                          setShowSpecialtyDropdown(false)
+                        }}
+                        className="w-full lg:max-w-[350px] px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-md hover:shadow-lg text-sm font-medium text-gray-700 cursor-pointer transition-all text-left flex items-center justify-between"
+                      >
+                        <span className="text-gray-500">Add Professional Role...</span>
+                        <Plus className="w-4 h-4 text-gray-400" />
+                      </button>
+                      {showProfessionDropdown && (
+                        <div className="absolute z-50 w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
+                          <div className="p-3 border-b border-gray-200">
+                            <div className="relative">
+                              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                              <input
+                                type="text"
+                                placeholder="Q Search role..."
+                                value={professionSearch}
+                                onChange={(e) => setProfessionSearch(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                                autoFocus
+                              />
+                            </div>
+                          </div>
+                          <div className="max-h-64 overflow-y-auto">
+                            {PROFESSIONS
+                              .filter(prof => 
+                                prof.toLowerCase().includes(professionSearch.toLowerCase())
+                              )
+                              .map(prof => {
+                                const isSelected = filters.professions.includes(prof)
+                                return (
+                                  <label
+                                    key={prof}
+                                    onClick={() => {
+                                      if (isSelected) {
+                                        setFilters({ 
+                                          ...filters, 
+                                          professions: filters.professions.filter(p => p !== prof)
+                                        })
+                                      } else {
+                                        setFilters({ 
+                                          ...filters, 
+                                          professions: [...filters.professions, prof]
+                                        })
+                                      }
+                                    }}
+                                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                                  >
+                                    <div className={`flex items-center justify-center w-5 h-5 border-2 rounded transition-all ${
+                                      isSelected 
+                                        ? 'bg-primary-500 border-primary-500' 
+                                        : 'border-gray-300'
+                                    }`}>
+                                      {isSelected && (
+                                        <Check className="w-4 h-4 text-white" />
+                                      )}
+                                    </div>
+                                    <span className={`text-sm font-medium flex-1 ${
+                                      isSelected ? 'text-gray-900' : 'text-gray-700'
+                                    }`}>
+                                      {prof}
+                                    </span>
+                                  </label>
+                                )
+                              })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -464,23 +561,89 @@ export function Home() {
 
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Specialties</label>
-                    <div className="relative">
-                      <select
-                        value={filters.specialty}
-                        onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
-                        className="w-full lg:max-w-[350px] px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-md hover:shadow-lg text-sm font-medium text-gray-700 cursor-pointer transition-all appearance-none"
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
-                          backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'right 14px center',
-                          paddingRight: '44px'
-                        }}
-                      >
-                        <option value="">Select specialties below...</option>
-                        {SPECIALTIES.map(spec => (
-                          <option key={spec} value={spec}>{spec}</option>
+                    {filters.specialties.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {filters.specialties.map(spec => (
+                          <span
+                            key={spec}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-semibold"
+                          >
+                            {spec}
+                            <button
+                              onClick={() => setFilters({ 
+                                ...filters, 
+                                specialties: filters.specialties.filter(s => s !== spec)
+                              })}
+                              className="hover:bg-purple-200 rounded-full p-0.5 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
                         ))}
-                      </select>
+                      </div>
+                    )}
+                    <div className="relative" data-dropdown>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" />
+                        <input
+                          type="text"
+                          placeholder="Q Search specialty..."
+                          value={specialtySearch}
+                          onChange={(e) => setSpecialtySearch(e.target.value)}
+                          onFocus={() => {
+                            setShowSpecialtyDropdown(true)
+                            setShowProfessionDropdown(false)
+                          }}
+                          className="w-full lg:max-w-[350px] pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-md hover:shadow-lg text-sm font-medium text-gray-700 transition-all"
+                        />
+                      </div>
+                      {showSpecialtyDropdown && (
+                        <div className="absolute z-50 w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
+                          <div className="max-h-64 overflow-y-auto">
+                            {SPECIALTIES
+                              .filter(spec => 
+                                spec.toLowerCase().includes(specialtySearch.toLowerCase())
+                              )
+                              .map(spec => {
+                                const isSelected = filters.specialties.includes(spec)
+                                return (
+                                  <label
+                                    key={spec}
+                                    onClick={() => {
+                                      if (isSelected) {
+                                        setFilters({ 
+                                          ...filters, 
+                                          specialties: filters.specialties.filter(s => s !== spec)
+                                        })
+                                      } else {
+                                        setFilters({ 
+                                          ...filters, 
+                                          specialties: [...filters.specialties, spec]
+                                        })
+                                      }
+                                    }}
+                                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                                  >
+                                    <div className={`flex items-center justify-center w-5 h-5 border-2 rounded transition-all ${
+                                      isSelected 
+                                        ? 'bg-primary-500 border-primary-500' 
+                                        : 'border-gray-300'
+                                    }`}>
+                                      {isSelected && (
+                                        <Check className="w-4 h-4 text-white" />
+                                      )}
+                                    </div>
+                                    <span className={`text-sm font-medium flex-1 ${
+                                      isSelected ? 'text-gray-900' : 'text-gray-700'
+                                    }`}>
+                                      {spec}
+                                    </span>
+                                  </label>
+                                )
+                              })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   </div>
