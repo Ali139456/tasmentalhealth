@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video, X } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
@@ -30,10 +30,104 @@ export function Home() {
     fetchListings()
   }, [])
 
+  const filterListings = useCallback(() => {
+    if (!listings || listings.length === 0) {
+      setFilteredListings([])
+      return
+    }
+
+    let filtered = [...listings]
+
+    // Keywords filter
+    if (filters.keywords && filters.keywords.trim()) {
+      const keywords = filters.keywords.toLowerCase().trim()
+      filtered = filtered.filter(listing =>
+        (listing.practice_name?.toLowerCase().includes(keywords) ?? false) ||
+        (listing.profession?.toLowerCase().includes(keywords) ?? false) ||
+        (listing.bio?.toLowerCase().includes(keywords) ?? false) ||
+        (listing.specialties && Array.isArray(listing.specialties) && listing.specialties.some(s => s?.toLowerCase().includes(keywords)))
+      )
+    }
+
+    // Location filter
+    if (filters.location && filters.location !== 'All Locations') {
+      filtered = filtered.filter(listing => {
+        if (filters.location === 'Statewide (Telehealth)') {
+          return listing.is_statewide_telehealth === true
+        }
+        if (filters.location === 'Telehealth') {
+          return listing.is_telehealth === true
+        }
+        return listing.location === filters.location
+      })
+    }
+
+    // Specialties filter (multiple selection)
+    if (filters.specialties && filters.specialties.length > 0) {
+      filtered = filtered.filter(listing => {
+        if (!listing.specialties || !Array.isArray(listing.specialties)) return false
+        return filters.specialties.some(selectedSpec => 
+          listing.specialties.includes(selectedSpec)
+        )
+      })
+    }
+
+    // Practice type filter
+    if (filters.practiceType && filters.practiceType !== 'all') {
+      filtered = filtered.filter(listing =>
+        listing.practice_type === filters.practiceType
+      )
+    }
+
+    // Professions filter (multiple selection)
+    if (filters.professions && filters.professions.length > 0) {
+      filtered = filtered.filter(listing =>
+        listing.profession && filters.professions.includes(listing.profession)
+      )
+    }
+
+    // Telehealth filter
+    if (filters.telehealth) {
+      filtered = filtered.filter(listing =>
+        listing.is_telehealth === true
+      )
+    }
+
+    // Statewide telehealth filter
+    if (filters.statewideTelehealth) {
+      filtered = filtered.filter(listing =>
+        listing.is_statewide_telehealth === true
+      )
+    }
+
+    // Rural outreach filter
+    if (filters.ruralOutreach) {
+      filtered = filtered.filter(listing =>
+        listing.is_rural_outreach === true
+      )
+    }
+
+    // Featured filter
+    if (filters.featured) {
+      filtered = filtered.filter(listing =>
+        listing.is_featured === true
+      )
+    }
+
+    // Verified filter
+    if (filters.verified) {
+      filtered = filtered.filter(listing =>
+        listing.ahpra_number && listing.ahpra_number.trim() !== ''
+      )
+    }
+
+    setFilteredListings(filtered)
+  }, [listings, filters])
+
   useEffect(() => {
     filterListings()
     setCurrentPage(1) // Reset to first page when filters change
-  }, [listings, filters])
+  }, [filterListings])
 
   const fetchListings = async () => {
     // Show sample data immediately for instant UI
@@ -123,80 +217,6 @@ export function Home() {
     if (allListings.length > 0) {
       setListings(allListings)
     }
-  }
-
-  const filterListings = () => {
-    let filtered = [...listings]
-
-    if (filters.keywords) {
-      const keywords = filters.keywords.toLowerCase()
-      filtered = filtered.filter(listing =>
-        listing.practice_name.toLowerCase().includes(keywords) ||
-        listing.profession.toLowerCase().includes(keywords) ||
-        listing.bio?.toLowerCase().includes(keywords) ||
-        listing.specialties.some(s => s.toLowerCase().includes(keywords))
-      )
-    }
-
-    if (filters.location !== 'All Locations') {
-      filtered = filtered.filter(listing =>
-        listing.location === filters.location ||
-        (filters.location === 'Statewide (Telehealth)' && listing.is_statewide_telehealth) ||
-        (filters.location === 'Telehealth' && listing.is_telehealth)
-      )
-    }
-
-    if (filters.specialties.length > 0) {
-      filtered = filtered.filter(listing =>
-        filters.specialties.some(selectedSpec => 
-          listing.specialties.includes(selectedSpec)
-        )
-      )
-    }
-
-    if (filters.practiceType !== 'all') {
-      filtered = filtered.filter(listing =>
-        listing.practice_type === filters.practiceType
-      )
-    }
-
-    if (filters.professions.length > 0) {
-      filtered = filtered.filter(listing =>
-        filters.professions.includes(listing.profession)
-      )
-    }
-
-    if (filters.telehealth) {
-      filtered = filtered.filter(listing =>
-        listing.is_telehealth === true
-      )
-    }
-
-    if (filters.statewideTelehealth) {
-      filtered = filtered.filter(listing =>
-        listing.is_statewide_telehealth === true
-      )
-    }
-
-    if (filters.ruralOutreach) {
-      filtered = filtered.filter(listing =>
-        listing.is_rural_outreach === true
-      )
-    }
-
-    if (filters.featured) {
-      filtered = filtered.filter(listing =>
-        listing.is_featured === true
-      )
-    }
-
-    if (filters.verified) {
-      filtered = filtered.filter(listing =>
-        listing.ahpra_number && listing.ahpra_number.trim() !== ''
-      )
-    }
-
-    setFilteredListings(filtered)
   }
 
   // Pagination logic
