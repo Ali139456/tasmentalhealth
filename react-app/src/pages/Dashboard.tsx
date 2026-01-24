@@ -20,7 +20,6 @@ export function Dashboard() {
   const [editingListing, setEditingListing] = useState<Listing | null>(null)
   const [editFormData, setEditFormData] = useState<any>(null)
   const [saving, setSaving] = useState(false)
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
@@ -203,7 +202,6 @@ export function Dashboard() {
       return
     }
 
-    setAvatarFile(file)
     setUploadingAvatar(true)
 
     try {
@@ -237,7 +235,6 @@ export function Dashboard() {
     } catch (err: any) {
       console.error('Error uploading avatar:', err)
       toast.error(err.message || 'Failed to upload avatar')
-      setAvatarFile(null)
       setAvatarPreview(null)
     } finally {
       setUploadingAvatar(false)
@@ -685,7 +682,6 @@ export function Dashboard() {
                         type="button"
                         onClick={() => {
                           setAvatarPreview(null)
-                          setAvatarFile(null)
                           setEditFormData((prev: any) => ({ ...prev, avatar_url: '' }))
                         }}
                         className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"

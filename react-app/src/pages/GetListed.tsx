@@ -34,7 +34,6 @@ export function GetListed() {
     show_phone_publicly: false,
     show_website_publicly: true,
   })
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
@@ -116,7 +115,6 @@ export function GetListed() {
       return
     }
 
-    setAvatarFile(file)
     setUploadingAvatar(true)
     setError('')
 
@@ -133,7 +131,7 @@ export function GetListed() {
       const fileName = `${user?.id || 'temp'}-${Date.now()}.${fileExt}`
       const filePath = `avatars/${fileName}`
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('listings')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -151,7 +149,6 @@ export function GetListed() {
     } catch (err: any) {
       console.error('Error uploading avatar:', err)
       setError(err.message || 'Failed to upload avatar')
-      setAvatarFile(null)
       setAvatarPreview(null)
     } finally {
       setUploadingAvatar(false)
@@ -503,7 +500,6 @@ export function GetListed() {
                           type="button"
                           onClick={() => {
                             setAvatarPreview(null)
-                            setAvatarFile(null)
                             setFormData(prev => ({ ...prev, avatar_url: '' }))
                           }}
                           className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
