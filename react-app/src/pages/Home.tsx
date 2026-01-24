@@ -295,7 +295,7 @@ export function Home() {
               </ul>
               <a 
                 href="#directory" 
-                className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-colors shadow-md hover:shadow-lg text-sm sm:text-base"
+                className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-primary-600 border-2 border-primary-500 rounded-lg font-semibold hover:bg-primary-50 hover:border-primary-600 transition-colors shadow-md hover:shadow-lg text-sm sm:text-base"
               >
                 Start Your Search
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -323,7 +323,7 @@ export function Home() {
               </ul>
               <Link 
                 to="/get-listed" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-colors shadow-md hover:shadow-lg"
               >
                 List Your Practice Now
                 <ArrowRight className="w-5 h-5" />
