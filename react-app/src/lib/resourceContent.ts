@@ -1,4 +1,3 @@
-// Resource content definitions
 export interface ResourceContent {
   id: number
   title: string
@@ -287,3 +286,4 @@ export const RESOURCES: ResourceContent[] = [
     ]
   }
 ]
+// Updated: Sat Jan 24 15:21:15 PKT 2026
