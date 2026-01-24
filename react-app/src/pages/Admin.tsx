@@ -245,7 +245,7 @@ export function Admin() {
         throw new Error(errorData.error || `HTTP ${response.status}: Failed to delete user`)
       }
 
-      const result = await response.json()
+      // Response is successful, no need to parse JSON
       await fetchData()
       toast.success('User deleted successfully!', { id: deleteToast })
     } catch (error: any) {
