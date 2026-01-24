@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video, Check } from 'lucide-react'
+import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
@@ -16,7 +16,7 @@ export function Home() {
   const [filters, setFilters] = useState({
     keywords: '',
     location: 'All Locations',
-    specialties: [] as string[],
+    specialty: '',
     practiceType: 'all',
     profession: '',
     telehealth: false,
@@ -146,11 +146,9 @@ export function Home() {
       )
     }
 
-    if (filters.specialties.length > 0) {
+    if (filters.specialty) {
       filtered = filtered.filter(listing =>
-        filters.specialties.some(selectedSpec => 
-          listing.specialties.includes(selectedSpec)
-        )
+        listing.specialties.includes(filters.specialty)
       )
     }
 
@@ -427,12 +425,12 @@ export function Home() {
                       <select
                         value={filters.profession}
                         onChange={(e) => setFilters({ ...filters, profession: e.target.value })}
-                        className="w-full lg:max-w-[350px] px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white shadow-sm hover:shadow-md text-sm cursor-pointer transition-all appearance-none"
+                        className="w-full lg:max-w-[350px] px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-md hover:shadow-lg text-sm font-medium text-gray-700 cursor-pointer transition-all appearance-none"
                         style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
                           backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'right 12px center',
-                          paddingRight: '40px'
+                          backgroundPosition: 'right 14px center',
+                          paddingRight: '44px'
                         }}
                       >
                         <option value="">Select professional role...</option>
@@ -446,15 +444,15 @@ export function Home() {
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3 uppercase">Select Location (e.g. Hobart)</label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10 pointer-events-none" />
+                      <MapPin className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-primary-500 w-4 h-4 z-10 pointer-events-none" />
                       <select
                         value={filters.location}
                         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                        className="w-full lg:max-w-[350px] pl-10 pr-10 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white shadow-sm hover:shadow-md text-sm cursor-pointer transition-all appearance-none"
+                        className="w-full lg:max-w-[350px] pl-11 pr-11 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-md hover:shadow-lg text-sm font-medium text-gray-700 cursor-pointer transition-all appearance-none"
                         style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
                           backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'right 12px center'
+                          backgroundPosition: 'right 14px center'
                         }}
                       >
                         {LOCATIONS.map(loc => (
@@ -466,53 +464,24 @@ export function Home() {
 
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
                     <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Specialties</label>
-                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
-                      {SPECIALTIES.map(spec => {
-                        const isChecked = filters.specialties.includes(spec)
-                        return (
-                          <label
-                            key={spec}
-                            onClick={() => {
-                              if (isChecked) {
-                                setFilters({ 
-                                  ...filters, 
-                                  specialties: filters.specialties.filter(s => s !== spec)
-                                })
-                              } else {
-                                setFilters({ 
-                                  ...filters, 
-                                  specialties: [...filters.specialties, spec]
-                                })
-                              }
-                            }}
-                            className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group"
-                          >
-                            <div className={`relative flex items-center justify-center w-5 h-5 border-2 rounded transition-all ${
-                              isChecked 
-                                ? 'bg-primary-500 border-primary-500' 
-                                : 'border-gray-300 group-hover:border-primary-300'
-                            }`}>
-                              {isChecked && (
-                                <Check className="w-4 h-4 text-white" />
-                              )}
-                            </div>
-                            <span className={`text-sm font-medium flex-1 ${
-                              isChecked ? 'text-gray-900' : 'text-gray-700'
-                            }`}>
-                              {spec}
-                            </span>
-                          </label>
-                        )
-                      })}
-                    </div>
-                    {filters.specialties.length > 0 && (
-                      <button
-                        onClick={() => setFilters({ ...filters, specialties: [] })}
-                        className="mt-3 w-full px-3 py-2 text-xs font-semibold text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+                    <div className="relative">
+                      <select
+                        value={filters.specialty}
+                        onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
+                        className="w-full lg:max-w-[350px] px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-md hover:shadow-lg text-sm font-medium text-gray-700 cursor-pointer transition-all appearance-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+                          backgroundRepeat: 'no-repeat',
+                          backgroundPosition: 'right 14px center',
+                          paddingRight: '44px'
+                        }}
                       >
-                        Clear all ({filters.specialties.length} selected)
-                      </button>
-                    )}
+                        <option value="">Select specialties below...</option>
+                        {SPECIALTIES.map(spec => (
+                          <option key={spec} value={spec}>{spec}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                   </div>
                 </div>
