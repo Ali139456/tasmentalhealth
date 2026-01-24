@@ -525,12 +525,30 @@ export function Home() {
                       )}
                       <div className="p-4 sm:p-6">
                         <div className="mb-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                              <h4 className="text-xl sm:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
-                              <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs sm:text-sm font-semibold self-start">
-                                {listing.profession}
-                              </span>
+                          <div className="flex items-start gap-4 mb-3">
+                            {/* Avatar - Only for featured listings */}
+                            {listing.is_featured && listing.avatar_url && (
+                              <div className="flex-shrink-0">
+                                <img 
+                                  src={listing.avatar_url} 
+                                  alt={listing.practice_name}
+                                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border-2 border-primary-200 shadow-md"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement
+                                    target.style.display = 'none'
+                                  }}
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                                <h4 className="text-xl sm:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
+                                <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs sm:text-sm font-semibold self-start">
+                                  {listing.profession}
+                                </span>
+                              </div>
                             </div>
+                          </div>
                           
                           {/* Show bio/description only for featured listings */}
                           {listing.is_featured && listing.bio && (

@@ -40,6 +40,7 @@ export interface Listing {
   is_rural_outreach: boolean
   is_statewide_telehealth: boolean
   bio?: string
+  avatar_url?: string
   status: ListingStatus
   is_featured: boolean
   show_name_publicly: boolean

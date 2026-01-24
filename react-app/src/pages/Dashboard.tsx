@@ -20,6 +20,9 @@ export function Dashboard() {
   const [editingListing, setEditingListing] = useState<Listing | null>(null)
   const [editFormData, setEditFormData] = useState<any>(null)
   const [saving, setSaving] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -131,11 +134,14 @@ export function Dashboard() {
       is_rural_outreach: listing.is_rural_outreach,
       is_statewide_telehealth: listing.is_statewide_telehealth,
       bio: listing.bio || '',
+      avatar_url: listing.avatar_url || '',
       show_name_publicly: listing.show_name_publicly,
       show_email_publicly: listing.show_email_publicly,
       show_phone_publicly: listing.show_phone_publicly,
       show_website_publicly: listing.show_website_publicly,
     })
+    setAvatarPreview(listing.avatar_url || null)
+    setAvatarFile(null)
   }
 
   const handleSaveEdit = async () => {
@@ -178,6 +184,63 @@ export function Dashboard() {
         ...editFormData,
         specialties: [...current, specialty],
       })
+    }
+  }
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB')
+      return
+    }
+
+    setAvatarFile(file)
+    setUploadingAvatar(true)
+
+    try {
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${user?.id || 'temp'}-${Date.now()}.${fileExt}`
+      const filePath = `avatars/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('listings')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadError) throw uploadError
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('listings')
+        .getPublicUrl(filePath)
+
+      setEditFormData((prev: any) => ({ ...prev, avatar_url: publicUrl }))
+    } catch (err: any) {
+      console.error('Error uploading avatar:', err)
+      toast.error(err.message || 'Failed to upload avatar')
+      setAvatarFile(null)
+      setAvatarPreview(null)
+    } finally {
+      setUploadingAvatar(false)
     }
   }
 
@@ -603,6 +666,52 @@ export function Dashboard() {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all resize-none"
                   placeholder="Tell us about your practice..."
                 />
+              </div>
+
+              {/* Avatar Upload */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Practice Logo/Avatar <span className="text-xs text-gray-500">(Only shown for featured listings)</span>
+                </label>
+                <div className="space-y-3">
+                  {avatarPreview && (
+                    <div className="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-primary-200">
+                      <img 
+                        src={avatarPreview} 
+                        alt="Avatar preview" 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAvatarPreview(null)
+                          setAvatarFile(null)
+                          setEditFormData((prev: any) => ({ ...prev, avatar_url: '' }))
+                        }}
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      >
+                        <span className="text-xs">×</span>
+                      </button>
+                    </div>
+                  )}
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      disabled={uploadingAvatar}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    />
+                    {uploadingAvatar && (
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        <Loader2 className="w-5 h-5 animate-spin text-primary-500" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Upload a square image (recommended: 400x400px). Max size: 5MB. Only featured listings will display this avatar.
+                  </p>
+                </div>
               </div>
 
               {/* Telehealth Options */}

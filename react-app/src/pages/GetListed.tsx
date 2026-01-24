@@ -28,11 +28,15 @@ export function GetListed() {
     is_rural_outreach: false,
     is_statewide_telehealth: false,
     bio: '',
+    avatar_url: '',
     show_name_publicly: true,
     show_email_publicly: false,
     show_phone_publicly: false,
     show_website_publicly: true,
   })
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -94,6 +98,64 @@ export function GetListed() {
         ? prev.specialties.filter(s => s !== specialty)
         : [...prev.specialties, specialty]
     }))
+  }
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB')
+      return
+    }
+
+    setAvatarFile(file)
+    setUploadingAvatar(true)
+    setError('')
+
+    try {
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${user?.id || 'temp'}-${Date.now()}.${fileExt}`
+      const filePath = `avatars/${fileName}`
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('listings')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadError) throw uploadError
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('listings')
+        .getPublicUrl(filePath)
+
+      setFormData(prev => ({ ...prev, avatar_url: publicUrl }))
+    } catch (err: any) {
+      console.error('Error uploading avatar:', err)
+      setError(err.message || 'Failed to upload avatar')
+      setAvatarFile(null)
+      setAvatarPreview(null)
+    } finally {
+      setUploadingAvatar(false)
+    }
   }
 
   if (success) {
@@ -423,6 +485,51 @@ export function GetListed() {
                     rows={5}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white resize-none"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Practice Logo/Avatar <span className="text-xs text-gray-500">(Only shown for featured listings)</span>
+                  </label>
+                  <div className="space-y-3">
+                    {avatarPreview && (
+                      <div className="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-primary-200">
+                        <img 
+                          src={avatarPreview} 
+                          alt="Avatar preview" 
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAvatarPreview(null)
+                            setAvatarFile(null)
+                            setFormData(prev => ({ ...prev, avatar_url: '' }))
+                          }}
+                          className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                        >
+                          <span className="text-xs">×</span>
+                        </button>
+                      </div>
+                    )}
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        disabled={uploadingAvatar}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      />
+                      {uploadingAvatar && (
+                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-500"></div>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Upload a square image (recommended: 400x400px). Max size: 5MB. Only featured listings will display this avatar.
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>
