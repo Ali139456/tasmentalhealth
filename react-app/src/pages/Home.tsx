@@ -371,10 +371,7 @@ export function Home() {
         <div className="w-full">
           <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
             {/* Mobile Filter Button */}
-            <div className="lg:hidden mb-4 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-gray-900">
-                Results <span className="text-primary-600">{filteredListings.length} found</span>
-              </h3>
+            <div className="lg:hidden mb-4 flex justify-end items-center">
               <button
                 onClick={() => setShowMobileFilters(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl font-semibold shadow-lg hover:bg-primary-600 transition-colors"
