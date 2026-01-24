@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Mail, MapPin, Heart } from 'lucide-react'
+import { Mail, MapPin, Heart, LogIn } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -102,7 +102,7 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/admin-login" className="text-red-600 hover:text-red-700 font-semibold transition-colors flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                  <LogIn className="w-4 h-4" />
                   Admin Login
                 </Link>
               </li>
