@@ -364,12 +364,12 @@ export function Home() {
           </div>
 
         {/* Full width container for grid to allow screen-edge margin */}
-        <div className="w-full">
-          <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
-            <div className="grid lg:grid-cols-5 gap-0">
+        <div className="w-full overflow-visible">
+          <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl overflow-visible">
+            <div className="grid lg:grid-cols-5 gap-0 overflow-visible">
             {/* Filters Sidebar */}
               <aside className="lg:col-span-2 w-full lg:w-auto">
-                <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
+                <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-visible w-full lg:w-[370px]">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-200/20 rounded-full blur-2xl -ml-12 -mb-12"></div>
@@ -476,7 +476,7 @@ export function Home() {
                         <Plus className="w-4 h-4 text-gray-400" />
                       </button>
                       {showProfessionDropdown && (
-                        <div className="absolute z-50 w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
+                        <div className="absolute z-[100] w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
                           <div className="p-3 border-b border-gray-200">
                             <div className="relative">
                               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -598,7 +598,7 @@ export function Home() {
                         />
                       </div>
                       {showSpecialtyDropdown && (
-                        <div className="absolute z-50 w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
+                        <div className="absolute z-[100] w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
                           <div className="max-h-64 overflow-y-auto">
                             {SPECIALTIES
                               .filter(spec => 
