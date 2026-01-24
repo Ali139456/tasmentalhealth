@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video, X, Check } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
@@ -29,8 +29,6 @@ export function Home() {
   const [specialtySearch, setSpecialtySearch] = useState('')
   const [showProfessionDropdown, setShowProfessionDropdown] = useState(false)
   const [showSpecialtyDropdown, setShowSpecialtyDropdown] = useState(false)
-  const professionButtonRef = useRef<HTMLButtonElement>(null)
-  const [professionDropdownPosition, setProfessionDropdownPosition] = useState({ top: 0, left: 0 })
 
   useEffect(() => {
     fetchListings()
@@ -467,16 +465,8 @@ export function Home() {
                     )}
                     <div className="relative" data-dropdown>
                       <button
-                        ref={professionButtonRef}
                         type="button"
                         onClick={() => {
-                          if (professionButtonRef.current) {
-                            const rect = professionButtonRef.current.getBoundingClientRect()
-                            setProfessionDropdownPosition({
-                              top: rect.bottom + window.scrollY + 8,
-                              left: rect.left + window.scrollX
-                            })
-                          }
                           setShowProfessionDropdown(!showProfessionDropdown)
                           setShowSpecialtyDropdown(false)
                         }}
@@ -486,13 +476,7 @@ export function Home() {
                         <Plus className="w-4 h-4 text-gray-400" />
                       </button>
                       {showProfessionDropdown && (
-                        <div 
-                          className="fixed z-[9999] bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden w-[350px]"
-                          style={{ 
-                            top: `${professionDropdownPosition.top}px`,
-                            left: `${professionDropdownPosition.left}px`
-                          }}
-                        >
+                        <div className="absolute z-[9999] top-full left-0 mt-2 w-full lg:max-w-[350px] bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-80 overflow-hidden">
                           <div className="p-3 border-b border-gray-200">
                             <div className="relative">
                               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -614,7 +598,7 @@ export function Home() {
                         />
                       </div>
                       {showSpecialtyDropdown && (
-                        <div className="absolute z-[100] top-0 right-full mr-2 w-[350px] bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
+                        <div className="absolute z-[9999] top-0 right-full mr-2 w-[350px] bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-80 overflow-hidden">
                           <div className="max-h-64 overflow-y-auto">
                             {SPECIALTIES
                               .filter(spec => 
