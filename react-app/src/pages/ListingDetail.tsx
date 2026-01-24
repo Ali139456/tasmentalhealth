@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 import { 
-  MapPin, Phone, Mail, Globe, Star, Shield, ArrowLeft, 
+  MapPin, Phone, Mail, Globe, Star, ArrowLeft, 
   CheckCircle2, Building2, Video
 } from 'lucide-react'
 
@@ -86,10 +86,28 @@ export function ListingDetail() {
 
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8">
-              {/* Logo/Icon */}
-              <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center flex-shrink-0 border-2 border-white/20">
-                <Building2 className="w-12 h-12 text-white" />
-              </div>
+              {/* Avatar/Logo */}
+              {listing.avatar_url ? (
+                <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden border-4 border-white/30 shadow-2xl flex-shrink-0">
+                  <img 
+                    src={listing.avatar_url} 
+                    alt={listing.practice_name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                      const parent = target.parentElement
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-full h-full bg-white/10 backdrop-blur-sm flex items-center justify-center"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>'
+                      }
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="w-32 h-32 sm:w-40 sm:h-40 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center flex-shrink-0 border-4 border-white/20 shadow-2xl">
+                  <Building2 className="w-16 h-16 text-white" />
+                </div>
+              )}
 
               {/* Title Section */}
               <div className="flex-1">
@@ -139,12 +157,7 @@ export function ListingDetail() {
             <div className="md:col-span-2 space-y-8">
               {/* About the Practice */}
               <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-primary-600" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">About the Practice</h2>
-                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">About the Practice</h2>
                 <p className="text-gray-700 leading-relaxed text-lg">
                   {listing.bio || 'No description available.'}
                 </p>
