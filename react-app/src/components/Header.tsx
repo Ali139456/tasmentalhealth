@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Search, Menu, X, User, LogOut, Stethoscope } from 'lucide-react'
+import { Search, Menu, X, User, LogOut, Stethoscope, Plus } from 'lucide-react'
 import { useState } from 'react'
 
 export function Header() {
@@ -153,8 +153,9 @@ export function Header() {
                 </Link>
                 <Link
                   to="/get-listed"
-                  className="px-6 py-2.5 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg transform hover:scale-105 whitespace-nowrap"
+                  className="px-6 py-2.5 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg whitespace-nowrap flex items-center gap-2"
                 >
+                  <Plus className="w-4 h-4" />
                   Get Listed
                 </Link>
               </div>
@@ -334,8 +335,9 @@ export function Header() {
                 <Link
                   to="/get-listed"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 bg-primary-500 text-white rounded-xl text-base font-semibold text-center"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white rounded-xl text-base font-semibold"
                 >
+                  <Plus className="w-5 h-5" />
                   Get Listed
                 </Link>
               </>
