@@ -476,7 +476,7 @@ export function Home() {
                         <Plus className="w-4 h-4 text-gray-400" />
                       </button>
                       {showProfessionDropdown && (
-                        <div className="absolute z-[100] w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
+                        <div className="absolute z-[100] top-full left-0 w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
                           <div className="p-3 border-b border-gray-200">
                             <div className="relative">
                               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -598,7 +598,7 @@ export function Home() {
                         />
                       </div>
                       {showSpecialtyDropdown && (
-                        <div className="absolute z-[100] w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
+                        <div className="absolute z-[100] top-full left-0 w-full lg:max-w-[350px] mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-80 overflow-hidden">
                           <div className="max-h-64 overflow-y-auto">
                             {SPECIALTIES
                               .filter(spec => 
