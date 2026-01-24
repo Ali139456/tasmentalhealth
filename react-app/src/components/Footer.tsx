@@ -65,7 +65,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/featured-listings" className="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
+                <Link to="/featured-listings" className="text-primary-600 hover:text-primary-700 font-semibold transition-colors flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
                   Featured Clinician Listings
                 </Link>
@@ -105,8 +105,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/admin-login" className="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
+                <Link to="/admin-login" className="text-red-600 hover:text-red-700 font-semibold transition-colors flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                   Admin Login
                 </Link>
               </li>

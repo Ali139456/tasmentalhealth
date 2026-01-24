@@ -111,16 +111,6 @@ export function Header() {
               >
                 Events
               </Link>
-              <Link
-                to="/featured-listings"
-                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
-                  isActive('/featured-listings') 
-                    ? 'bg-primary-500 text-white' 
-                    : 'bg-primary-500 text-white hover:bg-primary-600'
-                }`}
-              >
-                Featured Clinic
-              </Link>
             </div>
 
             {/* Auth Buttons - hidden when search is expanded on lg screens */}
@@ -303,17 +293,6 @@ export function Header() {
               }`}
             >
               Events
-            </Link>
-            <Link
-              to="/featured-listings"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-base font-semibold transition-all ${
-                isActive('/featured-listings') 
-                  ? 'bg-primary-500 text-white' 
-                  : 'bg-primary-500 text-white hover:bg-primary-600'
-              }`}
-            >
-              Featured Clinic
             </Link>
             {user ? (
               <>
