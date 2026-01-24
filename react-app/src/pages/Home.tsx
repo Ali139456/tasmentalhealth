@@ -296,7 +296,7 @@ export function Home() {
       <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
-            <div className="pr-6 sm:pr-8 md:pr-10 lg:pr-12 border-r border-gray-300">
+            <div className="pr-0 md:pr-6 md:pr-8 md:pr-10 lg:pr-12 border-r-0 md:border-r border-gray-300 pb-6 md:pb-0">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-900">For People Seeking Support</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
                 Navigating mental health care can be overwhelming. We make it easier to find compassionate help. Whether you are looking for psychologists in Hobart, need anxiety counselling in Tasmania, or want to find a social worker in Tasmania, our directory connects you with verified local experts.
@@ -324,7 +324,7 @@ export function Home() {
               </a>
             </div>
 
-            <div className="pl-6 sm:pl-8 md:pl-10 lg:pl-12">
+            <div className="pl-0 md:pl-6 md:pl-8 md:pl-10 lg:pl-12 pt-6 md:pt-0 border-t md:border-t-0 border-gray-300">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-900">For Professionals & Clinics</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
                 Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. We help you advertise psychology services in Tasmania effectively to patients actively seeking care.
@@ -369,9 +369,9 @@ export function Home() {
         {/* Full width container for grid to allow screen-edge margin */}
         <div className="w-full">
           <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
-            <div className="grid lg:grid-cols-5 gap-0">
+            <div className="grid lg:grid-cols-5 gap-4 lg:gap-0">
             {/* Filters Sidebar */}
-              <aside className="lg:col-span-2 w-full lg:w-auto">
+              <aside className="lg:col-span-2 w-full lg:w-auto mb-6 lg:mb-0">
                 <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
@@ -553,7 +553,7 @@ export function Home() {
 
             {/* Results - Enhanced Cards */}
             <div className="lg:col-span-3 w-full">
-              <div className="lg:w-[calc(100%+150px)]">
+              <div className="w-full lg:w-[calc(100%+150px)]">
               {loading ? (
                 <div className="text-center py-12 sm:py-20">
                   <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-primary-500 mb-4"></div>
@@ -571,17 +571,17 @@ export function Home() {
                 </div>
               ) : (
                 <div className="space-y-4 sm:space-y-6">
-                  <div className="flex justify-between items-center mb-4 sm:mb-6">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                       Results <span className="text-primary-600">{filteredListings.length} found</span>
                     </h3>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <button
                         onClick={() => window.print()}
-                        className="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700 flex items-center gap-2"
+                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm font-semibold text-gray-700 flex items-center justify-center gap-2"
                       >
-                        <Printer className="w-4 h-4" />
-                        Print
+                        <Printer className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">Print</span>
                       </button>
                       <button
                         onClick={() => {
@@ -604,10 +604,10 @@ export function Home() {
                           a.click()
                           URL.revokeObjectURL(url)
                         }}
-                        className="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700 flex items-center gap-2"
+                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm font-semibold text-gray-700 flex items-center justify-center gap-2"
                       >
-                        <FileSpreadsheet className="w-4 h-4" />
-                        CSV
+                        <FileSpreadsheet className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">CSV</span>
                       </button>
                     </div>
                   </div>
@@ -619,11 +619,11 @@ export function Home() {
                       }`}
                     >
                       <div className="p-4 sm:p-6">
-                        <div className="flex gap-4 sm:gap-6">
-                          {/* Left: Avatar/Logo - Only for featured listings */}
+                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                          {/* Top: Avatar/Logo - Only for featured listings */}
                           {listing.is_featured && listing.avatar_url && (
-                            <div className="flex-shrink-0 relative">
-                              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden border-2 border-gray-200 shadow-md">
+                            <div className="flex-shrink-0 relative sm:hidden">
+                              <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200 shadow-md mx-auto">
                                 <img 
                                   src={listing.avatar_url} 
                                   alt={listing.practice_name}
@@ -640,69 +640,90 @@ export function Home() {
                             </div>
                           )}
 
-                          {/* Center: Clinic Information */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                              <h4 className="text-xl sm:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
-                              {listing.is_featured && (
-                                <>
-                                  <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                                  <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm font-semibold">
-                                    Verified
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                            <p className="text-sm sm:text-base text-primary-600 font-medium mb-2">{listing.profession}</p>
-                            
-                            {/* Show bio/description only for featured listings */}
-                            {listing.is_featured && listing.bio && (
-                              <p className="text-sm sm:text-base text-gray-700 mb-3 leading-relaxed line-clamp-2">{listing.bio}</p>
-                            )}
-                            
-                            {/* Show specialties only for featured listings */}
-                            {listing.is_featured && listing.specialties.length > 0 && (
-                              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
-                                {listing.specialties.slice(0, 5).map(spec => (
-                                  <span key={spec} className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
-                                    {spec}
-                                  </span>
-                                ))}
-                                {listing.specialties.length > 5 && (
-                                  <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
-                                    + more
-                                  </span>
-                                )}
+                          <div className="flex gap-4 sm:gap-6 flex-1">
+                            {/* Left: Avatar/Logo - Only for featured listings (Desktop) */}
+                            {listing.is_featured && listing.avatar_url && (
+                              <div className="hidden sm:block flex-shrink-0 relative">
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden border-2 border-gray-200 shadow-md">
+                                  <img 
+                                    src={listing.avatar_url} 
+                                    alt={listing.practice_name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement
+                                      target.style.display = 'none'
+                                    }}
+                                  />
+                                </div>
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-500 px-2 py-1 text-center">
+                                  <span className="text-yellow-900 font-bold text-xs">FEATURED</span>
+                                </div>
                               </div>
                             )}
-                            
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <MapPin className="w-4 h-4 text-primary-500" />
-                              <span>{listing.location}</span>
-                              {listing.is_featured && listing.is_telehealth && (
-                                <>
-                                  <span className="mx-1">•</span>
-                                  <Video className="w-4 h-4 text-emerald-600" />
-                                  <span>Telehealth</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
 
-                          {/* Right: Action Buttons - Stacked vertically */}
-                          <div className="flex-shrink-0 flex flex-col gap-2 sm:gap-3">
+                            {/* Center: Clinic Information */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                                <h4 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
+                                {listing.is_featured && (
+                                  <>
+                                    <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 fill-yellow-500" />
+                                    <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm font-semibold">
+                                      Verified
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                              <p className="text-sm sm:text-base text-primary-600 font-medium mb-2">{listing.profession}</p>
+                              
+                              {/* Show bio/description only for featured listings */}
+                              {listing.is_featured && listing.bio && (
+                                <p className="text-xs sm:text-sm md:text-base text-gray-700 mb-3 leading-relaxed line-clamp-2">{listing.bio}</p>
+                              )}
+                              
+                              {/* Show specialties only for featured listings */}
+                              {listing.is_featured && listing.specialties.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
+                                  {listing.specialties.slice(0, 5).map(spec => (
+                                    <span key={spec} className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
+                                      {spec}
+                                    </span>
+                                  ))}
+                                  {listing.specialties.length > 5 && (
+                                    <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
+                                      + more
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                              
+                              <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-600 mb-3 sm:mb-0">
+                                <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-primary-500" />
+                                <span>{listing.location}</span>
+                                {listing.is_featured && listing.is_telehealth && (
+                                  <>
+                                    <span className="mx-1">•</span>
+                                    <Video className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600" />
+                                    <span>Telehealth</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Right: Action Buttons - Stacked vertically */}
+                            <div className="flex-shrink-0 flex flex-col gap-2 sm:gap-3 w-full sm:w-auto">
                             {listing.is_featured ? (
                               <>
                                 <Link
                                   to={`/listing/${listing.id}`}
-                                  className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap shadow-md hover:shadow-lg"
+                                  className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap shadow-md hover:shadow-lg"
                                 >
                                   View Profile
                                 </Link>
                                 {listing.show_phone_publicly && listing.phone && (
                                   <a
                                     href={`tel:${listing.phone}`}
-                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white border-2 border-gray-300 text-gray-900 rounded-xl hover:bg-gray-50 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap"
+                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white border-2 border-gray-300 text-gray-900 rounded-xl hover:bg-gray-50 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap"
                                   >
                                     Call Now
                                   </a>
@@ -713,7 +734,7 @@ export function Home() {
                                 {listing.email && (
                                   <a
                                     href={`mailto:${listing.email}`}
-                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap"
+                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base break-all sm:whitespace-nowrap"
                                   >
                                     {listing.email}
                                   </a>
@@ -721,18 +742,19 @@ export function Home() {
                                 {listing.phone && (
                                   <a
                                     href={`tel:${listing.phone}`}
-                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap shadow-md hover:shadow-lg"
+                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap shadow-md hover:shadow-lg"
                                   >
                                     {listing.phone}
                                   </a>
                                 )}
                                 {!listing.email && !listing.phone && (
-                                  <span className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-50 text-gray-500 rounded-xl text-center text-sm sm:text-base whitespace-nowrap">
+                                  <span className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-50 text-gray-500 rounded-xl text-center text-xs sm:text-sm md:text-base whitespace-nowrap">
                                     Standard Listing
                                   </span>
                                 )}
                               </>
                             )}
+                            </div>
                           </div>
                         </div>
                       </div>
