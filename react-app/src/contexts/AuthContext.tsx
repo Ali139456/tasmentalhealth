@@ -24,35 +24,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      // Add timeout to prevent hanging
+      // Try to get from cache first (sessionStorage)
+      const cachedRole = sessionStorage.getItem(`user_role_${userId}`)
+      if (cachedRole && ['admin', 'lister', 'public'].includes(cachedRole)) {
+        return cachedRole as UserRole
+      }
+
+      // Fast query with shorter timeout
       const queryPromise = supabase
         .from('users')
-        .select('role, email')
+        .select('role')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
 
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 3000)
+        setTimeout(() => reject(new Error('Timeout')), 1000) // Reduced to 1 second
       )
 
       const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any
 
       if (error) {
         if (error.code === 'PGRST116') {
-          return 'lister'
+          const defaultRole = 'lister'
+          sessionStorage.setItem(`user_role_${userId}`, defaultRole)
+          return defaultRole
         }
         throw error
       }
       
-      return data?.role as UserRole || 'lister'
+      const userRole = (data?.role as UserRole) || 'lister'
+      // Cache the role
+      sessionStorage.setItem(`user_role_${userId}`, userRole)
+      return userRole
     } catch (error: any) {
-      return 'lister'
+      // Return cached or default
+      const cachedRole = sessionStorage.getItem(`user_role_${userId}`)
+      return (cachedRole as UserRole) || 'lister'
     }
   }
 
   const refreshUser = async () => {
     try {
-      setLoading(true)
+      // Don't set loading to true immediately - allow UI to render first
       const { data: { session }, error } = await supabase.auth.getSession()
       
       if (error) throw error
@@ -61,19 +74,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
 
       if (session?.user) {
-        const userRole = await fetchUserRole(session.user.id)
-        setRole(userRole)
+        // Set a default role immediately from cache if available
+        const cachedRole = sessionStorage.getItem(`user_role_${session.user.id}`)
+        if (cachedRole && ['admin', 'lister', 'public'].includes(cachedRole)) {
+          setRole(cachedRole as UserRole)
+        }
+        
+        // Then fetch fresh role in background
+        fetchUserRole(session.user.id).then(userRole => {
+          setRole(userRole)
+        }).catch(() => {
+          // Keep cached role if fetch fails
+        })
       } else {
         setRole(null)
       }
     } catch (error) {
+      // On error, try to use cached role
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        const cachedRole = sessionStorage.getItem(`user_role_${session.user.id}`)
+        if (cachedRole && ['admin', 'lister', 'public'].includes(cachedRole)) {
+          setRole(cachedRole as UserRole)
+        }
+      }
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    refreshUser()
+    // Initial load - set loading to false quickly
+    refreshUser().finally(() => {
+      setLoading(false)
+    })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
@@ -81,8 +115,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null)
 
         if (session?.user) {
-          const userRole = await fetchUserRole(session.user.id)
-          setRole(userRole)
+          // Use cached role immediately
+          const cachedRole = sessionStorage.getItem(`user_role_${session.user.id}`)
+          if (cachedRole && ['admin', 'lister', 'public'].includes(cachedRole)) {
+            setRole(cachedRole as UserRole)
+          }
+          
+          // Fetch fresh role in background
+          fetchUserRole(session.user.id).then(userRole => {
+            setRole(userRole)
+          }).catch(() => {
+            // Keep cached role if fetch fails
+          })
         } else {
           setRole(null)
         }
@@ -98,11 +142,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Clear cached role
+      if (user?.id) {
+        sessionStorage.removeItem(`user_role_${user.id}`)
+      }
       await supabase.auth.signOut()
       setUser(null)
       setSession(null)
       setRole(null)
     } catch (error) {
+      // Clear cached role even on error
+      if (user?.id) {
+        sessionStorage.removeItem(`user_role_${user.id}`)
+      }
       setUser(null)
       setSession(null)
       setRole(null)
