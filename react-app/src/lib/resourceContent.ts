@@ -149,7 +149,7 @@ export const RESOURCES: ResourceContent[] = [
     title: 'Tips for Supporting a Loved One with Anxiety',
     category: 'For Families & Carers',
     excerpt: 'It can be hard to know what to say when someone you care about is struggling. Here are practical, compassionate ways to offer support without taking over.',
-    image: '/images/resource-anxiety.jpg',
+    image: '/photo-1573497019940-1c28c88b4f3e.jpeg',
     tags: ['#Anxiety', '#Family', '#Support'],
     readTime: 5,
     slug: 'supporting-anxiety',
