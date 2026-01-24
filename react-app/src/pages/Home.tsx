@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Phone, Mail, ExternalLink, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { Search, MapPin, Phone, Mail, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
@@ -265,8 +265,8 @@ export function Home() {
                 to="/get-listed" 
                 className="w-full sm:w-auto min-w-[200px] sm:min-w-[220px] px-6 sm:px-8 py-3 sm:py-4 bg-primary-700 text-white rounded-xl font-semibold hover:bg-primary-800 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 border-2 border-white/20 text-sm sm:text-base md:text-lg"
               >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 List Your Practice
-                <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
               </Link>
             </div>
           </div>
