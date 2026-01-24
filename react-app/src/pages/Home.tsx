@@ -36,54 +36,92 @@ export function Home() {
   }, [listings, filters])
 
   const fetchListings = async () => {
+    // Show sample data immediately for instant UI
+    setListings(SAMPLE_LISTINGS)
+    setLoading(false)
+
+    // Then fetch from database in background
     try {
-      const { data, error } = await supabase
+      // Try to get from cache first
+      const cacheKey = 'listings_cache'
+      const cacheTime = 'listings_cache_time'
+      const cached = sessionStorage.getItem(cacheKey)
+      const cacheTimestamp = sessionStorage.getItem(cacheTime)
+      
+      // Use cache if less than 5 minutes old
+      if (cached && cacheTimestamp) {
+        const age = Date.now() - parseInt(cacheTimestamp)
+        if (age < 5 * 60 * 1000) { // 5 minutes
+          try {
+            const cachedListings = JSON.parse(cached)
+            updateListings(cachedListings)
+            return // Use cached data, skip fetch
+          } catch (e) {
+            // Cache corrupted, continue to fetch
+          }
+        }
+      }
+
+      // Fetch with timeout
+      const queryPromise = supabase
         .from('listings')
         .select('*')
         .eq('status', 'approved')
         .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false })
+        .limit(100) // Limit results for faster query
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Query timeout')), 3000)
+      )
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any
 
       if (error) {
         console.error('Error fetching listings:', error)
-        // Use sample data on error
-        setListings(SAMPLE_LISTINGS)
-        return
+        return // Keep sample data
       }
 
-      // Combine database listings with sample listings (avoid duplicates)
+      // Process and update listings
       const dbListings = data || []
-      const sampleListings = SAMPLE_LISTINGS.filter(
-        sample => !dbListings.some(db => db.id === sample.id || db.practice_name === sample.practice_name)
-      )
+      updateListings(dbListings)
       
-      // Merge: database listings first, then sample listings
-      const allListings = [...dbListings, ...sampleListings]
-      
-      // Sort: Featured first (newest first), then non-featured (newest first)
-      allListings.sort((a, b) => {
-        // Featured listings come first
-        if (a.is_featured && !b.is_featured) return -1
-        if (!a.is_featured && b.is_featured) return 1
-        
-        // Within same featured status, sort by date (newest first)
-        const dateA = new Date(a.created_at).getTime()
-        const dateB = new Date(b.created_at).getTime()
-        return dateB - dateA
-      })
-      
-      if (allListings.length > 0) {
-        setListings(allListings)
-      } else {
-        // Fallback to just sample data
-        setListings(SAMPLE_LISTINGS)
+      // Cache the result
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify(dbListings))
+        sessionStorage.setItem(cacheTime, Date.now().toString())
+      } catch (e) {
+        // Cache failed, ignore
       }
     } catch (error) {
       console.error('Error fetching listings:', error)
-      // Use sample data on error
-      setListings(SAMPLE_LISTINGS)
-    } finally {
-      setLoading(false)
+      // Keep sample data on error
+    }
+  }
+
+  const updateListings = (dbListings: Listing[]) => {
+    // Combine database listings with sample listings (avoid duplicates)
+    const sampleListings = SAMPLE_LISTINGS.filter(
+      sample => !dbListings.some(db => db.id === sample.id || db.practice_name === sample.practice_name)
+    )
+    
+    // Merge: database listings first, then sample listings
+    const allListings = [...dbListings, ...sampleListings]
+    
+    // Sort: Featured first (newest first), then non-featured (newest first)
+    allListings.sort((a, b) => {
+      // Featured listings come first
+      if (a.is_featured && !b.is_featured) return -1
+      if (!a.is_featured && b.is_featured) return 1
+      
+      // Within same featured status, sort by date (newest first)
+      const dateA = new Date(a.created_at).getTime()
+      const dateB = new Date(b.created_at).getTime()
+      return dateB - dateA
+    })
+    
+    if (allListings.length > 0) {
+      setListings(allListings)
     }
   }
 
