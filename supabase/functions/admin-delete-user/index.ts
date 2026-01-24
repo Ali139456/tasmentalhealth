@@ -17,6 +17,14 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
+// Helper to create CORS response
+const corsResponse = (body: any, status = 200) => {
+  return new Response(typeof body === 'string' ? body : JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  })
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {

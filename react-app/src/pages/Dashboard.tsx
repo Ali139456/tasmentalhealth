@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
+import toast from 'react-hot-toast'
 
 export function Dashboard() {
   const { user } = useAuth()
@@ -36,10 +37,10 @@ export function Dashboard() {
       fetchData()
       // Remove query param
       setSearchParams({})
-      alert('Payment successful! Your listing is now featured.')
+      toast.success('Payment successful! Your listing is now featured.')
     } else if (canceled === 'true') {
       setSearchParams({})
-      alert('Payment was canceled.')
+      toast.error('Payment was canceled.')
     }
   }, [searchParams, setSearchParams])
 
@@ -89,7 +90,7 @@ export function Dashboard() {
       }
     } catch (error: any) {
       console.error('Error creating checkout session:', error)
-      alert(error.message || 'Failed to start checkout. Please try again.')
+      toast.error(error.message || 'Failed to start checkout. Please try again.')
       setProcessingListingId(null)
     }
   }
@@ -107,7 +108,7 @@ export function Dashboard() {
       }
     } catch (error: any) {
       console.error('Error creating portal session:', error)
-      alert(error.message || 'Failed to open customer portal. Please try again.')
+      toast.error(error.message || 'Failed to open customer portal. Please try again.')
       setProcessingPortal(false)
     }
   }
@@ -155,10 +156,10 @@ export function Dashboard() {
       await fetchData()
       setEditingListing(null)
       setEditFormData(null)
-      alert('Listing updated successfully!')
+      toast.success('Listing updated successfully!')
     } catch (error: any) {
       console.error('Error updating listing:', error)
-      alert(`Failed to update listing: ${error.message}`)
+      toast.error(`Failed to update listing: ${error.message}`)
     } finally {
       setSaving(false)
     }

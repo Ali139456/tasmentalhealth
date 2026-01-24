@@ -5,6 +5,7 @@ import type { Listing, User } from '../types'
 import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
+import toast from 'react-hot-toast'
 
 const ITEMS_PER_PAGE = 10
 
@@ -104,10 +105,10 @@ export function Admin() {
       }
 
       await fetchData()
-      alert(`Listing ${action}d successfully!`)
+      toast.success(`Listing ${action}d successfully!`)
     } catch (error: any) {
       console.error('Error updating listing:', error)
-      alert(`Failed to ${action} listing: ${error.message}`)
+      toast.error(`Failed to ${action} listing: ${error.message}`)
     }
   }
 
@@ -179,17 +180,17 @@ export function Admin() {
       if (error) throw error
       await fetchData()
       setEditingUserId(null)
-      alert('User role updated successfully!')
+      toast.success('User role updated successfully!')
     } catch (error: any) {
       console.error('Error updating user role:', error)
-      alert(`Failed to update user role: ${error.message}`)
+      toast.error(`Failed to update user role: ${error.message}`)
     }
   }
 
   const handleDeleteUser = async (userId: string, userEmail: string) => {
     // Prevent deleting yourself
     if (userId === user?.id) {
-      alert('You cannot delete your own account.')
+      toast.error('You cannot delete your own account.')
       return
     }
 
@@ -201,6 +202,8 @@ export function Admin() {
     if (!confirmed) return
 
     setDeletingUserId(userId)
+    const deleteToast = toast.loading('Deleting user...')
+    
     try {
       // Delete user from auth.users (this will cascade delete from public.users due to foreign key)
       // We need to use admin API for this, so we'll call an edge function
@@ -224,15 +227,17 @@ export function Admin() {
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to delete user')
+        const errorData = await response.json().catch(() => ({ error: 'Failed to delete user' }))
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to delete user`)
       }
 
+      const result = await response.json()
       await fetchData()
-      alert('User deleted successfully!')
+      toast.success('User deleted successfully!', { id: deleteToast })
     } catch (error: any) {
       console.error('Error deleting user:', error)
-      alert(`Failed to delete user: ${error.message}`)
+      const errorMessage = error.message || 'Failed to delete user. Please ensure the Edge Function is deployed.'
+      toast.error(errorMessage, { id: deleteToast, duration: 6000 })
     } finally {
       setDeletingUserId(null)
     }
