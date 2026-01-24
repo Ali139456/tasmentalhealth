@@ -263,7 +263,7 @@ export function Home() {
               </a>
               <Link 
                 to="/get-listed" 
-                className="w-full sm:w-auto min-w-[200px] sm:min-w-[220px] px-6 sm:px-8 py-3 sm:py-4 bg-primary-700 text-white rounded-xl font-semibold hover:bg-primary-800 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 border-2 border-white/20 text-sm sm:text-base md:text-lg"
+                className="w-full sm:w-auto min-w-[200px] sm:min-w-[220px] px-6 sm:px-8 py-3 sm:py-4 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 List Your Practice
