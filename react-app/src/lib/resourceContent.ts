@@ -194,7 +194,7 @@ export const RESOURCES: ResourceContent[] = [
     title: 'Telehealth vs In-Person Therapy: What\'s Right for You?',
     category: 'For People Seeking Support',
     excerpt: 'With the rise of digital health, you now have more choices. We compare the benefits of online counselling versus traditional face-to-face sessions.',
-    image: '/images/resource-telehealth.jpg',
+    image: '/photo-1588196749597-9ff075ee6b5b.jpeg',
     tags: ['#Telehealth', '#Technology', '#Access'],
     readTime: 5,
     slug: 'telehealth-vs-inperson',
