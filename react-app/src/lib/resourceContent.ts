@@ -242,7 +242,7 @@ export const RESOURCES: ResourceContent[] = [
     title: 'Workplace Mental Health: A Guide for Tasmanian Employers',
     category: 'For Professionals & Employers',
     excerpt: 'Creating a psychologically safe workplace is not just a legal requirement, it\'s good business. Strategies for supporting your team\'s mental wellbeing.',
-    image: '/images/resource-workplace.jpg',
+    image: '/photo-1522071820081-009f0129c71c.jpeg',
     tags: ['#Workplace', '#Business', '#Wellbeing'],
     readTime: 7,
     slug: 'workplace-wellbeing',
