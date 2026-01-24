@@ -117,21 +117,12 @@ export function Header() {
             {user ? (
               <div className={`flex items-center gap-2 ${searchExpanded ? 'xl:flex hidden' : ''}`}>
                 {role === 'admin' && (
-                  <>
-                    <Link
-                      to="/admin"
-                      className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
-                    >
-                      Admin
-                    </Link>
-                    <Link
-                      to="/dashboard"
-                      className="px-4 py-2 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
-                    >
-                      <User className="w-4 h-4" />
-                      Dashboard
-                    </Link>
-                  </>
+                  <Link
+                    to="/admin"
+                    className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Admin Dashboard
+                  </Link>
                 )}
                 {role === 'lister' && (
                   <Link
@@ -305,22 +296,13 @@ export function Header() {
             {user ? (
               <>
                 {role === 'admin' && (
-                  <>
-                    <Link
-                      to="/admin"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-4 py-3 bg-red-600 text-white rounded-xl text-base font-semibold"
-                    >
-                      Admin
-                    </Link>
-                    <Link
-                      to="/dashboard"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-4 py-3 bg-primary-500 text-white rounded-xl text-base font-semibold"
-                    >
-                      Dashboard
-                    </Link>
-                  </>
+                  <Link
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-3 bg-red-600 text-white rounded-xl text-base font-semibold"
+                  >
+                    Admin Dashboard
+                  </Link>
                 )}
                 {role === 'lister' && (
                   <Link

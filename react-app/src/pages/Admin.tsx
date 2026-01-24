@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, User } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
+
+const ITEMS_PER_PAGE = 10
 
 export function Admin() {
   const { user, role } = useAuth()
@@ -16,6 +18,8 @@ export function Admin() {
   const [userSearchQuery, setUserSearchQuery] = useState('')
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [editingRole, setEditingRole] = useState<'admin' | 'lister' | 'public'>('lister')
+  const [currentListingsPage, setCurrentListingsPage] = useState(1)
+  const [currentUsersPage, setCurrentUsersPage] = useState(1)
 
   useEffect(() => {
     if (user && role === 'admin') {
@@ -135,6 +139,35 @@ export function Admin() {
     user.role.toLowerCase().includes(userSearchQuery.toLowerCase())
   )
 
+  // Pagination calculations
+  const totalListingsPages = Math.ceil(filteredListings.length / ITEMS_PER_PAGE)
+  const totalUsersPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE)
+  
+  const paginatedListings = filteredListings.slice(
+    (currentListingsPage - 1) * ITEMS_PER_PAGE,
+    currentListingsPage * ITEMS_PER_PAGE
+  )
+  
+  const paginatedUsers = filteredUsers.slice(
+    (currentUsersPage - 1) * ITEMS_PER_PAGE,
+    currentUsersPage * ITEMS_PER_PAGE
+  )
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentListingsPage(1)
+  }, [searchQuery])
+
+  useEffect(() => {
+    setCurrentUsersPage(1)
+  }, [userSearchQuery])
+
+  // Reset to page 1 when tab changes
+  useEffect(() => {
+    setCurrentListingsPage(1)
+    setCurrentUsersPage(1)
+  }, [activeTab])
+
   const handleUpdateUserRole = async (userId: string, newRole: 'admin' | 'lister' | 'public') => {
     try {
       const { error } = await supabase
@@ -173,41 +206,41 @@ export function Admin() {
   }
 
   return (
-    <div className="py-12 px-4">
-      <div className="container mx-auto max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage listings, users, and subscriptions</p>
+          <h1 className="text-4xl font-bold mb-2 text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-600 text-lg">Manage listings, users, and subscriptions</p>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200 mb-6">
+        {/* Modern Tabs */}
+        <div className="flex gap-2 mb-6 bg-white rounded-xl p-1 shadow-sm border border-gray-200">
           <button
             onClick={() => setActiveTab('listings')}
-            className={`px-6 py-3 font-medium ${
+            className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'listings'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-red-600 text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
             Listings ({listings.length})
           </button>
           <button
             onClick={() => setActiveTab('users')}
-            className={`px-6 py-3 font-medium ${
+            className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'users'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-red-600 text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
             Users ({users.length})
           </button>
           <button
             onClick={() => setActiveTab('subscriptions')}
-            className={`px-6 py-3 font-medium ${
+            className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'subscriptions'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-red-600 text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
             Subscriptions
@@ -219,70 +252,71 @@ export function Admin() {
           <div>
             <div className="mb-6 flex gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search listings..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white shadow-sm"
                 />
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
               {filteredListings.length === 0 ? (
                 <div className="p-12 text-center">
                   <p className="text-gray-600">No listings found.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Practice Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredListings.map(listing => (
-                      <tr key={listing.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{listing.practice_name}</div>
-                          <div className="text-sm text-gray-500">{listing.profession}</div>
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Practice Name</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Contact</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Location</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Created</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-100">
+                        {paginatedListings.map(listing => (
+                      <tr key={listing.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-semibold text-gray-900">{listing.practice_name}</div>
+                          <div className="text-sm text-gray-500 mt-1">{listing.profession}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 flex items-center">
-                            <Mail className="w-4 h-4 mr-1" />
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900 flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-gray-400" />
                             {listing.email}
                           </div>
                           {listing.phone && (
-                            <div className="text-sm text-gray-500 flex items-center mt-1">
-                              <Phone className="w-4 h-4 mr-1" />
+                            <div className="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                              <Phone className="w-4 h-4 text-gray-400" />
                               {listing.phone}
                             </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-600 font-medium">
                           {listing.location}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           {getStatusBadge(listing.status)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-500">
                           {format(new Date(listing.created_at), 'MMM dd, yyyy')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex gap-2">
+                        <td className="px-6 py-4 text-sm font-medium">
+                          <div className="flex gap-2 flex-wrap">
                             {listing.status === 'pending' && (
                               <>
                                 <button
                                   onClick={() => handleListingAction(listing.id, 'approve')}
-                                  className="text-green-600 hover:text-green-900"
+                                  className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold text-xs"
                                 >
                                   Approve
                                 </button>
@@ -291,7 +325,7 @@ export function Admin() {
                                     const reason = prompt('Rejection reason:')
                                     if (reason) handleListingAction(listing.id, 'reject', reason)
                                   }}
-                                  className="text-red-600 hover:text-red-900"
+                                  className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-semibold text-xs"
                                 >
                                   Reject
                                 </button>
@@ -300,7 +334,7 @@ export function Admin() {
                                     const notes = prompt('Required changes:')
                                     if (notes) handleListingAction(listing.id, 'needs_changes', notes)
                                   }}
-                                  className="text-blue-600 hover:text-blue-900"
+                                  className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-semibold text-xs"
                                 >
                                   Needs Changes
                                 </button>
@@ -309,7 +343,7 @@ export function Admin() {
                             {listing.status === 'needs_changes' && (
                               <button
                                 onClick={() => handleListingAction(listing.id, 'approve')}
-                                className="text-green-600 hover:text-green-900"
+                                className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold text-xs"
                               >
                                 Approve
                               </button>
@@ -321,6 +355,49 @@ export function Admin() {
                   </tbody>
                 </table>
                 </div>
+                
+                {/* Pagination */}
+                {totalListingsPages > 1 && (
+                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                    <div className="text-sm text-gray-700">
+                      Showing {(currentListingsPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentListingsPage * ITEMS_PER_PAGE, filteredListings.length)} of {filteredListings.length} listings
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setCurrentListingsPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentListingsPage === 1}
+                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </button>
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalListingsPages }, (_, i) => i + 1).map(page => (
+                          <button
+                            key={page}
+                            onClick={() => setCurrentListingsPage(page)}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                              currentListingsPage === page
+                                ? 'bg-red-600 text-white'
+                                : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setCurrentListingsPage(prev => Math.min(totalListingsPages, prev + 1))}
+                        disabled={currentListingsPage === totalListingsPages}
+                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                </>
               )}
             </div>
           </div>
@@ -331,53 +408,54 @@ export function Admin() {
           <div>
             <div className="mb-6 flex gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search users by email or role..."
                   value={userSearchQuery}
                   onChange={(e) => setUserSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white shadow-sm"
                 />
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
               {filteredUsers.length === 0 ? (
                 <div className="p-12 text-center">
                   <p className="text-gray-600">No users found.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Verified</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredUsers.map(userItem => (
-                      <tr key={userItem.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Role</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email Verified</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Created</th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-100">
+                        {paginatedUsers.map(userItem => (
+                      <tr key={userItem.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 text-sm font-semibold text-gray-900">
                           {userItem.email}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           {editingUserId === userItem.id ? (
                             <select
                               value={editingRole}
                               onChange={(e) => setEditingRole(e.target.value as 'admin' | 'lister' | 'public')}
-                              className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="px-3 py-1.5 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                             >
                               <option value="admin">Admin</option>
                               <option value="lister">Lister</option>
                               <option value="public">Public</option>
                             </select>
                           ) : (
-                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            <span className={`px-3 py-1.5 text-xs font-bold rounded-full ${
                               userItem.role === 'admin' ? 'bg-red-100 text-red-800' :
                               userItem.role === 'lister' ? 'bg-blue-100 text-blue-800' :
                               'bg-gray-100 text-gray-800'
@@ -386,26 +464,26 @@ export function Admin() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           {userItem.email_verified ? (
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-green-100 text-green-800">
                               Verified
                             </span>
                           ) : (
-                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">
                               Pending
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-sm text-gray-600">
                           {format(new Date(userItem.created_at), 'MMM dd, yyyy')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-6 py-4 text-sm font-medium">
                           {editingUserId === userItem.id ? (
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleUpdateUserRole(userItem.id, editingRole)}
-                                className="text-green-600 hover:text-green-900"
+                                className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold text-xs"
                               >
                                 Save
                               </button>
@@ -414,7 +492,7 @@ export function Admin() {
                                   setEditingUserId(null)
                                   setEditingRole('lister')
                                 }}
-                                className="text-gray-600 hover:text-gray-900"
+                                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold text-xs"
                               >
                                 Cancel
                               </button>
@@ -425,7 +503,7 @@ export function Admin() {
                                 setEditingUserId(userItem.id)
                                 setEditingRole(userItem.role as 'admin' | 'lister' | 'public')
                               }}
-                              className="text-blue-600 hover:text-blue-900"
+                              className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-semibold text-xs"
                             >
                               Edit Role
                             </button>
@@ -436,6 +514,49 @@ export function Admin() {
                   </tbody>
                 </table>
                 </div>
+                
+                {/* Pagination */}
+                {totalUsersPages > 1 && (
+                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                    <div className="text-sm text-gray-700">
+                      Showing {(currentUsersPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentUsersPage * ITEMS_PER_PAGE, filteredUsers.length)} of {filteredUsers.length} users
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setCurrentUsersPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentUsersPage === 1}
+                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </button>
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalUsersPages }, (_, i) => i + 1).map(page => (
+                          <button
+                            key={page}
+                            onClick={() => setCurrentUsersPage(page)}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                              currentUsersPage === page
+                                ? 'bg-red-600 text-white'
+                                : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setCurrentUsersPage(prev => Math.min(totalUsersPages, prev + 1))}
+                        disabled={currentUsersPage === totalUsersPages}
+                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                </>
               )}
             </div>
           </div>
