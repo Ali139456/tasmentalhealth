@@ -100,6 +100,19 @@ export function Login() {
         }
 
         if (signInData?.user) {
+          // Check if user is admin - admins should use admin login
+          const { data: userData } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', signInData.user.id)
+            .maybeSingle()
+
+          if (userData?.role === 'admin') {
+            // Sign out and redirect to admin login
+            await supabase.auth.signOut()
+            throw new Error('Administrators must use the Admin Login page. Please use the Admin Login link in the footer.')
+          }
+
           navigate('/dashboard')
           setTimeout(() => refreshUser().catch(() => {}), 100)
         } else {

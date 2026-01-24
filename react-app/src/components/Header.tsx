@@ -45,7 +45,7 @@ export function Header() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-100">
-      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-[1920px]">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center group flex-shrink-0 min-w-0">
@@ -68,12 +68,12 @@ export function Header() {
           </Link>
 
           {/* Navigation + Auth + Search - Right Side */}
-          <div className="hidden lg:flex items-center gap-3 flex-1 justify-end min-w-0 ml-[60px]">
+          <div className="hidden lg:flex items-center gap-2 flex-1 justify-end min-w-0 ml-4">
             {/* Navigation Links - hidden when search is expanded on lg screens */}
             <div className={`flex items-center gap-1 flex-shrink-0 ${searchExpanded ? 'xl:flex hidden' : ''}`}>
               <Link
                 to="/"
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
                   isActive('/') 
                     ? 'text-primary-600 bg-primary-50' 
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
@@ -83,7 +83,7 @@ export function Header() {
               </Link>
               <Link
                 to="/crisis-support"
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
                   isActive('/crisis-support') 
                     ? 'text-primary-600 bg-primary-50' 
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
@@ -93,7 +93,7 @@ export function Header() {
               </Link>
               <Link
                 to="/resources"
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
                   isActive('/resources') 
                     ? 'text-primary-600 bg-primary-50' 
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
@@ -103,7 +103,7 @@ export function Header() {
               </Link>
               <Link
                 to="/events"
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
                   isActive('/events') 
                     ? 'text-primary-600 bg-primary-50' 
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
@@ -119,9 +119,9 @@ export function Header() {
                 {role === 'admin' && (
                   <Link
                     to="/admin"
-                    className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
+                    className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg whitespace-nowrap"
                   >
-                    Admin Dashboard
+                    Admin
                   </Link>
                 )}
                 {role === 'lister' && (
