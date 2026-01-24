@@ -13,6 +13,7 @@ export function Home() {
   const [filteredListings, setFilteredListings] = useState<Listing[]>([])
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [filters, setFilters] = useState({
     keywords: '',
     location: 'All Locations',
@@ -369,9 +370,23 @@ export function Home() {
         {/* Full width container for grid to allow screen-edge margin */}
         <div className="w-full">
           <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
+            {/* Mobile Filter Button */}
+            <div className="lg:hidden mb-4 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-gray-900">
+                Results <span className="text-primary-600">{filteredListings.length} found</span>
+              </h3>
+              <button
+                onClick={() => setShowMobileFilters(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl font-semibold shadow-lg hover:bg-primary-600 transition-colors"
+              >
+                <Filter className="w-5 h-5" />
+                Filters
+              </button>
+            </div>
+
             <div className="grid lg:grid-cols-5 gap-4 lg:gap-0">
-            {/* Filters Sidebar */}
-              <aside className="lg:col-span-2 w-full lg:w-auto mb-6 lg:mb-0">
+            {/* Filters Sidebar - Hidden on mobile, visible on desktop */}
+              <aside className="hidden lg:block lg:col-span-2 w-full lg:w-auto mb-6 lg:mb-0">
                 <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
@@ -550,6 +565,203 @@ export function Home() {
                 </div>
               </div>
             </aside>
+
+            {/* Mobile Filter Modal */}
+            {showMobileFilters && (
+              <div className="fixed inset-0 z-50 lg:hidden">
+                {/* Overlay */}
+                <div 
+                  className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                  onClick={() => setShowMobileFilters(false)}
+                ></div>
+                
+                {/* Modal */}
+                <div className="absolute inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl overflow-y-auto">
+                  <div className="sticky top-0 bg-white border-b-2 border-primary-200 p-4 flex items-center justify-between z-10">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg">
+                        <Filter className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-900">Filters</h3>
+                    </div>
+                    <button
+                      onClick={() => setShowMobileFilters(false)}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <X className="w-6 h-6 text-gray-600" />
+                    </button>
+                  </div>
+                  
+                  <div className="p-4 space-y-4">
+                    {/* Filter Content - Same as sidebar */}
+                    <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md">
+                      <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
+                        <Search className="w-4 h-4 text-primary-500" />
+                        Keywords
+                      </label>
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-3 h-3 z-10" />
+                        <input
+                          type="text"
+                          placeholder="Q Name, condition, therapy..."
+                          value={filters.keywords}
+                          onChange={(e) => setFilters({ ...filters, keywords: e.target.value })}
+                          className="w-full pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all text-sm bg-white/90 shadow-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md">
+                      <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Filter by Listing Category</label>
+                      <div className="flex flex-wrap gap-2.5">
+                        <button
+                          onClick={() => setFilters({ ...filters, practiceType: 'all' })}
+                          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                            filters.practiceType === 'all' 
+                              ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg' 
+                              : 'bg-white text-gray-700 hover:bg-primary-50 border-2 border-primary-200 shadow-sm'
+                          }`}
+                        >
+                          All
+                        </button>
+                        <button
+                          onClick={() => setFilters({ ...filters, practiceType: 'individual' })}
+                          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                            filters.practiceType === 'individual' 
+                              ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg' 
+                              : 'bg-white text-gray-700 hover:bg-primary-50 border-2 border-primary-200 shadow-sm'
+                          }`}
+                        >
+                          Individual
+                        </button>
+                        <button
+                          onClick={() => setFilters({ ...filters, practiceType: 'group_practice' })}
+                          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                            filters.practiceType === 'group_practice' 
+                              ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg' 
+                              : 'bg-white text-gray-700 hover:bg-primary-50 border-2 border-primary-200 shadow-sm'
+                          }`}
+                        >
+                          Practice
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md">
+                      <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+                        Professional Role{filters.professions.length > 0 && ` (${filters.professions.length})`}
+                      </label>
+                      {filters.professions.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {filters.professions.map(prof => (
+                            <span
+                              key={prof}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-100 text-primary-700 rounded-lg text-xs font-semibold"
+                            >
+                              {prof}
+                              <button
+                                onClick={() => setFilters({ 
+                                  ...filters, 
+                                  professions: filters.professions.filter(p => p !== prof)
+                                })}
+                                className="hover:bg-primary-200 rounded-full p-0.5 transition-colors"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <select
+                        value=""
+                        onChange={(e) => {
+                          const value = e.target.value
+                          if (value && !filters.professions.includes(value)) {
+                            setFilters({ ...filters, professions: [...filters.professions, value] })
+                          }
+                          e.target.value = ''
+                        }}
+                        className="w-full px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm text-sm cursor-pointer"
+                      >
+                        <option value="">Select professional role...</option>
+                        {PROFESSIONS.filter(prof => !filters.professions.includes(prof)).map(prof => (
+                          <option key={prof} value={prof}>{prof}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md">
+                      <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3 uppercase">Select Location (e.g. Hobart)</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-3 h-3 z-10 pointer-events-none" />
+                        <select
+                          value={filters.location}
+                          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+                          className="w-full pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 appearance-none bg-white/90 shadow-sm text-sm cursor-pointer"
+                        >
+                          {LOCATIONS.map(loc => (
+                            <option key={loc} value={loc}>{loc}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md">
+                      <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+                        Specialties{filters.specialties.length > 0 && ` (${filters.specialties.length})`}
+                      </label>
+                      {filters.specialties.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {filters.specialties.map(spec => (
+                            <span
+                              key={spec}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-semibold"
+                            >
+                              {spec}
+                              <button
+                                onClick={() => setFilters({ 
+                                  ...filters, 
+                                  specialties: filters.specialties.filter(s => s !== spec)
+                                })}
+                                className="hover:bg-purple-200 rounded-full p-0.5 transition-colors"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <select
+                        value=""
+                        onChange={(e) => {
+                          const value = e.target.value
+                          if (value && !filters.specialties.includes(value)) {
+                            setFilters({ ...filters, specialties: [...filters.specialties, value] })
+                          }
+                          e.target.value = ''
+                        }}
+                        className="w-full px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm text-sm cursor-pointer"
+                      >
+                        <option value="">Select specialties below...</option>
+                        {SPECIALTIES.filter(spec => !filters.specialties.includes(spec)).map(spec => (
+                          <option key={spec} value={spec}>{spec}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Apply Button */}
+                    <div className="sticky bottom-0 bg-white border-t-2 border-primary-200 p-4 -mx-4 -mb-4 mt-6">
+                      <button
+                        onClick={() => setShowMobileFilters(false)}
+                        className="w-full px-6 py-3 bg-primary-500 text-white rounded-xl font-semibold shadow-lg hover:bg-primary-600 transition-colors"
+                      >
+                        Apply Filters
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Results - Enhanced Cards */}
             <div className="lg:col-span-3 w-full">
