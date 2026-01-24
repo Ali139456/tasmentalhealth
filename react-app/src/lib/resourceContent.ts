@@ -1,3 +1,4 @@
+// Resource content definitions
 export interface ResourceContent {
   id: number
   title: string
