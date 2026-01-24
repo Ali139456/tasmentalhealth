@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video } from 'lucide-react'
+import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
@@ -16,9 +16,9 @@ export function Home() {
   const [filters, setFilters] = useState({
     keywords: '',
     location: 'All Locations',
-    specialty: '',
+    specialties: [] as string[],
     practiceType: 'all',
-    profession: '',
+    professions: [] as string[],
     telehealth: false,
     statewideTelehealth: false,
     ruralOutreach: false,
@@ -146,9 +146,11 @@ export function Home() {
       )
     }
 
-    if (filters.specialty) {
+    if (filters.specialties.length > 0) {
       filtered = filtered.filter(listing =>
-        listing.specialties.includes(filters.specialty)
+        filters.specialties.some(selectedSpec => 
+          listing.specialties.includes(selectedSpec)
+        )
       )
     }
 
@@ -158,9 +160,9 @@ export function Home() {
       )
     }
 
-    if (filters.profession) {
+    if (filters.professions.length > 0) {
       filtered = filtered.filter(listing =>
-        listing.profession === filters.profession
+        filters.professions.includes(listing.profession)
       )
     }
 
@@ -420,25 +422,47 @@ export function Home() {
                   </div>
 
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Professional Role</label>
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+                      Professional Role{filters.professions.length > 0 && ` (${filters.professions.length})`}
+                    </label>
+                    {filters.professions.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {filters.professions.map(prof => (
+                          <span
+                            key={prof}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-100 text-primary-700 rounded-lg text-xs font-semibold"
+                          >
+                            {prof}
+                            <button
+                              onClick={() => setFilters({ 
+                                ...filters, 
+                                professions: filters.professions.filter(p => p !== prof)
+                              })}
+                              className="hover:bg-primary-200 rounded-full p-0.5 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <div className="space-y-2">
-                    <select
-                      value={filters.profession}
-                      onChange={(e) => setFilters({ ...filters, profession: e.target.value })}
+                      <select
+                        value=""
+                        onChange={(e) => {
+                          const value = e.target.value
+                          if (value && !filters.professions.includes(value)) {
+                            setFilters({ ...filters, professions: [...filters.professions, value] })
+                          }
+                          e.target.value = ''
+                        }}
                         className="w-full lg:max-w-[350px] px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
-                    >
-                        <option value="">Select professional role...</option>
-                      {PROFESSIONS.map(prof => (
-                        <option key={prof} value={prof}>{prof}</option>
-                      ))}
-                    </select>
-                      <button
-                        type="button"
-                        className="w-full px-3 py-2 border-2 border-primary-300 rounded-lg text-primary-600 hover:bg-primary-50 font-semibold text-xs flex items-center justify-center gap-2 transition-all"
                       >
-                        <Plus className="w-3 h-3" />
-                        Add Professional Role...
-                      </button>
+                        <option value="">Select professional role...</option>
+                        {PROFESSIONS.filter(prof => !filters.professions.includes(prof)).map(prof => (
+                          <option key={prof} value={prof}>{prof}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
@@ -459,25 +483,47 @@ export function Home() {
                   </div>
 
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Specialties</label>
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+                      Specialties{filters.specialties.length > 0 && ` (${filters.specialties.length})`}
+                    </label>
+                    {filters.specialties.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {filters.specialties.map(spec => (
+                          <span
+                            key={spec}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-semibold"
+                          >
+                            {spec}
+                            <button
+                              onClick={() => setFilters({ 
+                                ...filters, 
+                                specialties: filters.specialties.filter(s => s !== spec)
+                              })}
+                              className="hover:bg-purple-200 rounded-full p-0.5 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <div className="space-y-2">
-                    <select
-                      value={filters.specialty}
-                      onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
+                      <select
+                        value=""
+                        onChange={(e) => {
+                          const value = e.target.value
+                          if (value && !filters.specialties.includes(value)) {
+                            setFilters({ ...filters, specialties: [...filters.specialties, value] })
+                          }
+                          e.target.value = ''
+                        }}
                         className="w-full lg:max-w-[350px] px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
-                    >
-                        <option value="">Select specialties below...</option>
-                      {SPECIALTIES.map(spec => (
-                        <option key={spec} value={spec}>{spec}</option>
-                      ))}
-                    </select>
-                      <button
-                        type="button"
-                        className="w-full px-3 py-2 border-2 border-primary-300 rounded-lg text-primary-600 hover:bg-primary-50 font-semibold text-xs flex items-center justify-center gap-2 transition-all"
                       >
-                        <Search className="w-3 h-3" />
-                        Search specialties...
-                      </button>
+                        <option value="">Select specialties below...</option>
+                        {SPECIALTIES.filter(spec => !filters.specialties.includes(spec)).map(spec => (
+                          <option key={spec} value={spec}>{spec}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   </div>
