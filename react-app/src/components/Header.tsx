@@ -301,7 +301,7 @@ export function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-4 py-3 bg-red-600 text-white rounded-xl text-base font-semibold"
                   >
-                    Admin Dashboard
+                    Admin
                   </Link>
                 )}
                 {role === 'lister' && (
