@@ -244,8 +244,8 @@ export function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-teal-950/80 to-teal-800/40"></div>
         <div className="container mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-28 xl:py-32 relative z-10 max-w-7xl">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
-              Connecting You to the Right Support
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 md:mb-10 leading-tight">
+              Tasmania's Mental Health Directory - Connecting You to the Right Support
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 md:mb-10 text-white/90 max-w-3xl mx-auto px-4">
               Search for trusted mental health professionals across Hobart, Launceston, and beyond - or list your clinic, private practice, or mental health service to grow your visibility.
