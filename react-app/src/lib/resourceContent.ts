@@ -105,7 +105,7 @@ export const RESOURCES: ResourceContent[] = [
     title: 'Understanding Medicare Rebates & Mental Health Care Plans',
     category: 'For People Seeking Support',
     excerpt: 'Navigating the costs of therapy can be confusing. This guide explains how the Better Access initiative works and how to get a Mental Health Treatment Plan from your GP.',
-    image: '/images/resource-medicare.jpg',
+    image: '/photo-1579684385127-1ef15d508118.jpeg',
     tags: ['#Medicare', '#Finance', '#Access'],
     readTime: 6,
     slug: 'medicare-rebates',
