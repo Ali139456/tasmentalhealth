@@ -4,7 +4,7 @@ import { Search, Menu, X, User, LogOut, Stethoscope } from 'lucide-react'
 import { useState } from 'react'
 
 export function Header() {
-  const { user, role, signOut, loading } = useAuth()
+  const { user, role, signOut } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
