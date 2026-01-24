@@ -579,11 +579,13 @@ export function Home() {
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                               <h4 className="text-xl sm:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
                               {listing.is_featured && (
-                                <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                                <>
+                                  <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                                  <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm font-semibold">
+                                    Verified
+                                  </span>
+                                </>
                               )}
-                              <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm font-semibold">
-                                Verified
-                              </span>
                             </div>
                             <p className="text-sm sm:text-base text-primary-600 font-medium mb-2">{listing.profession}</p>
                             
