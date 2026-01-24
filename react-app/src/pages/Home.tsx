@@ -507,8 +507,43 @@ export function Home() {
                 <div className="space-y-4 sm:space-y-6">
                   <div className="flex justify-between items-center mb-4 sm:mb-6">
                     <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
-                      Results <span className="text-primary-600">({filteredListings.length} found)</span>
+                      Results <span className="text-primary-600">{filteredListings.length} found</span>
                     </h3>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => window.print()}
+                        className="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700 flex items-center gap-2"
+                      >
+                        <Printer className="w-4 h-4" />
+                        Print
+                      </button>
+                      <button
+                        onClick={() => {
+                          // Generate CSV
+                          const headers = ['Practice Name', 'Profession', 'Location', 'Email', 'Phone', 'Website']
+                          const rows = filteredListings.map(l => [
+                            l.practice_name,
+                            l.profession,
+                            l.location,
+                            l.show_email_publicly ? l.email : '',
+                            l.show_phone_publicly ? l.phone : '',
+                            l.show_website_publicly ? l.website || '' : ''
+                          ])
+                          const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n')
+                          const blob = new Blob([csv], { type: 'text/csv' })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = 'listings.csv'
+                          a.click()
+                          URL.revokeObjectURL(url)
+                        }}
+                        className="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700 flex items-center gap-2"
+                      >
+                        <FileSpreadsheet className="w-4 h-4" />
+                        CSV
+                      </button>
+                    </div>
                   </div>
                   {paginatedListings.map(listing => (
                     <div
@@ -517,121 +552,115 @@ export function Home() {
                         listing.is_featured ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-white' : 'border-primary-500'
                       }`}
                     >
-                      {listing.is_featured && (
-                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 px-3 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2">
-                          <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-900 fill-yellow-900" />
-                          <span className="text-yellow-900 font-bold text-xs sm:text-sm">FEATURED LISTING</span>
-                        </div>
-                      )}
                       <div className="p-4 sm:p-6">
-                        <div className="mb-4">
-                          <div className="flex items-start gap-4 mb-3">
-                            {/* Avatar - Only for featured listings */}
-                            {listing.is_featured && listing.avatar_url && (
-                              <div className="flex-shrink-0">
+                        <div className="flex gap-4 sm:gap-6">
+                          {/* Left: Avatar/Logo - Only for featured listings */}
+                          {listing.is_featured && listing.avatar_url && (
+                            <div className="flex-shrink-0 relative">
+                              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden border-2 border-gray-200 shadow-md">
                                 <img 
                                   src={listing.avatar_url} 
                                   alt={listing.practice_name}
-                                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border-2 border-primary-200 shadow-md"
+                                  className="w-full h-full object-cover"
                                   onError={(e) => {
                                     const target = e.target as HTMLImageElement
                                     target.style.display = 'none'
                                   }}
                                 />
                               </div>
-                            )}
-                            <div className="flex-1">
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                                <h4 className="text-xl sm:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
-                                <span className="px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs sm:text-sm font-semibold self-start">
-                                  {listing.profession}
-                                </span>
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-500 px-2 py-1 text-center">
+                                <span className="text-yellow-900 font-bold text-xs">FEATURED</span>
                               </div>
                             </div>
-                          </div>
-                          
-                          {/* Show bio/description only for featured listings */}
-                          {listing.is_featured && listing.bio && (
-                              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{listing.bio}</p>
+                          )}
+
+                          {/* Center: Clinic Information */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                              <h4 className="text-xl sm:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
+                              {listing.is_featured && (
+                                <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                              )}
+                              <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm font-semibold">
+                                Verified
+                              </span>
+                            </div>
+                            <p className="text-sm sm:text-base text-primary-600 font-medium mb-2">{listing.profession}</p>
+                            
+                            {/* Show bio/description only for featured listings */}
+                            {listing.is_featured && listing.bio && (
+                              <p className="text-sm sm:text-base text-gray-700 mb-3 leading-relaxed line-clamp-2">{listing.bio}</p>
                             )}
-                          
-                          <div className="flex items-center gap-2 mb-3 text-sm text-gray-600">
-                            <MapPin className="w-4 h-4 text-primary-500" />
-                            <span>{listing.location}</span>
-                            {listing.is_featured && listing.is_telehealth && (
+                            
+                            {/* Show specialties only for featured listings */}
+                            {listing.is_featured && listing.specialties.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
+                                {listing.specialties.slice(0, 5).map(spec => (
+                                  <span key={spec} className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
+                                    {spec}
+                                  </span>
+                                ))}
+                                {listing.specialties.length > 5 && (
+                                  <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
+                                    + more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <MapPin className="w-4 h-4 text-primary-500" />
+                              <span>{listing.location}</span>
+                              {listing.is_featured && listing.is_telehealth && (
+                                <>
+                                  <span className="mx-1">•</span>
+                                  <Video className="w-4 h-4 text-emerald-600" />
+                                  <span>Telehealth</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Right: Action Buttons - Stacked vertically */}
+                          <div className="flex-shrink-0 flex flex-col gap-2 sm:gap-3">
+                            {listing.is_featured ? (
                               <>
-                                <span className="mx-2">•</span>
-                                <Phone className="w-4 h-4 text-emerald-600" />
-                                <span>Telehealth</span>
+                                <Link
+                                  to={`/listing/${listing.id}`}
+                                  className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap shadow-md hover:shadow-lg"
+                                >
+                                  View Profile
+                                </Link>
+                                {listing.show_phone_publicly && listing.phone && (
+                                  <a
+                                    href={`tel:${listing.phone}`}
+                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white border-2 border-gray-300 text-gray-900 rounded-xl hover:bg-gray-50 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap"
+                                  >
+                                    Call Now
+                                  </a>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {listing.show_email_publicly && listing.email && (
+                                  <a
+                                    href={`mailto:${listing.email}`}
+                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap"
+                                  >
+                                    {listing.email}
+                                  </a>
+                                )}
+                                {listing.show_phone_publicly && listing.phone && (
+                                  <a
+                                    href={`tel:${listing.phone}`}
+                                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap shadow-md hover:shadow-lg"
+                                  >
+                                    {listing.phone}
+                                  </a>
+                                )}
                               </>
                             )}
                           </div>
-                          {/* Show specialties only for featured listings */}
-                          {listing.is_featured && (
-                            <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
-                              {listing.specialties.slice(0, 8).map(spec => (
-                                <span key={spec} className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
-                                  {spec}
-                                </span>
-                              ))}
-                              {listing.specialties.length > 8 && (
-                                <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full font-medium">
-                                  +{listing.specialties.length - 8} more
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
-                          {listing.is_featured ? (
-                            <>
-                          <Link
-                            to={`/listing/${listing.id}`}
-                            className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-                          >
-                            View Profile
-                          </Link>
-                          {listing.show_phone_publicly && listing.phone && (
-                            <a
-                              href={`tel:${listing.phone}`}
-                              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-                            >
-                              <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-                              Call Now
-                            </a>
-                          )}
-                          {listing.show_email_publicly && listing.email && (
-                            <a
-                              href={`mailto:${listing.email}`}
-                              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
-                            >
-                              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                              Email
-                            </a>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {listing.show_email_publicly && listing.email && (
-                                <a
-                                  href={`mailto:${listing.email}`}
-                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
-                                >
-                                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                                  {listing.email}
-                                </a>
-                              )}
-                              {listing.show_phone_publicly && listing.phone && (
-                                <a
-                                  href={`tel:${listing.phone}`}
-                                  className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm sm:text-base"
-                                >
-                                  <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-                                  {listing.phone}
-                                </a>
-                              )}
-                            </>
-                          )}
                         </div>
                       </div>
                     </div>
