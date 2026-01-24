@@ -226,8 +226,22 @@ export function Admin() {
         body: JSON.stringify({ userId }),
       })
 
+      // Check if function doesn't exist (404) or CORS issue
+      if (response.status === 404) {
+        throw new Error('Edge Function not found. Please deploy the admin-delete-user function to Supabase.')
+      }
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Failed to delete user' }))
+        let errorData
+        try {
+          errorData = await response.json()
+        } catch {
+          // If response isn't JSON, it might be a CORS or network error
+          if (response.status === 0 || !response.status) {
+            throw new Error('Network error or CORS issue. Please ensure the admin-delete-user Edge Function is deployed and CORS is configured correctly.')
+          }
+          errorData = { error: `HTTP ${response.status}: Failed to delete user` }
+        }
         throw new Error(errorData.error || `HTTP ${response.status}: Failed to delete user`)
       }
 
