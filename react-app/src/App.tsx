@@ -5,6 +5,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { ScrollToTop } from './components/ScrollToTop'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
+import { AdminLogin } from './pages/AdminLogin'
 import { GetListed } from './pages/GetListed'
 import { CrisisSupport } from './pages/CrisisSupport'
 import { Resources } from './pages/Resources'
@@ -55,6 +56,7 @@ function AppRoutes() {
       <Route path="/events" element={<Layout><Events /></Layout>} />
       <Route path="/search" element={<Layout><SearchResults /></Layout>} />
       <Route path="/login" element={<Login />} />
+      <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/get-listed" element={<Layout><GetListed /></Layout>} />
       <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
       <Route path="/terms-of-service" element={<Layout><TermsOfService /></Layout>} />
