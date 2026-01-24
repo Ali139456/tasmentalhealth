@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="bg-white text-gray-700">
       <div className="container mx-auto px-4 py-12 sm:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Brand Column */}
           <div className="sm:col-span-2 md:col-span-1">
             <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
@@ -27,10 +27,6 @@ export function Footer() {
             <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-3 sm:mb-4">
               The trusted directory connecting Tasmanians with verified psychologists, counsellors, and mental health social workers. Find support in Hobart, Launceston, Devonport, Burnie and rural Tasmania.
             </p>
-            <div className="flex items-center gap-2 text-primary-600">
-              <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="text-xs sm:text-sm">Supporting mental health across Tasmania</span>
-            </div>
           </div>
 
           {/* Find Support Column */}
@@ -113,26 +109,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Quick Contact Column */}
-          <div>
-            <h4 className="text-gray-900 font-bold text-base sm:text-lg mb-3 sm:mb-4">Quick Contact</h4>
-            <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
-              <div className="flex items-start gap-2 sm:gap-3">
-                <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-gray-600 mb-1">Email Us</p>
-                  <a href="mailto:info@tasmentalhealthdirectory.com.au" className="text-primary-600 hover:text-primary-700 break-all">
-                    info@tasmentalhealthdirectory.com.au
-                  </a>
-                </div>
-              </div>
-              <div className="pt-3 sm:pt-4 border-t border-gray-300">
-                <p className="text-gray-600 text-xs leading-relaxed">
-                  Connecting Hobart, Launceston & Burnie with mental health care.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="border-t border-gray-300 pt-6 sm:pt-8">
