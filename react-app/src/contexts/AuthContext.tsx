@@ -104,10 +104,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    // Initial load - set loading to false quickly
-    refreshUser().finally(() => {
-      setLoading(false)
-    })
+    // Initial load - get session first, then role
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) throw error
+
+        setSession(session)
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          // Get cached role immediately
+          const cachedRole = sessionStorage.getItem(`user_role_${session.user.id}`)
+          if (cachedRole && ['admin', 'lister', 'public'].includes(cachedRole)) {
+            setRole(cachedRole as UserRole)
+            setLoading(false) // Set loading to false immediately with cached role
+          } else {
+            // No cache, fetch role quickly
+            const userRole = await fetchUserRole(session.user.id)
+            setRole(userRole)
+            setLoading(false)
+          }
+        } else {
+          setRole(null)
+          setLoading(false)
+        }
+      } catch (error) {
+        setLoading(false)
+      }
+    }
+
+    initializeAuth()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {

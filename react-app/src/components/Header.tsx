@@ -116,7 +116,7 @@ export function Header() {
             {/* Auth Buttons - hidden when search is expanded on lg screens */}
             {user ? (
               <div className={`flex items-center gap-2 ${searchExpanded ? 'xl:flex hidden' : ''}`}>
-                {/* Show buttons based on role, but don't wait for loading */}
+                {/* Only show buttons when role is determined - no flickering */}
                 {role === 'admin' && (
                   <Link
                     to="/admin"
@@ -125,7 +125,7 @@ export function Header() {
                     Admin
                   </Link>
                 )}
-                {(role === 'lister' || (role === null && !loading)) && (
+                {role === 'lister' && (
                   <Link
                     to="/dashboard"
                     className="px-4 py-2 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
@@ -305,7 +305,7 @@ export function Header() {
                     Admin
                   </Link>
                 )}
-                {(role === 'lister' || (role === null && !loading)) && (
+                {role === 'lister' && (
                   <Link
                     to="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
