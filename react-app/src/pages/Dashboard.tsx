@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2 } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save } from 'lucide-react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
+import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
 
 export function Dashboard() {
   const { user } = useAuth()
@@ -15,6 +16,9 @@ export function Dashboard() {
   const [processingListingId, setProcessingListingId] = useState<string | null>(null)
   const [processingPortal, setProcessingPortal] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
+  const [editingListing, setEditingListing] = useState<Listing | null>(null)
+  const [editFormData, setEditFormData] = useState<any>(null)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -108,6 +112,74 @@ export function Dashboard() {
     }
   }
 
+  const handleEditListing = (listing: Listing) => {
+    setEditingListing(listing)
+    setEditFormData({
+      practice_name: listing.practice_name,
+      email: listing.email,
+      phone: listing.phone,
+      website: listing.website || '',
+      profession: listing.profession,
+      practice_type: listing.practice_type,
+      ahpra_number: listing.ahpra_number || '',
+      specialties: [...listing.specialties],
+      location: listing.location,
+      postcode: listing.postcode,
+      street_address: listing.street_address || '',
+      is_telehealth: listing.is_telehealth,
+      is_rural_outreach: listing.is_rural_outreach,
+      is_statewide_telehealth: listing.is_statewide_telehealth,
+      bio: listing.bio || '',
+      show_name_publicly: listing.show_name_publicly,
+      show_email_publicly: listing.show_email_publicly,
+      show_phone_publicly: listing.show_phone_publicly,
+      show_website_publicly: listing.show_website_publicly,
+    })
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingListing || !editFormData) return
+
+    setSaving(true)
+    try {
+      const { error } = await supabase
+        .from('listings')
+        .update({
+          ...editFormData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', editingListing.id)
+
+      if (error) throw error
+
+      await fetchData()
+      setEditingListing(null)
+      setEditFormData(null)
+      alert('Listing updated successfully!')
+    } catch (error: any) {
+      console.error('Error updating listing:', error)
+      alert(`Failed to update listing: ${error.message}`)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const toggleSpecialty = (specialty: string) => {
+    if (!editFormData) return
+    const current = editFormData.specialties || []
+    if (current.includes(specialty)) {
+      setEditFormData({
+        ...editFormData,
+        specialties: current.filter((s: string) => s !== specialty),
+      })
+    } else {
+      setEditFormData({
+        ...editFormData,
+        specialties: [...current, specialty],
+      })
+    }
+  }
+
   const getStatusBadge = (status: string) => {
     const badges = {
       approved: { icon: CheckCircle, color: 'text-green-600 bg-green-50', label: 'Approved' },
@@ -136,16 +208,28 @@ export function Dashboard() {
   }
 
   return (
-    <div className="py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">My Dashboard</h1>
-          <p className="text-gray-600">Manage your listings and subscription</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/20 to-gray-100 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-300 rounded-full blur-3xl"></div>
+      </div>
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2339B8A6' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}></div>
+      </div>
 
-        {/* Subscription Status */}
-        {subscription && (
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg p-6 mb-8">
+      <div className="py-12 px-4 relative z-10">
+        <div className="container mx-auto max-w-6xl">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2 text-gray-900">My Dashboard</h1>
+            <p className="text-gray-600 text-lg">Manage your listings and subscription</p>
+          </div>
+
+          {/* Subscription Status */}
+          {subscription && (
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-2xl p-6 mb-8 shadow-xl border-2 border-yellow-300">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Star className="w-8 h-8 mr-3" />
@@ -174,9 +258,9 @@ export function Dashboard() {
           </div>
         )}
 
-        {/* Upgrade to Featured CTA - Show if no active subscription */}
-        {!subscription && listings.length > 0 && listings.some(l => l.status === 'approved' && !l.is_featured) && (
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg p-6 mb-8">
+          {/* Upgrade to Featured CTA - Show if no active subscription */}
+          {!subscription && listings.length > 0 && listings.some(l => l.status === 'approved' && !l.is_featured) && (
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-2xl p-6 mb-8 shadow-xl border-2 border-yellow-300">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h3 className="text-xl font-bold mb-2">Upgrade to Featured Listing</h3>
@@ -213,19 +297,19 @@ export function Dashboard() {
           </div>
         )}
 
-        {/* Listings */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">My Listings</h2>
-              <a
-                href="/get-listed"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Add New Listing
-              </a>
+          {/* Listings */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">My Listings</h2>
+                <a
+                  href="/get-listed"
+                  className="px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all shadow-md hover:shadow-lg font-semibold"
+                >
+                  Add New Listing
+                </a>
+              </div>
             </div>
-          </div>
 
           <div className="p-6">
             {listings.length === 0 ? (
@@ -242,11 +326,11 @@ export function Dashboard() {
                 </a>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 p-6">
                 {listings.map(listing => (
                   <div
                     key={listing.id}
-                    className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                    className="border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-gradient-to-br from-white to-gray-50/50 hover:border-primary-300"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
@@ -281,7 +365,11 @@ export function Dashboard() {
                       </div>
                     </div>
                     <div className="flex gap-2 flex-wrap">
-                      <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                      <button 
+                        onClick={() => handleEditListing(listing)}
+                        className="px-4 py-2 bg-primary-100 text-primary-700 rounded-xl hover:bg-primary-200 transition-all font-semibold flex items-center gap-2 shadow-sm hover:shadow-md"
+                      >
+                        <Edit className="w-4 h-4" />
                         Edit
                       </button>
                       {listing.status === 'approved' && !listing.is_featured && (
@@ -321,31 +409,311 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Account Settings */}
-        <div className="bg-white rounded-lg shadow-sm mt-8">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-2xl font-semibold">Account Settings</h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <input
-                  type="email"
-                  value={user?.email || ''}
-                  disabled
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                />
-              </div>
-              <div>
-                <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  Change Password
-                </button>
+          {/* Account Settings */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 mt-8 overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+              <h2 className="text-2xl font-bold text-gray-900">Account Settings</h2>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={user?.email || ''}
+                    disabled
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-semibold">
+                    Change Password
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editingListing && editFormData && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gradient-to-r from-primary-500 to-primary-600 text-white p-6 flex items-center justify-between rounded-t-2xl">
+              <h2 className="text-2xl font-bold">Edit Listing</h2>
+              <button
+                onClick={() => {
+                  setEditingListing(null)
+                  setEditFormData(null)
+                }}
+                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Practice Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Practice Name *</label>
+                <input
+                  type="text"
+                  value={editFormData.practice_name}
+                  onChange={(e) => setEditFormData({ ...editFormData, practice_name: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                  required
+                />
+              </div>
+
+              {/* Email and Phone */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    value={editFormData.email}
+                    onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
+                  <input
+                    type="tel"
+                    value={editFormData.phone}
+                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Website */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Website</label>
+                <input
+                  type="url"
+                  value={editFormData.website}
+                  onChange={(e) => setEditFormData({ ...editFormData, website: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                  placeholder="https://example.com"
+                />
+              </div>
+
+              {/* Profession and Practice Type */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Profession *</label>
+                  <select
+                    value={editFormData.profession}
+                    onChange={(e) => setEditFormData({ ...editFormData, profession: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                    required
+                  >
+                    <option value="">Select profession</option>
+                    {PROFESSIONS.map(prof => (
+                      <option key={prof} value={prof}>{prof}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Practice Type *</label>
+                  <select
+                    value={editFormData.practice_type}
+                    onChange={(e) => setEditFormData({ ...editFormData, practice_type: e.target.value as any })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                    required
+                  >
+                    {PRACTICE_TYPES.map(type => (
+                      <option key={type.value} value={type.value}>{type.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Location and Postcode */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
+                  <select
+                    value={editFormData.location}
+                    onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                    required
+                  >
+                    <option value="">Select location</option>
+                    {LOCATIONS.filter(loc => loc !== 'All Locations' && loc !== 'Statewide (Telehealth)' && loc !== 'Telehealth').map(loc => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Postcode *</label>
+                  <input
+                    type="text"
+                    value={editFormData.postcode}
+                    onChange={(e) => setEditFormData({ ...editFormData, postcode: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Street Address */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Street Address</label>
+                <input
+                  type="text"
+                  value={editFormData.street_address}
+                  onChange={(e) => setEditFormData({ ...editFormData, street_address: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                />
+              </div>
+
+              {/* Specialties */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Specialties</label>
+                <div className="border-2 border-gray-200 rounded-xl p-4 max-h-48 overflow-y-auto">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {SPECIALTIES.map(specialty => (
+                      <label key={specialty} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={editFormData.specialties?.includes(specialty) || false}
+                          onChange={() => toggleSpecialty(specialty)}
+                          className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                        />
+                        <span className="text-sm text-gray-700">{specialty}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Bio</label>
+                <textarea
+                  value={editFormData.bio}
+                  onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
+                  rows={4}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all resize-none"
+                  placeholder="Tell us about your practice..."
+                />
+              </div>
+
+              {/* Telehealth Options */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Services</label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.is_telehealth}
+                      onChange={(e) => setEditFormData({ ...editFormData, is_telehealth: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Telehealth Available</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.is_statewide_telehealth}
+                      onChange={(e) => setEditFormData({ ...editFormData, is_statewide_telehealth: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Statewide Telehealth</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.is_rural_outreach}
+                      onChange={(e) => setEditFormData({ ...editFormData, is_rural_outreach: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Rural Outreach</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Privacy Settings */}
+              <div className="space-y-3 border-t border-gray-200 pt-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Privacy Settings</label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.show_name_publicly}
+                      onChange={(e) => setEditFormData({ ...editFormData, show_name_publicly: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Show name publicly</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.show_email_publicly}
+                      onChange={(e) => setEditFormData({ ...editFormData, show_email_publicly: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Show email publicly</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.show_phone_publicly}
+                      onChange={(e) => setEditFormData({ ...editFormData, show_phone_publicly: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Show phone publicly</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.show_website_publicly}
+                      onChange={(e) => setEditFormData({ ...editFormData, show_website_publicly: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-700">Show website publicly</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Save/Cancel Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={saving}
+                  className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-5 h-5" />
+                      Save Changes
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingListing(null)
+                    setEditFormData(null)
+                  }}
+                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-semibold"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
