@@ -642,7 +642,7 @@ export function Home() {
                               </>
                             ) : (
                               <>
-                                {listing.show_email_publicly && listing.email && (
+                                {listing.email && (
                                   <a
                                     href={`mailto:${listing.email}`}
                                     className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap"
@@ -650,13 +650,18 @@ export function Home() {
                                     {listing.email}
                                   </a>
                                 )}
-                                {listing.show_phone_publicly && listing.phone && (
+                                {listing.phone && (
                                   <a
                                     href={`tel:${listing.phone}`}
                                     className="px-4 sm:px-5 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold text-sm sm:text-base whitespace-nowrap shadow-md hover:shadow-lg"
                                   >
                                     {listing.phone}
                                   </a>
+                                )}
+                                {!listing.email && !listing.phone && (
+                                  <span className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-50 text-gray-500 rounded-xl text-center text-sm sm:text-base whitespace-nowrap">
+                                    Standard Listing
+                                  </span>
                                 )}
                               </>
                             )}
