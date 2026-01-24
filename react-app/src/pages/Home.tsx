@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video, X, Check } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
@@ -29,6 +29,8 @@ export function Home() {
   const [specialtySearch, setSpecialtySearch] = useState('')
   const [showProfessionDropdown, setShowProfessionDropdown] = useState(false)
   const [showSpecialtyDropdown, setShowSpecialtyDropdown] = useState(false)
+  const specialtyInputRef = useRef<HTMLInputElement>(null)
+  const [specialtyDropdownPosition, setSpecialtyDropdownPosition] = useState({ top: 0, left: 0 })
 
   useEffect(() => {
     fetchListings()
@@ -586,11 +588,19 @@ export function Home() {
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" />
                         <input
+                          ref={specialtyInputRef}
                           type="text"
                           placeholder="Q Search specialty..."
                           value={specialtySearch}
                           onChange={(e) => setSpecialtySearch(e.target.value)}
                           onFocus={() => {
+                            if (specialtyInputRef.current) {
+                              const rect = specialtyInputRef.current.getBoundingClientRect()
+                              setSpecialtyDropdownPosition({
+                                top: rect.top + window.scrollY,
+                                left: rect.left + window.scrollX - 358 // 350px width + 8px margin
+                              })
+                            }
                             setShowSpecialtyDropdown(true)
                             setShowProfessionDropdown(false)
                           }}
@@ -598,7 +608,13 @@ export function Home() {
                         />
                       </div>
                       {showSpecialtyDropdown && (
-                        <div className="absolute z-[9999] top-0 right-full mr-2 w-[350px] bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-80 overflow-hidden">
+                        <div 
+                          className="fixed z-[9999] w-[350px] bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-80 overflow-hidden"
+                          style={{
+                            top: `${specialtyDropdownPosition.top}px`,
+                            left: `${specialtyDropdownPosition.left}px`
+                          }}
+                        >
                           <div className="max-h-64 overflow-y-auto">
                             {SPECIALTIES
                               .filter(spec => 
