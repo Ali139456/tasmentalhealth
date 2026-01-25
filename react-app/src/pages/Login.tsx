@@ -23,6 +23,11 @@ export function Login() {
 
     try {
       if (isSignUp) {
+        // Validate password length before sending to Supabase
+        if (password.length < 8) {
+          throw new Error('Password must be at least 8 characters long.')
+        }
+
         // Sign up flow
         const { data: authData, error: signUpError } = await supabase.auth.signUp({
           email,
