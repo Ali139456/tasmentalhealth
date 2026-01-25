@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { sendEmail, getEmailTemplate } from '../lib/email'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
 import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
 
@@ -44,9 +45,10 @@ export function GetListed() {
 
     try {
       if (!user) {
+        const tempPassword = Math.random().toString(36).slice(-12) + 'A1!'
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.email,
-          password: Math.random().toString(36).slice(-12) + 'A1!',
+          password: tempPassword,
         })
 
         if (authError) throw authError
@@ -64,6 +66,41 @@ export function GetListed() {
 
         if (listingError) throw listingError
 
+        // Send lister account creation email
+        try {
+          const listerTemplate = getEmailTemplate('lister_account_created', {
+            email: formData.email,
+            userName: formData.email.split('@')[0],
+            listingName: formData.practice_name,
+            temporaryPassword: tempPassword,
+            appUrl: window.location.origin
+          })
+          await sendEmail({
+            to: formData.email,
+            subject: listerTemplate.subject,
+            html: listerTemplate.html
+          })
+        } catch (emailErr) {
+          console.error('Failed to send lister account email:', emailErr)
+        }
+
+        // Send listing submitted email
+        try {
+          const listingTemplate = getEmailTemplate('listing_submitted', {
+            email: formData.email,
+            userName: formData.email.split('@')[0],
+            listingName: formData.practice_name,
+            appUrl: window.location.origin
+          })
+          await sendEmail({
+            to: formData.email,
+            subject: listingTemplate.subject,
+            html: listingTemplate.html
+          })
+        } catch (emailErr) {
+          console.error('Failed to send listing submitted email:', emailErr)
+        }
+
         setSuccess(true)
         setTimeout(() => {
           navigate('/login')
@@ -77,6 +114,23 @@ export function GetListed() {
           })
 
         if (listingError) throw listingError
+
+        // Send listing submitted email for existing users
+        try {
+          const listingTemplate = getEmailTemplate('listing_submitted', {
+            email: user.email || formData.email,
+            userName: user.email?.split('@')[0] || formData.email.split('@')[0],
+            listingName: formData.practice_name,
+            appUrl: window.location.origin
+          })
+          await sendEmail({
+            to: user.email || formData.email,
+            subject: listingTemplate.subject,
+            html: listingTemplate.html
+          })
+        } catch (emailErr) {
+          console.error('Failed to send listing submitted email:', emailErr)
+        }
 
         setSuccess(true)
         setTimeout(() => {

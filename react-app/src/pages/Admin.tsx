@@ -89,11 +89,13 @@ export function Admin() {
           // Send email notification
           const templateType = action === 'approve' ? 'listing_approved' : action === 'reject' ? 'listing_rejected' : 'listing_needs_changes'
           const template = getEmailTemplate(templateType, {
-            userName: userData.email,
+            email: userData.email,
+            userName: userData.email.split('@')[0],
             listingName: listing.practice_name,
             reason: notes,
             notes: notes,
-            dashboardUrl: `${window.location.origin}/dashboard`
+            dashboardUrl: `${window.location.origin}/dashboard`,
+            appUrl: window.location.origin
           })
 
           await sendEmail({

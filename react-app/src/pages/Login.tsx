@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { sendEmail, getEmailTemplate } from '../lib/email'
 import { Mail, Lock, AlertCircle, LogIn, ArrowRight, Shield, ArrowLeft, Sparkles, UserPlus, CheckCircle } from 'lucide-react'
 
 export function Login() {
@@ -44,6 +45,22 @@ export function Login() {
         }
 
         if (authData.user) {
+          // Send welcome email (don't wait for it to complete)
+          try {
+            const template = getEmailTemplate('welcome', {
+              email: authData.user.email,
+              userName: authData.user.email?.split('@')[0],
+              appUrl: window.location.origin
+            })
+            sendEmail({
+              to: authData.user.email!,
+              subject: template.subject,
+              html: template.html
+            }).catch(err => console.error('Failed to send welcome email:', err))
+          } catch (err) {
+            console.error('Error preparing welcome email:', err)
+          }
+
           if (authData.user.email_confirmed_at || authData.session) {
             setSuccess('Account created successfully! Signing you in...')
             setTimeout(() => {
