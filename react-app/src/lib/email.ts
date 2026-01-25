@@ -11,12 +11,23 @@ export interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions) {
   try {
+    console.log('Attempting to send email via Edge Function:', {
+      to: options.to,
+      subject: options.subject,
+      hasHtml: !!options.html
+    })
+
     // Option 1: Use Supabase Edge Function (recommended)
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: options
     })
 
-    if (error) throw error
+    if (error) {
+      console.error('Supabase Edge Function error:', error)
+      throw error
+    }
+
+    console.log('Email sent successfully via Edge Function:', data)
     return { success: true, data }
 
     // Option 2: Use custom API endpoint
@@ -28,9 +39,14 @@ export async function sendEmail(options: EmailOptions) {
     // const result = await response.json()
     // if (!response.ok) throw new Error(result.error)
     // return { success: true, data: result.data }
-  } catch (error) {
-    console.error('Email send error:', error)
-    return { success: false, error }
+  } catch (error: any) {
+    console.error('Email send error details:', {
+      error,
+      message: error?.message,
+      details: error?.details,
+      hint: error?.hint
+    })
+    return { success: false, error: error?.message || 'Unknown error' }
   }
 }
 

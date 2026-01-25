@@ -24,9 +24,16 @@ serve(async (req) => {
   }
 
   try {
+    console.log("send-email function called")
+    console.log("RESEND_API_KEY exists:", !!RESEND_API_KEY)
+    console.log("FROM_EMAIL:", FROM_EMAIL)
+
     const { to, subject, html, from } = await req.json()
 
+    console.log("Email request received:", { to, subject, hasHtml: !!html, from })
+
     if (!to || !subject || !html) {
+      console.error("Missing required fields:", { to: !!to, subject: !!subject, html: !!html })
       return new Response(
         JSON.stringify({ error: "Missing required fields: to, subject, html" }),
         {
@@ -39,6 +46,7 @@ serve(async (req) => {
       )
     }
 
+    console.log("Sending email via Resend...")
     const { data, error } = await resend.emails.send({
       from: from || FROM_EMAIL,
       to,
@@ -49,7 +57,7 @@ serve(async (req) => {
     if (error) {
       console.error("Resend error:", error)
       return new Response(
-        JSON.stringify({ error: error.message || "Failed to send email" }),
+        JSON.stringify({ error: error.message || "Failed to send email", details: error }),
         {
           status: 400,
           headers: {
@@ -60,6 +68,7 @@ serve(async (req) => {
       )
     }
 
+    console.log("Email sent successfully:", data)
     return new Response(
       JSON.stringify({ success: true, data }),
       {
@@ -73,7 +82,7 @@ serve(async (req) => {
   } catch (error: any) {
     console.error("Function error:", error)
     return new Response(
-      JSON.stringify({ error: error.message || "Internal server error" }),
+      JSON.stringify({ error: error.message || "Internal server error", stack: error.stack }),
       {
         status: 500,
         headers: {

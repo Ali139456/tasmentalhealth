@@ -36,7 +36,7 @@ export function Login() {
           if (errorMsg.includes('user already registered')) {
             throw new Error('An account with this email already exists. Please sign in instead.')
           } else if (errorMsg.includes('password')) {
-            throw new Error('Password does not meet requirements. Please use at least 6 characters.')
+            throw new Error('Password does not meet requirements. Please use at least 8 characters.')
           } else if (errorMsg.includes('email')) {
             throw new Error('Invalid email address. Please check and try again.')
           }
@@ -45,20 +45,28 @@ export function Login() {
         }
 
         if (authData.user) {
-          // Send welcome email (don't wait for it to complete)
+          // Send welcome email
           try {
             const template = getEmailTemplate('welcome', {
               email: authData.user.email,
               userName: authData.user.email?.split('@')[0],
               appUrl: window.location.origin
             })
-            sendEmail({
+            
+            console.log('Sending welcome email to:', authData.user.email)
+            const emailResult = await sendEmail({
               to: authData.user.email!,
               subject: template.subject,
               html: template.html
-            }).catch(err => console.error('Failed to send welcome email:', err))
+            })
+            
+            if (emailResult.success) {
+              console.log('Welcome email sent successfully')
+            } else {
+              console.error('Failed to send welcome email:', emailResult.error)
+            }
           } catch (err) {
-            console.error('Error preparing welcome email:', err)
+            console.error('Error preparing/sending welcome email:', err)
           }
 
           if (authData.user.email_confirmed_at || authData.session) {
@@ -316,7 +324,7 @@ export function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="relative w-full pl-12 pr-4 py-3 border-2 border-gray-200 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
                     placeholder="••••••••"
-                    minLength={6}
+                    minLength={8}
                   />
                 </div>
               </div>
@@ -335,7 +343,7 @@ export function Login() {
             )}
             {isSignUp && (
               <div className="text-sm text-gray-600">
-                <p className="text-xs">Password must be at least 6 characters long.</p>
+                <p className="text-xs">Password must be at least 8 characters long.</p>
               </div>
             )}
 
