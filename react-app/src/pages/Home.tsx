@@ -381,16 +381,16 @@ export function Home() {
               </button>
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-4 lg:gap-6">
+            <div className="grid lg:grid-cols-5 gap-4 lg:gap-4">
             {/* Filters Sidebar - Hidden on mobile, visible on desktop */}
               <aside className="hidden lg:block lg:col-span-2 w-full lg:w-auto mb-6 lg:mb-0 pr-0">
-                <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-6 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
+                <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-3 sm:p-4 md:p-4 lg:p-4 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-200/20 rounded-full blur-2xl -ml-12 -mb-12"></div>
                 
                 <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-primary-200">
+                  <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-primary-200">
                     <div className="p-2.5 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg">
                       <Filter className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
@@ -399,9 +399,9 @@ export function Home() {
                     </h3>
                   </div>
 
-                  <div className="space-y-4 sm:space-y-5">
-                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
+                  <div className="space-y-3 sm:space-y-3">
+                  <div className="bg-white/80 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
                       <Search className="w-4 h-4 text-primary-500" />
                       Keywords
                     </label>
@@ -417,8 +417,8 @@ export function Home() {
                     </div>
                   </div>
 
-                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">Filter by Listing Category</label>
+                  <div className="bg-white/80 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2">Filter by Listing Category</label>
                     <div className="flex flex-wrap gap-2.5">
                       <button
                         onClick={() => setFilters({ ...filters, practiceType: 'all' })}
@@ -454,7 +454,7 @@ export function Home() {
                   </div>
 
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2">
                       Professional Role{filters.professions.length > 0 && ` (${filters.professions.length})`}
                     </label>
                     {filters.professions.length > 0 && (
@@ -498,8 +498,8 @@ export function Home() {
                     </div>
                   </div>
 
-                  <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3 uppercase">Select Location (e.g. Hobart)</label>
+                  <div className="bg-white/80 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 uppercase">Select Location (e.g. Hobart)</label>
                     <div className="relative">
                       <MapPin className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-primary-400 w-3 h-3 z-10 pointer-events-none" />
                       <select
@@ -515,7 +515,7 @@ export function Home() {
                   </div>
 
                   <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-primary-100/50 shadow-md hover:shadow-lg transition-all w-full">
-                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2 sm:mb-3">
+                    <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-2">
                       Specialties{filters.specialties.length > 0 && ` (${filters.specialties.length})`}
                     </label>
                     {filters.specialties.length > 0 && (
