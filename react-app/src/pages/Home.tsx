@@ -381,10 +381,10 @@ export function Home() {
               </button>
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-4 lg:gap-0">
+            <div className="grid lg:grid-cols-5 gap-4 lg:gap-6">
             {/* Filters Sidebar - Hidden on mobile, visible on desktop */}
-              <aside className="hidden lg:block lg:col-span-2 w-full lg:w-auto mb-6 lg:mb-0">
-                <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-7 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
+              <aside className="hidden lg:block lg:col-span-2 w-full lg:w-auto mb-6 lg:mb-0 pr-0">
+                <div className="relative bg-gradient-to-br from-white via-primary-50/30 to-white p-4 sm:p-5 md:p-6 lg:p-6 rounded-2xl lg:rounded-3xl shadow-2xl lg:sticky lg:top-24 border-2 border-primary-100/50 backdrop-blur-sm overflow-hidden w-full lg:w-[370px]">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-200/20 rounded-full blur-2xl -ml-12 -mb-12"></div>
@@ -412,7 +412,7 @@ export function Home() {
                         placeholder="Q Name, condition, therapy..."
                         value={filters.keywords}
                         onChange={(e) => setFilters({ ...filters, keywords: e.target.value })}
-                        className="w-full lg:max-w-[350px] pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all text-sm bg-white/90 shadow-sm hover:shadow-md"
+                        className="w-full pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all text-sm bg-white/90 shadow-sm hover:shadow-md"
                       />
                     </div>
                   </div>
@@ -488,7 +488,7 @@ export function Home() {
                           }
                           e.target.value = ''
                         }}
-                        className="w-full lg:max-w-[350px] px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
+                        className="w-full px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
                       >
                         <option value="">Select professional role...</option>
                         {PROFESSIONS.filter(prof => !filters.professions.includes(prof)).map(prof => (
@@ -505,7 +505,7 @@ export function Home() {
                       <select
                         value={filters.location}
                         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                        className="w-full lg:max-w-[350px] pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 appearance-none bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer"
+                        className="w-full pl-8 pr-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 appearance-none bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer"
                       >
                         {LOCATIONS.map(loc => (
                           <option key={loc} value={loc}>{loc}</option>
@@ -549,7 +549,7 @@ export function Home() {
                           }
                           e.target.value = ''
                         }}
-                        className="w-full lg:max-w-[350px] px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
+                        className="w-full px-3 py-2 border-2 border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white/90 shadow-sm hover:shadow-md text-sm cursor-pointer transition-all"
                       >
                         <option value="">Select specialties below...</option>
                         {SPECIALTIES.filter(spec => !filters.specialties.includes(spec)).map(spec => (
