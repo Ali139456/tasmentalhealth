@@ -495,30 +495,27 @@ export function Dashboard() {
               <button
                 onClick={async () => {
                   try {
-                    // Try Supabase's built-in resend first
-                    const { error: resendError } = await supabase.auth.resend({
-                      type: 'signup',
-                      email: user.email || ''
+                    console.log('Sending verification email to:', user.email)
+                    // Always use our custom Edge Function for reliable email delivery
+                    const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
+                      body: { email: user.email || '' }
                     })
                     
-                    if (resendError) {
-                      console.error('Supabase resend error:', resendError)
-                      // Fallback: Use our custom Edge Function
-                      try {
-                        const { error: functionError } = await supabase.functions.invoke('send-verification-email', {
-                          body: { email: user.email || '' }
-                        })
-                        
-                        if (functionError) {
-                          throw functionError
-                        }
-                        
+                    if (functionError) {
+                      console.error('Edge Function error:', functionError)
+                      // Fallback: Try Supabase's built-in resend
+                      const { error: resendError } = await supabase.auth.resend({
+                        type: 'signup',
+                        email: user.email || ''
+                      })
+                      
+                      if (resendError) {
+                        throw new Error(resendError.message || 'Failed to send verification email')
+                      } else {
                         toast.success('Verification email sent! Check your inbox.')
-                      } catch (functionErr: any) {
-                        console.error('Edge Function error:', functionErr)
-                        toast.error('Failed to send verification email. Please try again later.')
                       }
                     } else {
+                      console.log('Verification email sent successfully:', data)
                       toast.success('Verification email sent! Check your inbox.')
                     }
                   } catch (error: any) {
