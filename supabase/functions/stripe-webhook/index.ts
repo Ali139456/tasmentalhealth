@@ -6,6 +6,7 @@ const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY")
 const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET")
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+const APP_URL = Deno.env.get("APP_URL") || "https://www.tasmentalhealthdirectory.com.au"
 
 if (!STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY environment variable is required")
@@ -197,7 +198,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
                   <p><strong>Next Billing Date:</strong> ${new Date(subscription.current_period_end * 1000).toLocaleDateString('en-AU', { dateStyle: 'long' })}</p>
                   <p>Your listing is now featured and will appear higher in search results.</p>
                   <p style="text-align: center;">
-                    <a href="${Deno.env.get('APP_URL') || 'https://www.tasmentalhealthdirectory.com.au'}/dashboard" class="button">Manage Subscription</a>
+                    <a href="${APP_URL}/dashboard" class="button">Manage Subscription</a>
                   </p>
                 </div>
                 <div class="footer">
