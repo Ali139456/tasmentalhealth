@@ -28,6 +28,66 @@ export function Dashboard() {
   useEffect(() => {
     if (user) {
       fetchData()
+      
+      // Set up real-time subscription to listen for listing changes
+      const channel = supabase
+        .channel('listings-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+            schema: 'public',
+            table: 'listings',
+            filter: `user_id=eq.${user.id}`, // Only listen to this user's listings
+          },
+          (payload) => {
+            console.log('Listing change detected:', payload)
+            // Refresh data when any change is detected
+            fetchData()
+            
+            // Show toast notification based on change type
+            if (payload.eventType === 'UPDATE') {
+              const newStatus = payload.new?.status
+              const oldStatus = payload.old?.status
+              
+              if (newStatus !== oldStatus) {
+                if (newStatus === 'approved') {
+                  toast.success('Your listing has been approved!', { duration: 5000 })
+                } else if (newStatus === 'rejected') {
+                  toast.error('Your listing has been rejected. Check your email for details.', { duration: 6000 })
+                } else if (newStatus === 'needs_changes') {
+                  toast('Your listing needs changes. Check your email for details.', { 
+                    icon: '⚠️',
+                    duration: 6000 
+                  })
+                }
+              }
+            }
+          }
+        )
+        .subscribe()
+
+      // Also set up polling as a fallback (refresh every 30 seconds)
+      const pollInterval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          fetchData()
+        }
+      }, 30000) // 30 seconds
+
+      // Refresh when page becomes visible (user switches back to tab)
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          fetchData()
+        }
+      }
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+
+      // Cleanup
+      return () => {
+        supabase.removeChannel(channel)
+        clearInterval(pollInterval)
+        document.removeEventListener('visibilitychange', handleVisibilityChange)
+      }
     }
   }, [user])
 
