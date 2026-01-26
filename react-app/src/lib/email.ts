@@ -126,7 +126,7 @@ export function getAppUrl(): string {
     return window.location.origin
   }
   // Final fallback
-  return 'https://tasmentalhealth.vercel.app'
+  return 'https://www.tasmentalhealthdirectory.com.au'
 }
 
 export function getEmailTemplate(type: string, data: Record<string, any>): { subject: string; html: string } {
