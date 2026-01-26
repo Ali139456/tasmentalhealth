@@ -33,6 +33,7 @@ export function Dashboard() {
   })
   const [updatingAccount, setUpdatingAccount] = useState(false)
   const [userProfile, setUserProfile] = useState<any>(null)
+  const [emailVerified, setEmailVerified] = useState<boolean | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -483,7 +484,7 @@ export function Dashboard() {
       <div className="py-12 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl">
           {/* Email Verification Warning */}
-          {user && !(user as any).email_verified && (
+          {user && emailVerified === false && (
             <div className="mb-6 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <AlertCircle className="w-6 h-6 text-yellow-600" />

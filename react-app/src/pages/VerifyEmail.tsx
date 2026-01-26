@@ -12,8 +12,12 @@ export function VerifyEmail() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { refreshUser } = useAuth()
+  const [hasVerified, setHasVerified] = useState(false) // Prevent multiple verifications
 
   useEffect(() => {
+    // Prevent multiple executions
+    if (hasVerified) return
+
     const verifyEmail = async () => {
       try {
         const token = searchParams.get('token')
@@ -117,15 +121,20 @@ export function VerifyEmail() {
             // Don't fail if this update fails - Supabase auth is already verified
           }
 
+          setHasVerified(true)
           setSuccess(true)
-          toast.success('Email verified successfully!')
+          
+          // Only show toast once
+          if (!hasVerified) {
+            toast.success('Email verified successfully!', { id: 'email-verified' })
+          }
           
           // Refresh user data
           await refreshUser()
           
-          // Redirect to dashboard after 2 seconds
+          // Redirect to dashboard with verification flag
           setTimeout(() => {
-            navigate('/dashboard')
+            navigate('/dashboard?verified=true')
           }, 2000)
         } else {
           throw new Error('Verification failed. Please try again.')
@@ -140,7 +149,7 @@ export function VerifyEmail() {
     }
 
     verifyEmail()
-  }, [searchParams, navigate, refreshUser])
+  }, [searchParams, navigate, refreshUser, hasVerified])
 
   if (loading) {
     return (
