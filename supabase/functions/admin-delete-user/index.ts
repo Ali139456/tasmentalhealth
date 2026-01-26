@@ -29,8 +29,13 @@ const corsResponse = (body: any, status = 200) => {
 }
 
 serve(async (req) => {
+  console.log('=== admin-delete-user function called ===')
+  console.log('Method:', req.method)
+  console.log('URL:', req.url)
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
+    console.log('Handling OPTIONS preflight request')
     return new Response("ok", {
       status: 200,
       headers: corsHeaders,
@@ -38,8 +43,10 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Processing DELETE request')
     // Get the authorization header
     const authHeader = req.headers.get("Authorization")
+    console.log('Authorization header exists:', !!authHeader)
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: "Missing authorization header" }),
@@ -81,9 +88,12 @@ serve(async (req) => {
       )
     }
 
-    const { userId } = await req.json()
+    const requestBody = await req.json()
+    console.log('Request body:', requestBody)
+    const { userId } = requestBody
 
     if (!userId) {
+      console.error('Missing userId in request')
       return new Response(
         JSON.stringify({ error: "Missing userId" }),
         {

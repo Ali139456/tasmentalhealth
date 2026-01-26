@@ -573,6 +573,12 @@ export function Admin() {
 
       const functionUrl = `${supabaseUrl}/functions/v1/admin-delete-user`
 
+      console.log('Calling admin-delete-user function:', {
+        functionUrl,
+        userId,
+        hasSession: !!session
+      })
+
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: {
@@ -582,6 +588,9 @@ export function Admin() {
         },
         body: JSON.stringify({ userId }),
       })
+
+      console.log('Function response status:', response.status)
+      console.log('Function response ok:', response.ok)
 
       // Check if function doesn't exist (404) or CORS issue
       if (response.status === 404) {
@@ -604,6 +613,7 @@ export function Admin() {
 
       // Parse response to check email status
       const result = await response.json()
+      console.log('Function response data:', result)
       
       await fetchData()
       await fetchCounts()
