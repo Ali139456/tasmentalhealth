@@ -230,7 +230,7 @@ export function VerifyEmail() {
 
       toast.loading('Sending verification email...', { id: 'resend-verification' })
       
-      const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
+      const { error: functionError } = await supabase.functions.invoke('send-verification-email', {
         body: { email: user.email }
       })
       
