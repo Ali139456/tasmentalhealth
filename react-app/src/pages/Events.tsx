@@ -143,11 +143,9 @@ export function Events() {
           </div>
 
           {/* Coming Soon Card */}
-          <div className="relative rounded-2xl shadow-lg mb-8 overflow-hidden" style={{
-            background: 'linear-gradient(to right, rgb(20 184 166), rgb(34 211 238), rgb(168 85 247))',
-            padding: '2px'
-          }}>
-            <div className="bg-white rounded-2xl p-8 sm:p-12 h-full">
+          <div className="bg-white rounded-2xl shadow-lg mb-8 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 via-primary-400 to-primary-500"></div>
+            <div className="p-8 sm:p-12 h-full">
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-primary-100 rounded-full mb-6">
                   <Calendar className="w-10 h-10 text-primary-600" />
@@ -176,7 +174,7 @@ export function Events() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <>

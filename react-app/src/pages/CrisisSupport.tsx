@@ -861,7 +861,7 @@ export function CrisisSupport() {
                                 href={service.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex-1 sm:flex-none px-5 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2"
+                                className="flex-1 sm:flex-none px-5 py-3 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2"
                               >
                                 <Globe className="w-4 h-4" />
                                 Website
@@ -884,7 +884,7 @@ export function CrisisSupport() {
                   </div>
                   <div className="space-y-4 sm:space-y-6">
                     {stateData[selectedState].safeHavens!.map((haven, idx) => (
-                      <div key={idx} className="bg-gradient-to-br from-blue-50 to-white rounded-xl p-5 sm:p-6 border border-blue-200 hover:border-blue-300 transition-all shadow-md">
+                      <div key={idx} className="bg-gradient-to-br from-primary-50 to-white rounded-xl p-5 sm:p-6 border border-primary-200 hover:border-primary-300 transition-all shadow-md">
                         <h5 className="font-bold text-gray-900 mb-2 text-lg sm:text-xl">{haven.name}</h5>
                         <p className="text-sm sm:text-base text-gray-700 mb-3">
                           {haven.description}
@@ -898,7 +898,7 @@ export function CrisisSupport() {
                             href={haven.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
+                            className="inline-flex items-center gap-2 px-5 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
                           >
                             <Globe className="w-4 h-4" />
                             Website
