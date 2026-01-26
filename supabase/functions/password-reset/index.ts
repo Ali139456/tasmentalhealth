@@ -77,7 +77,7 @@ serve(async (req) => {
 
     // Extract the reset link from the response
     // The generateLink response structure: { properties: { action_link: string } }
-    const resetLink = resetData.properties?.action_link
+    let resetLink = resetData.properties?.action_link
 
     if (!resetLink) {
       console.error("No reset link in response:", resetData)
@@ -90,7 +90,31 @@ serve(async (req) => {
       )
     }
 
-    console.log("Reset link generated successfully")
+    // Extract the token from the generated link and construct our own URL
+    // This ensures we use the production URL, not Supabase's default redirect
+    try {
+      const url = new URL(resetLink)
+      const accessToken = url.searchParams.get('access_token')
+      const refreshToken = url.searchParams.get('refresh_token')
+      const type = url.searchParams.get('type')
+      
+      if (accessToken && refreshToken && type === 'recovery') {
+        // Construct our own reset link with production URL
+        resetLink = `${safeRedirectUrl}?access_token=${accessToken}&refresh_token=${refreshToken}&type=${type}`
+        console.log("Constructed custom reset link with production URL")
+      } else {
+        console.log("Using original reset link from Supabase")
+      }
+    } catch (urlError) {
+      console.error("Error parsing reset link URL:", urlError)
+      // If URL parsing fails, try to replace localhost in the original link
+      if (resetLink.includes('localhost')) {
+        resetLink = resetLink.replace(/https?:\/\/[^/]+/, safeRedirectUrl.split('/reset-password')[0])
+        console.log("Replaced localhost in reset link")
+      }
+    }
+
+    console.log("Reset link generated successfully:", resetLink.substring(0, 100) + "...")
 
     // Send password reset email
     const emailHtml = `
