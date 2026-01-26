@@ -6,6 +6,7 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")
 const FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") || "Tasmanian Mental Health Directory <noreply@tasmentalhealthdirectory.com.au>"
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+const APP_URL = Deno.env.get("APP_URL") || "https://tasmentalhealthdirectory.com.au"
 
 if (!RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY environment variable is required")
@@ -45,11 +46,21 @@ serve(async (req) => {
     }
 
     // Generate password reset token using Supabase Admin API
+    // Always use production URL, never localhost
+    const finalRedirectUrl = redirectUrl || `${APP_URL}/reset-password`
+    
+    // Ensure we never use localhost
+    const safeRedirectUrl = finalRedirectUrl.includes('localhost') 
+      ? `${APP_URL}/reset-password`
+      : finalRedirectUrl
+    
+    console.log("Generating reset link with redirect URL:", safeRedirectUrl)
+    
     const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
       type: 'recovery',
       email: email,
       options: {
-        redirectTo: redirectUrl || `${req.headers.get("origin") || "https://tasmentalhealthdirectory.com.au"}/reset-password`,
+        redirectTo: safeRedirectUrl,
       }
     })
 

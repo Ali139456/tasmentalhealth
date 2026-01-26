@@ -126,10 +126,16 @@ export function Dashboard() {
     setPasswordLoading(true)
     try {
       // Use our custom password reset Edge Function via Supabase client
+      // Always use production URL for password reset links (not localhost)
+      const appUrl = import.meta.env.VITE_APP_URL || 'https://tasmentalhealthdirectory.com.au'
+      const redirectUrl = window.location.hostname === 'localhost' 
+        ? `${appUrl}/reset-password`
+        : `${window.location.origin}/reset-password`
+      
       const { data, error } = await supabase.functions.invoke('password-reset', {
         body: {
           email: user.email,
-          redirectUrl: `${window.location.origin}/reset-password`,
+          redirectUrl: redirectUrl,
         },
       })
 
