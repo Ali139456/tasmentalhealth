@@ -105,17 +105,32 @@ serve(async (req) => {
     }
 
     // Get user email before deletion
+    console.log('Fetching user data for deletion, userId:', userId)
     const { data: userToDelete, error: getUserError } = await supabase.auth.admin.getUserById(userId)
+    
+    if (getUserError) {
+      console.error('Error fetching user data:', getUserError)
+    }
+    
     const userEmail = userToDelete?.user?.email
+    console.log('User email retrieved:', userEmail)
+    console.log('RESEND_API_KEY exists:', !!RESEND_API_KEY)
+
+    // Track if email was sent
+    let emailSent = false
+    let emailError: string | null = null
 
     // Send deletion email to user before deleting (if email exists and Resend is configured)
-    if (userEmail && RESEND_API_KEY) {
+    if (!userEmail) {
+      console.warn('No user email found, skipping deletion email')
+    } else if (!RESEND_API_KEY) {
+      console.warn('RESEND_API_KEY not configured, skipping deletion email')
+      emailError = 'RESEND_API_KEY not configured in Edge Function secrets'
+    } else {
       try {
+        console.log('Attempting to send deletion email to:', userEmail)
         const resend = new Resend(RESEND_API_KEY)
         const userName = userEmail.split('@')[0]
-        const appUrl = SUPABASE_URL.includes('localhost') 
-          ? 'http://localhost:5173' 
-          : 'https://tasmentalhealthdirectory.com.au'
 
         const emailHtml = `
           <!DOCTYPE html>
@@ -159,15 +174,26 @@ serve(async (req) => {
           </html>
         `
 
-        await resend.emails.send({
+        const emailResult = await resend.emails.send({
           from: FROM_EMAIL,
           to: userEmail,
           subject: 'Your Account Has Been Deleted - Tasmanian Mental Health Directory',
           html: emailHtml,
         })
-        console.log('Deletion email sent to user:', userEmail)
-      } catch (emailError) {
-        console.error('Error sending deletion email:', emailError)
+        
+        if (emailResult.error) {
+          console.error('Resend API error:', emailResult.error)
+          emailError = emailResult.error.message || 'Failed to send email'
+          throw emailResult.error
+        }
+        
+        emailSent = true
+        console.log('Deletion email sent successfully to:', userEmail)
+        console.log('Email ID:', emailResult.data?.id)
+      } catch (err: any) {
+        console.error('Error sending deletion email:', err)
+        console.error('Error details:', JSON.stringify(err, null, 2))
+        emailError = err?.message || 'Unknown error sending email'
         // Continue with deletion even if email fails
       }
     }
@@ -187,7 +213,12 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: "User deleted successfully" }),
+      JSON.stringify({ 
+        success: true, 
+        message: "User deleted successfully",
+        emailSent,
+        emailError: emailError || null
+      }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

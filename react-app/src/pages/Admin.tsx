@@ -602,10 +602,19 @@ export function Admin() {
         throw new Error(errorData.error || `HTTP ${response.status}: Failed to delete user`)
       }
 
-      // Response is successful, no need to parse JSON
+      // Parse response to check email status
+      const result = await response.json()
+      
       await fetchData()
       await fetchCounts()
-      toast.success('User deleted successfully!', { id: deleteToast })
+      
+      if (result.emailSent) {
+        toast.success('User deleted successfully! Deletion email sent to user.', { id: deleteToast })
+      } else if (result.emailError) {
+        toast.success('User deleted successfully, but email could not be sent: ' + result.emailError, { id: deleteToast, duration: 8000 })
+      } else {
+        toast.success('User deleted successfully!', { id: deleteToast })
+      }
     } catch (error: any) {
       console.error('Error deleting user:', error)
       const errorMessage = error.message || 'Failed to delete user. Please ensure the Edge Function is deployed.'
