@@ -49,18 +49,32 @@ serve(async (req) => {
       )
     }
 
+    const finalFromEmail = from || FROM_EMAIL
     console.log("Sending email via Resend...")
+    console.log("Using FROM_EMAIL:", finalFromEmail)
+    console.log("Email data (without html):", { 
+      from: finalFromEmail, 
+      to, 
+      subject, 
+      htmlLength: html?.length || 0 
+    })
+    
     const { data, error } = await resend.emails.send({
-      from: from || FROM_EMAIL,
+      from: finalFromEmail,
       to,
       subject,
       html,
     })
 
     if (error) {
-      console.error("Resend error:", error)
+      console.error("Resend API error:", JSON.stringify(error, null, 2))
       return new Response(
-        JSON.stringify({ error: error.message || "Failed to send email", details: error }),
+        JSON.stringify({ 
+          error: error.message || "Failed to send email", 
+          details: error,
+          fromEmail: finalFromEmail,
+          toEmail: to
+        }),
         {
           status: 400,
           headers: {
