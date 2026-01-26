@@ -101,6 +101,57 @@ export function Dashboard() {
     }
   }, [user])
 
+  // Check email verification status
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      if (!user?.id) {
+        setEmailVerified(null)
+        return
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('email_verified')
+          .eq('id', user.id)
+          .maybeSingle()
+
+        if (error) {
+          console.error('Error checking email verification:', error)
+          // Fallback to auth user email_confirmed_at
+          setEmailVerified(!!user.email_confirmed_at)
+        } else {
+          setEmailVerified(data?.email_verified || !!user.email_confirmed_at)
+        }
+      } catch (err) {
+        console.error('Error checking email verification:', err)
+        setEmailVerified(!!user.email_confirmed_at)
+      }
+    }
+
+    checkEmailVerification()
+  }, [user])
+
+  // Check if we just verified email (from URL param)
+  useEffect(() => {
+    const verified = searchParams.get('verified')
+    if (verified === 'true') {
+      // Refresh email verification status
+      if (user?.id) {
+        supabase
+          .from('users')
+          .select('email_verified')
+          .eq('id', user.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            setEmailVerified(data?.email_verified || false)
+          })
+      }
+      // Remove the param from URL
+      setSearchParams({}, { replace: true })
+    }
+  }, [searchParams, user, setSearchParams])
+
   // Check for success/cancel messages from Stripe redirect
   useEffect(() => {
     const success = searchParams.get('success')
