@@ -2,7 +2,7 @@
 // See BACKEND_SETUP.md for implementation options
 import { supabase } from './supabase'
 
-// Email validation function
+// Email validation function - simplified to avoid blocking valid emails
 export function isValidEmail(email: string): boolean {
   if (!email || typeof email !== 'string') return false
   
@@ -10,17 +10,10 @@ export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email)) return false
   
-  // Check for common fake/invalid email patterns
+  // Check for obviously invalid patterns (less strict)
   const invalidPatterns = [
-    /^test@/i,
-    /^fake@/i,
-    /^temp@/i,
-    /@test\./i,
     /@example\./i,
-    /@fake\./i,
-    /@temp\./i,
     /@localhost/i,
-    /@123\./i,
     /^[a-z0-9]+@[a-z0-9]+$/i, // Missing TLD (e.g., test@test)
   ]
   
@@ -45,21 +38,28 @@ export function isValidEmail(email: string): boolean {
   return true
 }
 
-// Get admin email addresses
+// Get admin email addresses - with timeout to prevent hanging
 export async function getAdminEmails(): Promise<string[]> {
   try {
-    const { data, error } = await supabase
+    // Add timeout to prevent hanging
+    const queryPromise = supabase
       .from('users')
       .select('email')
       .eq('role', 'admin')
       .eq('email_verified', true)
+
+    const timeoutPromise = new Promise<{ data: null; error: { message: 'Timeout' } }>((resolve) => 
+      setTimeout(() => resolve({ data: null, error: { message: 'Timeout' } }), 5000)
+    )
+
+    const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any
 
     if (error) {
       console.error('Error fetching admin emails:', error)
       return []
     }
 
-    return data?.map(user => user.email).filter(Boolean) || []
+    return data?.map((user: any) => user.email).filter(Boolean) || []
   } catch (err) {
     console.error('Error fetching admin emails:', err)
     return []

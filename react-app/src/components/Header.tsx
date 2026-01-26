@@ -16,26 +16,15 @@ export function Header() {
 
   const handleSignOut = async () => {
     try {
-      console.log('Header: Initiating sign out...')
       await signOut()
       setMobileMenuOpen(false)
-      // Navigate first, then reload
       navigate('/')
-      // Small delay to ensure navigation happens before reload
-      setTimeout(() => {
-        window.location.href = '/' // Use href instead of reload for more reliable redirect
-      }, 100)
+      window.location.reload() // Force reload to clear all state
     } catch (error) {
       console.error('Error signing out:', error)
-      // Force clear everything and navigate
-      setMobileMenuOpen(false)
-      // Clear session storage
-      sessionStorage.clear()
-      // Navigate and reload
+      // Still navigate even if there's an error
       navigate('/')
-      setTimeout(() => {
-        window.location.href = '/'
-      }, 100)
+      window.location.reload()
     }
   }
 

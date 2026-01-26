@@ -55,55 +55,82 @@ export function Login() {
         }
 
         if (authData.user) {
-          // Send welcome email
-          try {
-            const template = getEmailTemplate('welcome', {
-              email: authData.user.email,
-              userName: authData.user.email?.split('@')[0],
-              appUrl: window.location.origin
-            })
-            
-            console.log('Sending welcome email to:', authData.user.email)
-            const emailResult = await sendEmail({
-              to: authData.user.email!,
-              subject: template.subject,
-              html: template.html
-            })
-            
-            if (emailResult.success) {
-              console.log('Welcome email sent successfully')
-            } else {
-              console.error('Failed to send welcome email:', emailResult.error)
-            }
-          } catch (err) {
-            console.error('Error preparing/sending welcome email:', err)
-          }
-
-          // Send admin notification
-          try {
-            const adminEmails = await getAdminEmails()
-            if (adminEmails.length > 0) {
-              const adminTemplate = getEmailTemplate('admin_user_signup', {
-                email: authData.user.email,
-                userId: authData.user.id,
-                signupDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
-              })
-
-              // Send to all admins
-              await Promise.all(adminEmails.map(adminEmail => 
-                sendEmail({
-                  to: adminEmail,
-                  subject: adminTemplate.subject,
-                  html: adminTemplate.html
+          // Send emails asynchronously (non-blocking) - don't wait for them
+          // This prevents signup from hanging if email service is slow or unavailable
+          Promise.all([
+            // Send welcome email
+            (async () => {
+              try {
+                const template = getEmailTemplate('welcome', {
+                  email: authData.user.email,
+                  userName: authData.user.email?.split('@')[0],
+                  appUrl: window.location.origin
                 })
-              ))
-              console.log('Admin notification sent for new user signup')
-            }
-          } catch (err) {
-            console.error('Error sending admin notification:', err)
-            // Don't fail signup if admin notification fails
-          }
+                
+                console.log('Sending welcome email to:', authData.user.email)
+                const emailResult = await Promise.race([
+                  sendEmail({
+                    to: authData.user.email!,
+                    subject: template.subject,
+                    html: template.html
+                  }),
+                  new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Email timeout')), 10000)
+                  )
+                ]) as any
+                
+                if (emailResult?.success) {
+                  console.log('Welcome email sent successfully')
+                } else {
+                  console.error('Failed to send welcome email:', emailResult?.error)
+                }
+              } catch (err) {
+                console.error('Error sending welcome email:', err)
+                // Don't block signup if email fails
+              }
+            })(),
+            // Send admin notification
+            (async () => {
+              try {
+                const adminEmails = await Promise.race([
+                  getAdminEmails(),
+                  new Promise<string[]>((resolve) => 
+                    setTimeout(() => resolve([]), 5000)
+                  )
+                ]) as string[]
+                
+                if (adminEmails.length > 0) {
+                  const adminTemplate = getEmailTemplate('admin_user_signup', {
+                    email: authData.user.email,
+                    userId: authData.user.id,
+                    signupDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
+                  })
 
+                  // Send to all admins with timeout
+                  await Promise.race([
+                    Promise.all(adminEmails.map(adminEmail => 
+                      sendEmail({
+                        to: adminEmail,
+                        subject: adminTemplate.subject,
+                        html: adminTemplate.html
+                      })
+                    )),
+                    new Promise((_, reject) => 
+                      setTimeout(() => reject(new Error('Admin email timeout')), 10000)
+                    )
+                  ])
+                  console.log('Admin notification sent for new user signup')
+                }
+              } catch (err) {
+                console.error('Error sending admin notification:', err)
+                // Don't fail signup if admin notification fails
+              }
+            })()
+          ]).catch(err => {
+            console.error('Email sending error (non-blocking):', err)
+          })
+
+          // Complete signup immediately without waiting for emails
           if (authData.user.email_confirmed_at || authData.session) {
             setSuccess('Account created successfully! Signing you in...')
             setTimeout(() => {
@@ -190,7 +217,6 @@ export function Login() {
       } else {
         setError(errorMessage)
       }
-    } finally {
       setLoading(false)
     }
   }
