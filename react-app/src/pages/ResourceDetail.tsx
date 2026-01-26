@@ -21,6 +21,19 @@ interface DatabaseArticle {
   updated_at: string
 }
 
+interface RelatedArticle {
+  id: string
+  title: string
+  slug: string
+  category: string
+  excerpt: string
+  image_url: string | null
+  tags: string[]
+  read_time: number
+  published: boolean
+  created_at: string
+}
+
 // Parse content from database (plain text) into structured format
 function parseContent(content: string): Array<{ heading?: string; paragraphs: string[] }> {
   if (!content) return []
@@ -72,7 +85,7 @@ function parseContent(content: string): Array<{ heading?: string; paragraphs: st
 export function ResourceDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [article, setArticle] = useState<DatabaseArticle | null>(null)
-  const [relatedArticles, setRelatedArticles] = useState<DatabaseArticle[]>([])
+  const [relatedArticles, setRelatedArticles] = useState<RelatedArticle[]>([])
   const [loading, setLoading] = useState(true)
   
   // Fetch article from database
@@ -99,7 +112,7 @@ export function ResourceDetail() {
           setArticle(data)
           
           // Fetch related articles (same category first, then others if needed)
-          let related: DatabaseArticle[] = []
+          let related: RelatedArticle[] = []
           
           // First, try to get articles from the same category
           const { data: sameCategory, error: sameCategoryError } = await supabase
