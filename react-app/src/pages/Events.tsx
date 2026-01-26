@@ -1,15 +1,136 @@
 import { Calendar, Mail, Bell, User, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
+import { supabase } from '../lib/supabase'
+import { sendEmail, getEmailTemplate } from '../lib/email'
 
 export function Events() {
   const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleNotifyMe = (e: React.FormEvent) => {
+  const handleNotifyMe = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement email subscription
-    console.log('Subscribe email:', email)
-    alert('Thank you for subscribing! We\'ll notify you when events launch.')
-    setEmail('')
+    setError('')
+    setSuccess(false)
+    setLoading(true)
+
+    try {
+      // Check if email already exists
+      const { data: existing } = await supabase
+        .from('event_subscriptions')
+        .select('id, is_active')
+        .eq('email', email.toLowerCase().trim())
+        .single()
+
+      if (existing) {
+        if (existing.is_active) {
+          setError('This email is already subscribed to event notifications.')
+          setLoading(false)
+          return
+        } else {
+          // Reactivate subscription
+          const { error: updateError } = await supabase
+            .from('event_subscriptions')
+            .update({ 
+              is_active: true,
+              subscribed_at: new Date().toISOString(),
+              unsubscribed_at: null
+            })
+            .eq('email', email.toLowerCase().trim())
+
+          if (updateError) throw updateError
+        }
+      } else {
+        // Create new subscription
+        const { error: insertError } = await supabase
+          .from('event_subscriptions')
+          .insert({
+            email: email.toLowerCase().trim(),
+            is_active: true
+          })
+
+        if (insertError) throw insertError
+      }
+
+      // Send confirmation email to user
+      try {
+        const userName = email.split('@')[0]
+        const template = getEmailTemplate('event_subscription', {
+          email: email.toLowerCase().trim(),
+          userName,
+          appUrl: window.location.origin
+        })
+
+        await sendEmail({
+          to: email.toLowerCase().trim(),
+          subject: template.subject,
+          html: template.html
+        })
+      } catch (emailErr) {
+        console.error('Failed to send confirmation email:', emailErr)
+        // Don't fail the subscription if email fails
+      }
+
+      // Send notification to admin
+      try {
+        const adminTemplate = getEmailTemplate('event_subscription', {
+          email: 'info@tasmentalhealthdirectory.com.au',
+          userName: 'Admin',
+          appUrl: window.location.origin
+        })
+
+        await sendEmail({
+          to: 'info@tasmentalhealthdirectory.com.au',
+          subject: `New Event Subscription: ${email}`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+                .content { padding: 20px; background: #f9f9f9; }
+                .info-box { background: white; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #2563eb; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h2 style="margin: 0;">New Event Subscription</h2>
+                </div>
+                <div class="content">
+                  <div class="info-box">
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Subscribed At:</strong> ${new Date().toLocaleString('en-AU')}</p>
+                  </div>
+                  <p>A new user has subscribed to event notifications.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `
+        })
+      } catch (adminEmailErr) {
+        console.error('Failed to send admin notification:', adminEmailErr)
+        // Don't fail the subscription if admin email fails
+      }
+
+      setSuccess(true)
+      setEmail('')
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSuccess(false)
+      }, 5000)
+    } catch (err: any) {
+      console.error('Subscription error:', err)
+      setError(err.message || 'Failed to subscribe. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -54,17 +175,44 @@ export function Events() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
                       required
-                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 text-gray-900"
+                      disabled={loading}
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
+                    disabled={loading}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Bell className="w-5 h-5" />
-                    Notify Me
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Subscribing...
+                      </>
+                    ) : (
+                      <>
+                        <Bell className="w-5 h-5" />
+                        Notify Me
+                      </>
+                    )}
                   </button>
                 </form>
+
+                {/* Success Message */}
+                {success && (
+                  <div className="mt-4 p-4 bg-green-50 border-2 border-green-200 rounded-xl text-center">
+                    <p className="text-green-800 font-semibold">
+                      ✓ Thank you for subscribing! We'll notify you when events launch.
+                    </p>
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                  <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-center">
+                    <p className="text-red-800 font-semibold">{error}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

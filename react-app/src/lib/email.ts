@@ -518,6 +518,49 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
         </body>
         </html>
       `
+    }),
+    event_subscription: (data) => ({
+      subject: 'You\'re Subscribed to Event Notifications - Tasmanian Mental Health Directory',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>${baseStyles}</style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0;">Event Notifications</h1>
+            </div>
+            <div class="content">
+              <div class="success">
+                <h2 style="margin: 0;">✓ You're Subscribed!</h2>
+              </div>
+              <p>Hello${data.userName ? ` ${data.userName}` : ''},</p>
+              <p>Thank you for subscribing to event notifications from the <strong>Tasmanian Mental Health Directory</strong>!</p>
+              <p>We're currently working hard to bring you a comprehensive calendar of mental health events, including:</p>
+              <ul>
+                <li>Workshops and training sessions</li>
+                <li>Support groups and community meetings</li>
+                <li>Mental health seminars and conferences</li>
+                <li>Professional development opportunities</li>
+              </ul>
+              <p>You'll be among the first to know when our event calendar launches. We'll notify you at <strong>${data.email}</strong> as soon as events become available.</p>
+              <p style="text-align: center;">
+                <a href="${appUrl}/events" class="button">Visit Events Page</a>
+              </p>
+              <p>Thank you for your interest in supporting mental health in Tasmania!</p>
+              <p>Best regards,<br>The Tasmanian Mental Health Directory Team</p>
+            </div>
+            <div class="footer">
+              <p>This email was sent to ${data.email || 'you'}. If you didn't subscribe, please ignore this email.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
     })
   }
 
