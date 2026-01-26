@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') || 'Tasmanian Mental Health Directory <noreply@www.tasmentalhealthdirectory.com.au>'
+const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') || 'Tasmanian Mental Health Directory <noreply@tasmentalhealthdirectory.com.au>'
 const APP_URL = Deno.env.get('APP_URL') || 'https://www.tasmentalhealthdirectory.com.au'
 
 const corsHeaders = {

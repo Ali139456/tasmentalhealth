@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { Resend } from "https://esm.sh/resend@2.0.0"
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")
-const FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") || "Tasmanian Mental Health Directory <noreply@www.tasmentalhealthdirectory.com.au>"
+const FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") || "Tasmanian Mental Health Directory <noreply@tasmentalhealthdirectory.com.au>"
 
 if (!RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY environment variable is required")
