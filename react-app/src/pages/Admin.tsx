@@ -289,19 +289,19 @@ export function Admin() {
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
       const filePath = `articles/${fileName}`
 
-      // Try 'articles' bucket first, fallback to 'listings' if it doesn't exist
-      let bucketName = 'articles'
+      // Try 'Articles' bucket first (case-sensitive), fallback to 'listings' if it doesn't exist
+      let bucketName = 'Articles'
       let uploadError = null
 
       const { error: articlesError } = await supabase.storage
-        .from('articles')
+        .from('Articles')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
         })
 
       if (articlesError) {
-        // If articles bucket doesn't exist, try listings bucket
+        // If Articles bucket doesn't exist, try listings bucket
         if (articlesError.message?.includes('not found') || articlesError.message?.includes('Bucket')) {
           bucketName = 'listings'
           const { error: listingsError } = await supabase.storage
@@ -329,7 +329,7 @@ export function Admin() {
       console.error('Error uploading image:', err)
       const errorMessage = err.message || 'Failed to upload image'
       if (errorMessage.includes('Bucket not found') || errorMessage.includes('not found')) {
-        toast.error('Storage bucket not found. Please create an "articles" or "listings" bucket in Supabase Storage.')
+        toast.error('Storage bucket not found. Please create an "Articles" or "listings" bucket in Supabase Storage.')
       } else {
         toast.error(errorMessage)
       }
