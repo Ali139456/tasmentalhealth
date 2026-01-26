@@ -494,14 +494,46 @@ export function Dashboard() {
               </div>
               <button
                 onClick={async () => {
-                  const { error } = await supabase.auth.resend({
-                    type: 'signup',
-                    email: user.email || ''
-                  })
-                  if (error) {
-                    toast.error('Failed to resend verification email')
-                  } else {
-                    toast.success('Verification email sent! Check your inbox.')
+                  try {
+                    // Try Supabase's built-in resend first
+                    const { error: resendError } = await supabase.auth.resend({
+                      type: 'signup',
+                      email: user.email || ''
+                    })
+                    
+                    if (resendError) {
+                      console.error('Supabase resend error:', resendError)
+                      // Fallback: Send custom verification email via Edge Function
+                      const { data: verifyData, error: verifyError } = await supabase.auth.generateLink({
+                        type: 'signup',
+                        email: user.email || ''
+                      })
+                      
+                      if (verifyError) {
+                        throw verifyError
+                      }
+                      
+                      // Send custom verification email
+                      const { sendEmail, getEmailTemplate } = await import('../lib/email')
+                      const template = getEmailTemplate('signup_verification', {
+                        email: user.email || '',
+                        userName: user.email?.split('@')[0] || '',
+                        verificationUrl: verifyData.properties?.action_link || `${window.location.origin}/dashboard`
+                      })
+                      
+                      await sendEmail({
+                        to: user.email || '',
+                        subject: template.subject,
+                        html: template.html
+                      })
+                      
+                      toast.success('Verification email sent! Check your inbox.')
+                    } else {
+                      toast.success('Verification email sent! Check your inbox.')
+                    }
+                  } catch (error: any) {
+                    console.error('Error sending verification email:', error)
+                    toast.error(error.message || 'Failed to send verification email. Please try again.')
                   }
                 }}
                 className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-semibold"
