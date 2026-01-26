@@ -4,10 +4,13 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') || 'Tasmanian Mental Health Directory <noreply@tasmentalhealthdirectory.com.au>'
 const APP_URL = Deno.env.get('APP_URL') || 'https://www.tasmentalhealthdirectory.com.au'
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || ''
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
 serve(async (req) => {
@@ -17,50 +20,18 @@ serve(async (req) => {
   }
 
   try {
-    // Get authorization header
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Missing authorization header' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
-    }
-
-    // Create Supabase client with service role key
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+    console.log('send-verification-email function called')
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
-
-    // Verify the user's token
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-    
-    if (authError || !user) {
+    // Check required environment variables
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase configuration:', {
+        hasUrl: !!SUPABASE_URL,
+        hasServiceKey: !!SUPABASE_SERVICE_ROLE_KEY
+      })
       return new Response(
-        JSON.stringify({ error: 'Invalid or expired token' }),
+        JSON.stringify({ error: 'Server configuration error' }),
         {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
-    }
-
-    const { email } = await req.json()
-    
-    if (!email || email !== user.email) {
-      return new Response(
-        JSON.stringify({ error: 'Email mismatch' }),
-        {
-          status: 400,
+          status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       )
@@ -77,7 +48,60 @@ serve(async (req) => {
       )
     }
 
+    // Get authorization header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      console.error('Missing authorization header')
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    // Create Supabase client with service role key
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+
+    // Verify the user's token
+    const token = authHeader.replace('Bearer ', '')
+    console.log('Verifying user token...')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError)
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token', details: authError?.message }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    console.log('User verified:', user.email)
+    const { email } = await req.json()
+    console.log('Request email:', email, 'User email:', user.email)
+    
+    if (!email || email !== user.email) {
+      console.error('Email mismatch:', { requestEmail: email, userEmail: user.email })
+      return new Response(
+        JSON.stringify({ error: 'Email mismatch' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
     // Generate verification link using admin API
+    console.log('Generating verification link for:', email)
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'signup',
       email: email,
@@ -86,10 +110,24 @@ serve(async (req) => {
       }
     })
 
-    if (linkError || !linkData?.properties?.action_link) {
-      console.error('Error generating verification link:', linkError)
+    if (linkError) {
+      console.error('Error generating verification link:', JSON.stringify(linkError, null, 2))
       return new Response(
-        JSON.stringify({ error: 'Failed to generate verification link' }),
+        JSON.stringify({ 
+          error: 'Failed to generate verification link', 
+          details: linkError.message 
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    if (!linkData?.properties?.action_link) {
+      console.error('No action_link in response:', linkData)
+      return new Response(
+        JSON.stringify({ error: 'Failed to generate verification link - no link in response' }),
         {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -116,6 +154,9 @@ serve(async (req) => {
     }
 
     // Send email via Resend
+    console.log('Sending email via Resend to:', email)
+    console.log('Using FROM_EMAIL:', FROM_EMAIL)
+    
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -173,8 +214,13 @@ serve(async (req) => {
     if (!resendResponse.ok) {
       const errorData = await resendResponse.text()
       console.error('Resend API error:', errorData)
+      console.error('Resend response status:', resendResponse.status)
       return new Response(
-        JSON.stringify({ error: 'Failed to send email', details: errorData }),
+        JSON.stringify({ 
+          error: 'Failed to send email', 
+          details: errorData,
+          status: resendResponse.status
+        }),
         {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
