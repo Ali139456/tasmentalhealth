@@ -249,7 +249,7 @@ BEGIN
     NEW.id,
     NEW.email,
     'lister',
-    NEW.email_confirmed_at IS NOT NULL
+    FALSE  -- Always start as unverified, even if email_confirmed_at exists
   );
   RETURN NEW;
 END;

@@ -118,14 +118,19 @@ export function Dashboard() {
 
         if (error) {
           console.error('Error checking email verification:', error)
-          // Fallback to auth user email_confirmed_at
-          setEmailVerified(!!user.email_confirmed_at)
+          // Fallback: check if user exists, if not, default to false (unverified)
+          setEmailVerified(false)
+        } else if (data) {
+          // Use the email_verified value from users table
+          setEmailVerified(data.email_verified === true)
         } else {
-          setEmailVerified(data?.email_verified || !!user.email_confirmed_at)
+          // User record doesn't exist yet, default to false (unverified)
+          setEmailVerified(false)
         }
       } catch (err) {
         console.error('Error checking email verification:', err)
-        setEmailVerified(!!user.email_confirmed_at)
+        // On error, default to false (unverified)
+        setEmailVerified(false)
       }
     }
 
