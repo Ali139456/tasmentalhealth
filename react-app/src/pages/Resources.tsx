@@ -4,7 +4,6 @@ import { Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { RESOURCES } from '../lib/resourceContent'
 
-const BASE_CATEGORIES = ['All', 'For People Seeking Support', 'For Professionals & Clinics', 'For Families & Carers', 'For Professionals & Employers']
 const RESOURCES_PER_PAGE = 6
 
 interface Article {

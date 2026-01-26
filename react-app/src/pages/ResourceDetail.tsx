@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Clock, Calendar, Users, Share2, BookOpen } from 'lucide-react'
-import { RESOURCES } from '../lib/resourceContent'
+import { RESOURCES, type ResourceContent } from '../lib/resourceContent'
 import { supabase } from '../lib/supabase'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -126,17 +126,18 @@ export function ResourceDetail() {
   const staticResource = RESOURCES.find(r => r.slug === slug)
   
   // Use database article if available, otherwise use static resource
-  const resource = article ? {
+  const resource: ResourceContent | undefined = article ? {
     id: article.id as any, // Convert string to any for compatibility with static resources
     title: article.title,
     slug: article.slug,
     category: article.category,
     excerpt: article.excerpt,
-    image: article.image_url || undefined,
+    image: article.image_url || '/images/resource-ocean.jpg',
     tags: article.tags || [],
     readTime: article.read_time,
     updated: format(new Date(article.updated_at || article.created_at), 'MMMM yyyy'),
-    content: parseContent(article.content)
+    content: parseContent(article.content),
+    audience: undefined // Database articles don't have audience field
   } : staticResource
 
   if (loading) {
