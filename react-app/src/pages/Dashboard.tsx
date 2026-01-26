@@ -125,29 +125,20 @@ export function Dashboard() {
 
     setPasswordLoading(true)
     try {
-      // Use our custom password reset Edge Function
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-      const functionUrl = `${supabaseUrl}/functions/v1/password-reset`
-
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-        },
-        body: JSON.stringify({
+      // Use our custom password reset Edge Function via Supabase client
+      const { data, error } = await supabase.functions.invoke('password-reset', {
+        body: {
           email: user.email,
           redirectUrl: `${window.location.origin}/reset-password`,
-        }),
+        },
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to send password reset email')
+      if (error) {
+        console.error('Password reset function error:', error)
+        throw new Error(error.message || 'Failed to send password reset email')
       }
 
-      const result = await response.json()
-      console.log('Password reset email sent:', result)
+      console.log('Password reset email sent:', data)
 
       toast.success('Password reset email sent! Please check your inbox and click the link to change your password.')
       setShowPasswordModal(false)

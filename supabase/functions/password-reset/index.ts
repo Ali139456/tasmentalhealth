@@ -64,20 +64,12 @@ serve(async (req) => {
       )
     }
 
-    if (!resetData?.properties?.hashed_token) {
-      return new Response(
-        JSON.stringify({ error: "Failed to generate reset link" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      )
-    }
-
     // Extract the reset link from the response
-    const resetLink = resetData.properties.action_link
+    // The generateLink response structure: { properties: { action_link: string } }
+    const resetLink = resetData.properties?.action_link
 
     if (!resetLink) {
+      console.error("No reset link in response:", resetData)
       return new Response(
         JSON.stringify({ error: "Failed to generate reset link" }),
         {
@@ -86,6 +78,8 @@ serve(async (req) => {
         }
       )
     }
+
+    console.log("Reset link generated successfully")
 
     // Send password reset email
     const emailHtml = `
