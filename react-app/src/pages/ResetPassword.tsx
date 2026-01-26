@@ -73,7 +73,7 @@ export function ResetPassword() {
           if (sessionError || !session.session) {
             throw new Error('Invalid or expired reset link. Please request a new password reset.')
           }
-          sessionData = { user: session.user, session: session.session }
+          sessionData = { user: session.session.user, session: session.session }
         } else {
           sessionData = verifyData
         }
