@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save, Lock } from 'lucide-react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
-import { sendEmail, getEmailTemplate } from '../lib/email'
 import toast from 'react-hot-toast'
 
 export function Dashboard() {

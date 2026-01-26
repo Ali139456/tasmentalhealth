@@ -61,6 +61,8 @@ export function Login() {
             // Send welcome email
             (async () => {
               try {
+                if (!authData.user?.email) return
+                
                 const template = getEmailTemplate('welcome', {
                   email: authData.user.email,
                   userName: authData.user.email?.split('@')[0],
@@ -70,7 +72,7 @@ export function Login() {
                 console.log('Sending welcome email to:', authData.user.email)
                 const emailResult = await Promise.race([
                   sendEmail({
-                    to: authData.user.email!,
+                    to: authData.user.email,
                     subject: template.subject,
                     html: template.html
                   }),
@@ -92,6 +94,8 @@ export function Login() {
             // Send admin notification
             (async () => {
               try {
+                if (!authData.user?.email || !authData.user?.id) return
+                
                 const adminEmails = await Promise.race([
                   getAdminEmails(),
                   new Promise<string[]>((resolve) => 

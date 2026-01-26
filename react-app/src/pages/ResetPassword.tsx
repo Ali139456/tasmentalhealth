@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { Lock, AlertCircle, CheckCircle, ArrowLeft, Shield } from 'lucide-react'
+import { Lock, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 import toast from 'react-hot-toast'
 
@@ -14,7 +14,7 @@ export function ResetPassword() {
   const [success, setSuccess] = useState(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { user, refreshUser } = useAuth()
+  const { refreshUser } = useAuth()
 
   useEffect(() => {
     // Check if we have the access token from the reset link
