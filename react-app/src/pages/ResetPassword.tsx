@@ -19,18 +19,59 @@ export function ResetPassword() {
   useEffect(() => {
     // Check if we have the token from the reset link
     // Supabase verify endpoint uses 'token', direct links use 'access_token'
+    // Also check hash fragments (Supabase might use #access_token=...)
     const token = searchParams.get('token')
     const accessToken = searchParams.get('access_token')
+    const refreshToken = searchParams.get('refresh_token')
     const type = searchParams.get('type')
     
-    if (!token && !accessToken) {
-      setError('Invalid or expired reset link. Please request a new password reset.')
+    // Check hash fragments too (Supabase sometimes uses hash for tokens)
+    const hash = window.location.hash
+    let hashAccessToken = null
+    let hashRefreshToken = null
+    let hashType = null
+    
+    if (hash) {
+      const hashParams = new URLSearchParams(hash.substring(1))
+      hashAccessToken = hashParams.get('access_token')
+      hashRefreshToken = hashParams.get('refresh_token')
+      hashType = hashParams.get('type')
     }
     
-    // If we have a token from verify endpoint, we need to exchange it for a session
-    if (token && type === 'recovery' && !accessToken) {
-      // The verify endpoint will redirect here, but we need to handle the token
-      // For now, show the form - we'll handle token exchange in handleSubmit
+    // Use hash params if available, otherwise use query params
+    const finalAccessToken = hashAccessToken || accessToken
+    const finalRefreshToken = hashRefreshToken || refreshToken
+    const finalType = hashType || type
+    
+    // If we have tokens, try to set session immediately
+    if (finalAccessToken && finalRefreshToken) {
+      supabase.auth.setSession({
+        access_token: finalAccessToken,
+        refresh_token: finalRefreshToken,
+      }).then(({ error }) => {
+        if (error) {
+          console.error('Error setting session:', error)
+          setError('Invalid or expired reset link. Please request a new password reset.')
+        } else {
+          // Session set successfully, clear error
+          setError('')
+        }
+      })
+    } else if (token && finalType === 'recovery') {
+      // We have a token from verify endpoint, allow form to be shown
+      // Token will be verified in handleSubmit
+      setError('')
+    } else {
+      // Check if we have an active session (Supabase might have set it via redirect)
+      supabase.auth.getSession().then(({ data: session, error }) => {
+        if (session?.session && !error) {
+          // We have a valid session, allow password reset
+          setError('')
+        } else if (!token && !finalAccessToken) {
+          // No tokens and no session - show error
+          setError('Invalid or expired reset link. Please request a new password reset.')
+        }
+      })
     }
   }, [searchParams])
 
