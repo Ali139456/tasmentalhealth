@@ -141,8 +141,8 @@ export function Login() {
           if (authData.user && !authData.user.email_confirmed_at) {
             // Always use our custom Edge Function for reliable email delivery
             // This runs asynchronously and doesn't block signup
-            const userEmail = authData.user.email || email
-            (async () => {
+            const userEmail: string = authData.user.email || email
+            ;(async () => {
               try {
                 console.log('Sending verification email to:', userEmail)
                 const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
