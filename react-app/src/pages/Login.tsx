@@ -335,6 +335,8 @@ export function Login() {
             type="button"
             onClick={() => {
               setIsSignUp(false)
+              setEmail('')
+              setPassword('')
               setError('')
               setSuccess('')
             }}
@@ -350,6 +352,8 @@ export function Login() {
             type="button"
             onClick={() => {
               setIsSignUp(true)
+              setEmail('')
+              setPassword('')
               setError('')
               setSuccess('')
             }}
@@ -481,7 +485,13 @@ export function Login() {
                   Don't have an account?{' '}
                   <button
                     type="button"
-                    onClick={() => setIsSignUp(true)}
+                    onClick={() => {
+                      setIsSignUp(true)
+                      setEmail('')
+                      setPassword('')
+                      setError('')
+                      setSuccess('')
+                    }}
                     className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
                   >
                     Sign up here
@@ -499,7 +509,13 @@ export function Login() {
                   Already have an account?{' '}
                   <button
                     type="button"
-                    onClick={() => setIsSignUp(false)}
+                    onClick={() => {
+                      setIsSignUp(false)
+                      setEmail('')
+                      setPassword('')
+                      setError('')
+                      setSuccess('')
+                    }}
                     className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
                   >
                     Sign in here
