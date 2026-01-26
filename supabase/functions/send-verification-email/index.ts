@@ -141,20 +141,39 @@ serve(async (req) => {
     const verificationUrl = linkData.properties.action_link
 
     // Extract token from URL if it's a verify endpoint
+    // Magiclink URLs can be in different formats, so we handle multiple cases
     let finalVerificationUrl = verificationUrl
     try {
       const url = new URL(verificationUrl)
+      
+      // Check if it's a Supabase verify endpoint
       if (url.pathname.includes('/auth/v1/verify')) {
         const token = url.searchParams.get('token')
         const type = url.searchParams.get('type')
-        if (token && (type === 'email' || type === 'signup')) {
+        if (token && (type === 'email' || type === 'signup' || type === 'magiclink')) {
           // Construct direct verification URL
           finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(token)}&type=${type}`
         }
+      } 
+      // Check for token_hash (used by magiclink)
+      else if (url.searchParams.has('token_hash')) {
+        const tokenHash = url.searchParams.get('token_hash')
+        const type = url.searchParams.get('type') || 'magiclink'
+        if (tokenHash) {
+          finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(tokenHash)}&type=${type}`
+        }
+      }
+      // If it's already a direct link, use it as-is
+      else if (verificationUrl.includes(APP_URL)) {
+        finalVerificationUrl = verificationUrl
       }
     } catch (urlError) {
       console.error('Error parsing verification URL:', urlError)
+      // Use original URL if parsing fails
+      finalVerificationUrl = verificationUrl
     }
+    
+    console.log('Final verification URL:', finalVerificationUrl.substring(0, 100) + '...')
 
     // Send email via Resend
     console.log('Sending email via Resend to:', email)
