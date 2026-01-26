@@ -286,20 +286,40 @@ export function Admin() {
     setUploadingImage(true)
     try {
       const fileExt = file.name.split('.').pop()
-      const fileName = `articles/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
-      const filePath = fileName
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
+      const filePath = `articles/${fileName}`
 
-      const { error: uploadError } = await supabase.storage
-        .from('listings')
+      // Try 'articles' bucket first, fallback to 'listings' if it doesn't exist
+      let bucketName = 'articles'
+      let uploadError = null
+
+      const { error: articlesError } = await supabase.storage
+        .from('articles')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
         })
 
+      if (articlesError) {
+        // If articles bucket doesn't exist, try listings bucket
+        if (articlesError.message?.includes('not found') || articlesError.message?.includes('Bucket')) {
+          bucketName = 'listings'
+          const { error: listingsError } = await supabase.storage
+            .from('listings')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            })
+          uploadError = listingsError
+        } else {
+          uploadError = articlesError
+        }
+      }
+
       if (uploadError) throw uploadError
 
       const { data: { publicUrl } } = supabase.storage
-        .from('listings')
+        .from(bucketName)
         .getPublicUrl(filePath)
 
       setArticleFormData(prev => ({ ...prev, image_url: publicUrl }))
@@ -307,7 +327,12 @@ export function Admin() {
       toast.success('Image uploaded successfully')
     } catch (err: any) {
       console.error('Error uploading image:', err)
-      toast.error(err.message || 'Failed to upload image')
+      const errorMessage = err.message || 'Failed to upload image'
+      if (errorMessage.includes('Bucket not found') || errorMessage.includes('not found')) {
+        toast.error('Storage bucket not found. Please create an "articles" or "listings" bucket in Supabase Storage.')
+      } else {
+        toast.error(errorMessage)
+      }
     } finally {
       setUploadingImage(false)
     }
@@ -357,12 +382,16 @@ export function Admin() {
       if (editingArticleId) {
         // Update existing article
         // Check if slug already exists (excluding current article)
-        const { data: existing } = await supabase
+        const { data: existing, error: checkError } = await supabase
           .from('resources')
           .select('id')
           .eq('slug', slug)
           .neq('id', editingArticleId)
-          .single()
+          .maybeSingle()
+
+        if (checkError && checkError.code !== 'PGRST116') {
+          throw checkError
+        }
 
         if (existing) {
           toast.error('An article with this slug already exists. Please change the title or slug.')
@@ -390,11 +419,15 @@ export function Admin() {
       } else {
         // Create new article
         // Check if slug already exists
-        const { data: existing } = await supabase
+        const { data: existing, error: checkError } = await supabase
           .from('resources')
           .select('id')
           .eq('slug', slug)
-          .single()
+          .maybeSingle()
+
+        if (checkError && checkError.code !== 'PGRST116') {
+          throw checkError
+        }
 
         if (existing) {
           toast.error('An article with this slug already exists. Please change the title or slug.')
