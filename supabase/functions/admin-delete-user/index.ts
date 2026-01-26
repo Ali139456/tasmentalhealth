@@ -20,22 +20,9 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
-// Helper to create CORS response
-const corsResponse = (body: any, status = 200) => {
-  return new Response(typeof body === 'string' ? body : JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  })
-}
-
 serve(async (req) => {
-  console.log('=== admin-delete-user function called ===')
-  console.log('Method:', req.method)
-  console.log('URL:', req.url)
-  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    console.log('Handling OPTIONS preflight request')
     return new Response("ok", {
       status: 200,
       headers: corsHeaders,
@@ -43,10 +30,8 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Processing DELETE request')
     // Get the authorization header
     const authHeader = req.headers.get("Authorization")
-    console.log('Authorization header exists:', !!authHeader)
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: "Missing authorization header" }),
@@ -59,21 +44,11 @@ serve(async (req) => {
 
     // Verify the user
     const token = authHeader.replace("Bearer ", "")
-    console.log('Token received, length:', token.length)
-    
-    // Use admin API to verify the user token
     const { data: { user: requestingUser }, error: authError } = await supabase.auth.getUser(token)
     
-    console.log('Auth check result:', {
-      hasUser: !!requestingUser,
-      userId: requestingUser?.id,
-      authError: authError?.message
-    })
-    
     if (authError || !requestingUser) {
-      console.error('Authentication failed:', authError)
       return new Response(
-        JSON.stringify({ error: "Unauthorized", details: authError?.message || "Invalid token" }),
+        JSON.stringify({ error: "Unauthorized" }),
         {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -82,32 +57,13 @@ serve(async (req) => {
     }
 
     // Verify the requesting user is an admin
-    console.log('Checking admin role for user:', requestingUser.id)
-    const { data: adminCheck, error: adminCheckError } = await supabase
+    const { data: adminCheck } = await supabase
       .from("users")
       .select("role")
       .eq("id", requestingUser.id)
       .single()
 
-    console.log('Admin check result:', {
-      hasData: !!adminCheck,
-      role: adminCheck?.role,
-      error: adminCheckError?.message
-    })
-
-    if (adminCheckError) {
-      console.error('Error checking admin role:', adminCheckError)
-      return new Response(
-        JSON.stringify({ error: "Failed to verify admin status", details: adminCheckError.message }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      )
-    }
-
     if (!adminCheck || adminCheck.role !== 'admin') {
-      console.warn('User is not an admin:', { userId: requestingUser.id, role: adminCheck?.role })
       return new Response(
         JSON.stringify({ error: "Only admins can delete users" }),
         {
@@ -117,14 +73,9 @@ serve(async (req) => {
       )
     }
 
-    console.log('Admin verification passed')
-
-    const requestBody = await req.json()
-    console.log('Request body:', requestBody)
-    const { userId } = requestBody
+    const { userId } = await req.json()
 
     if (!userId) {
-      console.error('Missing userId in request')
       return new Response(
         JSON.stringify({ error: "Missing userId" }),
         {
@@ -145,34 +96,17 @@ serve(async (req) => {
       )
     }
 
-    // Get user email before deletion
-    console.log('Fetching user data for deletion, userId:', userId)
-    const { data: userToDelete, error: getUserError } = await supabase.auth.admin.getUserById(userId)
-    
-    if (getUserError) {
-      console.error('Error fetching user data:', getUserError)
-    }
-    
+    // Get user email BEFORE deletion
+    const { data: userToDelete } = await supabase.auth.admin.getUserById(userId)
     const userEmail = userToDelete?.user?.email
-    console.log('User email retrieved:', userEmail)
-    console.log('RESEND_API_KEY exists:', !!RESEND_API_KEY)
+    const userName = userEmail ? userEmail.split('@')[0] : ''
 
-    // Track if email was sent
+    // Send deletion email to user BEFORE deleting
     let emailSent = false
-    let emailError: string | null = null
-
-    // Send deletion email to user before deleting (if email exists and Resend is configured)
-    if (!userEmail) {
-      console.warn('No user email found, skipping deletion email')
-    } else if (!RESEND_API_KEY) {
-      console.warn('RESEND_API_KEY not configured, skipping deletion email')
-      emailError = 'RESEND_API_KEY not configured in Edge Function secrets'
-    } else {
+    if (userEmail && RESEND_API_KEY) {
       try {
-        console.log('Attempting to send deletion email to:', userEmail)
         const resend = new Resend(RESEND_API_KEY)
-        const userName = userEmail.split('@')[0]
-
+        
         const emailHtml = `
           <!DOCTYPE html>
           <html>
@@ -222,19 +156,14 @@ serve(async (req) => {
           html: emailHtml,
         })
         
-        if (emailResult.error) {
-          console.error('Resend API error:', emailResult.error)
-          emailError = emailResult.error.message || 'Failed to send email'
-          throw emailResult.error
+        if (!emailResult.error) {
+          emailSent = true
+          console.log('Deletion email sent successfully to:', userEmail)
+        } else {
+          console.error('Failed to send deletion email:', emailResult.error)
         }
-        
-        emailSent = true
-        console.log('Deletion email sent successfully to:', userEmail)
-        console.log('Email ID:', emailResult.data?.id)
       } catch (err: any) {
         console.error('Error sending deletion email:', err)
-        console.error('Error details:', JSON.stringify(err, null, 2))
-        emailError = err?.message || 'Unknown error sending email'
         // Continue with deletion even if email fails
       }
     }
@@ -257,8 +186,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         message: "User deleted successfully",
-        emailSent,
-        emailError: emailError || null
+        emailSent 
       }),
       {
         status: 200,
