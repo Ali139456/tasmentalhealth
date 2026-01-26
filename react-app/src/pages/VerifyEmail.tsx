@@ -28,12 +28,16 @@ export function VerifyEmail() {
         console.log('Verifying email with token:', token.substring(0, 20) + '...', 'type:', type)
 
         // Verify the token using Supabase
-        // Magiclink tokens from generateLink can be plain tokens or token_hash
-        // Try both methods to handle different token formats
+        // Magiclink tokens from generateLink should be used as token_hash
+        // The token from the URL is the token_hash value
         let verificationData = null
         let verificationError = null
 
-        // Try with token_hash first (for hashed tokens)
+        // Get current user email if available (for fallback)
+        const { data: { user: currentUser } } = await supabase.auth.getUser()
+        const userEmail = currentUser?.email
+
+        // Try with token_hash first (this is the correct format for magiclink)
         if (type === 'magiclink' || type === 'email' || !type) {
           console.log('Attempting verification with token_hash...')
           const result1 = await supabase.auth.verifyOtp({
@@ -44,18 +48,22 @@ export function VerifyEmail() {
           if (!result1.error && result1.data?.user) {
             verificationData = result1.data
             verificationError = null
-          } else {
-            // If token_hash fails, try with plain token
-            console.log('Token_hash failed, trying plain token...', result1.error?.message)
+          } else if (userEmail) {
+            // If token_hash fails and we have email, try with plain token + email
+            console.log('Token_hash failed, trying plain token with email...', result1.error?.message)
             const result2 = await supabase.auth.verifyOtp({
               token: token,
               type: 'email',
+              email: userEmail,
             })
             verificationData = result2.data
             verificationError = result2.error
+          } else {
+            verificationData = result1.data
+            verificationError = result1.error
           }
         } else if (type === 'signup') {
-          // For signup type, try both formats
+          // For signup type, try token_hash first
           const result1 = await supabase.auth.verifyOtp({
             token_hash: token,
             type: 'signup',
@@ -64,13 +72,18 @@ export function VerifyEmail() {
           if (!result1.error && result1.data?.user) {
             verificationData = result1.data
             verificationError = null
-          } else {
+          } else if (userEmail) {
+            // Try with plain token + email
             const result2 = await supabase.auth.verifyOtp({
               token: token,
               type: 'signup',
+              email: userEmail,
             })
             verificationData = result2.data
             verificationError = result2.error
+          } else {
+            verificationData = result1.data
+            verificationError = result1.error
           }
         }
 
