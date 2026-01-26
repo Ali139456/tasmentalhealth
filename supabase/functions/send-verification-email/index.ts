@@ -1,0 +1,212 @@
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') || 'Tasmanian Mental Health Directory <noreply@www.tasmentalhealthdirectory.com.au>'
+const APP_URL = Deno.env.get('APP_URL') || 'https://www.tasmentalhealthdirectory.com.au'
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    // Get authorization header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    // Create Supabase client with service role key
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+
+    // Verify the user's token
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    const { email } = await req.json()
+    
+    if (!email || email !== user.email) {
+      return new Response(
+        JSON.stringify({ error: 'Email mismatch' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    if (!RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not set')
+      return new Response(
+        JSON.stringify({ error: 'Email service not configured' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    // Generate verification link using admin API
+    const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+      type: 'signup',
+      email: email,
+      options: {
+        redirectTo: `${APP_URL}/dashboard`,
+      }
+    })
+
+    if (linkError || !linkData?.properties?.action_link) {
+      console.error('Error generating verification link:', linkError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to generate verification link' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    const verificationUrl = linkData.properties.action_link
+
+    // Extract token from URL if it's a verify endpoint
+    let finalVerificationUrl = verificationUrl
+    try {
+      const url = new URL(verificationUrl)
+      if (url.pathname.includes('/auth/v1/verify')) {
+        const token = url.searchParams.get('token')
+        const type = url.searchParams.get('type')
+        if (token && type === 'signup') {
+          // Construct direct verification URL
+          finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(token)}&type=${type}`
+        }
+      }
+    } catch (urlError) {
+      console.error('Error parsing verification URL:', urlError)
+    }
+
+    // Send email via Resend
+    const emailHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+          .button { display: inline-block; background: #0ea5e9; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+          .footer { text-align: center; margin-top: 20px; color: #6b7280; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Verify Your Email</h1>
+          </div>
+          <div class="content">
+            <p>Hello,</p>
+            <p>Thank you for signing up for the Tasmanian Mental Health Directory! Please verify your email address by clicking the button below:</p>
+            <p style="text-align: center;">
+              <a href="${finalVerificationUrl}" class="button">Verify Email Address</a>
+            </p>
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; color: #0ea5e9;">${finalVerificationUrl}</p>
+            <p><strong>This link will expire in 24 hours.</strong></p>
+            <p>If you didn't create this account, please ignore this email.</p>
+          </div>
+          <div class="footer">
+            <p>This email was sent to ${email}. If you didn't request this, please ignore it.</p>
+            <p>&copy; ${new Date().getFullYear()} Tasmanian Mental Health Directory. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+
+    const resendResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: email,
+        subject: 'Verify Your Email - Tasmanian Mental Health Directory',
+        html: emailHtml,
+      }),
+    })
+
+    if (!resendResponse.ok) {
+      const errorData = await resendResponse.text()
+      console.error('Resend API error:', errorData)
+      return new Response(
+        JSON.stringify({ error: 'Failed to send email', details: errorData }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    const resendData = await resendResponse.json()
+    console.log('Verification email sent successfully:', resendData)
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        message: 'Verification email sent successfully',
+        emailId: resendData.id 
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  } catch (error: any) {
+    console.error('Error in send-verification-email function:', error)
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || 'Internal server error',
+        details: error.stack 
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+})

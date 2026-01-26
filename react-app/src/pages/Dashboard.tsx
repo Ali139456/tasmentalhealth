@@ -503,13 +503,21 @@ export function Dashboard() {
                     
                     if (resendError) {
                       console.error('Supabase resend error:', resendError)
-                      // Fallback: Send custom verification email via Edge Function
-                      // Note: We can't generate verification links on client side
-                      // So we'll just send a message to check email or contact support
-                      toast('Please check your email. If you don\'t receive it, Supabase email service may be unavailable. Our system will send verification emails automatically.', { 
-                        duration: 6000,
-                        icon: 'ℹ️'
-                      })
+                      // Fallback: Use our custom Edge Function
+                      try {
+                        const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
+                          body: { email: user.email || '' }
+                        })
+                        
+                        if (functionError) {
+                          throw functionError
+                        }
+                        
+                        toast.success('Verification email sent! Check your inbox.')
+                      } catch (functionErr: any) {
+                        console.error('Edge Function error:', functionErr)
+                        toast.error('Failed to send verification email. Please try again later.')
+                      }
                     } else {
                       toast.success('Verification email sent! Check your inbox.')
                     }

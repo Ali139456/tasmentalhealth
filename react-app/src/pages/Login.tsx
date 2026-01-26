@@ -138,27 +138,38 @@ export function Login() {
           })
 
           // Send verification email if not already confirmed
-          // Note: Supabase automatically sends verification email on signup
-          // We just need to ensure it's sent via resend
           if (!authData.user.email_confirmed_at) {
             try {
-              // Send Supabase verification email
+              // Try Supabase's built-in resend first
               const { error: resendError } = await supabase.auth.resend({
                 type: 'signup',
                 email: authData.user.email || email
               })
               
               if (resendError) {
-                console.error('Error sending Supabase verification email:', resendError)
-                // Supabase will handle verification email automatically
-                // Our welcome email is already sent via Resend
-                console.log('Supabase verification email may be sent automatically')
+                console.error('Supabase resend error:', resendError)
+                // Fallback: Use our custom Edge Function to send verification email
+                try {
+                  const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
+                    body: { email: authData.user.email || email }
+                  })
+                  
+                  if (functionError) {
+                    console.error('Edge Function error:', functionError)
+                    // Don't block signup if email fails
+                  } else {
+                    console.log('Custom verification email sent via Edge Function')
+                  }
+                } catch (functionErr) {
+                  console.error('Failed to send custom verification email:', functionErr)
+                  // Don't block signup if email fails
+                }
               } else {
                 console.log('Supabase verification email sent')
               }
             } catch (emailError) {
               console.error('Error sending verification email:', emailError)
-              // Don't block signup if email fails - Supabase may send it automatically
+              // Don't block signup if email fails
             }
           }
 
