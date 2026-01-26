@@ -312,10 +312,10 @@ export function CrisisSupport() {
         }
       ],
       hospitals: [
-        { name: 'Royal Melbourne Hospital', location: 'Parkville', phone: '(03) 9342 7000', address: '300 Grattan St, Parkville VIC 3050', service: '24/7 Emergency' },
-        { name: 'The Alfred Hospital', location: 'Prahran', phone: '(03) 9076 2000', address: '55 Commercial Rd, Melbourne VIC 3004', service: '24/7 Emergency & Trauma' },
-        { name: 'Austin Hospital', location: 'Heidelberg', phone: '(03) 9496 5000', address: '145 Studley Rd, Heidelberg VIC 3084', service: '24/7 Emergency' },
-        { name: 'Monash Medical Centre', location: 'Clayton', phone: '(03) 9594 6666', address: '246 Clayton Rd, Clayton VIC 3168', service: '24/7 Emergency' }
+        { name: 'Royal Melbourne Hospital', location: 'Parkville', phone: '(03) 9342 7000', address: '300 Grattan St, Parkville VIC 3050', service: '24/7 Emergency', website: 'https://www.thermh.org.au' },
+        { name: 'The Alfred Hospital', location: 'Prahran', phone: '(03) 9076 2000', address: '55 Commercial Rd, Melbourne VIC 3004', service: '24/7 Emergency & Trauma', website: 'https://www.alfredhealth.org.au' },
+        { name: 'Austin Hospital', location: 'Heidelberg', phone: '(03) 9496 5000', address: '145 Studley Rd, Heidelberg VIC 3084', service: '24/7 Emergency', website: 'https://www.austin.org.au' },
+        { name: 'Monash Medical Centre', location: 'Clayton', phone: '(03) 9594 6666', address: '246 Clayton Rd, Clayton VIC 3168', service: '24/7 Emergency', website: 'https://www.monashhealth.org' }
       ]
     },
     NSW: {
@@ -330,10 +330,10 @@ export function CrisisSupport() {
         }
       ],
       hospitals: [
-        { name: 'Royal Prince Alfred Hospital', location: 'Camperdown', phone: '(02) 9515 6111', address: '50 Missenden Rd, Camperdown NSW 2050', service: '24/7 Emergency' },
-        { name: 'St Vincent\'s Hospital', location: 'Darlinghurst', phone: '(02) 8382 1111', address: '390 Victoria St, Darlinghurst NSW 2010', service: '24/7 Emergency' },
-        { name: 'Westmead Hospital', location: 'Westmead', phone: '(02) 8890 5555', address: 'Cnr Hawkesbury Rd & Darcy Rd, Westmead NSW 2145', service: '24/7 Emergency' },
-        { name: 'Prince of Wales Hospital', location: 'Randwick', phone: '(02) 9382 2222', address: '320-346 Barker St, Randwick NSW 2031', service: '24/7 Emergency' }
+        { name: 'Royal Prince Alfred Hospital', location: 'Camperdown', phone: '(02) 9515 6111', address: '50 Missenden Rd, Camperdown NSW 2050', service: '24/7 Emergency', website: 'https://www.slhd.nsw.gov.au/rpa' },
+        { name: 'St Vincent\'s Hospital', location: 'Darlinghurst', phone: '(02) 8382 1111', address: '390 Victoria St, Darlinghurst NSW 2010', service: '24/7 Emergency', website: 'https://www.svhs.org.au' },
+        { name: 'Westmead Hospital', location: 'Westmead', phone: '(02) 8890 5555', address: 'Cnr Hawkesbury Rd & Darcy Rd, Westmead NSW 2145', service: '24/7 Emergency', website: 'https://www.wslhd.health.nsw.gov.au/Westmead-Hospital' },
+        { name: 'Prince of Wales Hospital', location: 'Randwick', phone: '(02) 9382 2222', address: '320-346 Barker St, Randwick NSW 2031', service: '24/7 Emergency', website: 'https://www.seslhd.health.nsw.gov.au/Prince-of-Wales-Hospital' }
       ]
     },
     QLD: {
@@ -356,10 +356,10 @@ export function CrisisSupport() {
         }
       ],
       hospitals: [
-        { name: 'Royal Brisbane and Women\'s Hospital', location: 'Herston', phone: '(07) 3646 8111', address: 'Butterfield St, Herston QLD 4029', service: '24/7 Emergency' },
-        { name: 'Princess Alexandra Hospital', location: 'Woolloongabba', phone: '(07) 3176 2111', address: '199 Ipswich Rd, Woolloongabba QLD 4102', service: '24/7 Emergency' },
-        { name: 'Gold Coast University Hospital', location: 'Southport', phone: '(07) 5687 0000', address: '1 Hospital Blvd, Southport QLD 4215', service: '24/7 Emergency' },
-        { name: 'Townsville University Hospital', location: 'Townsville', phone: '(07) 4433 1111', address: '100 Angus Smith Dr, Douglas QLD 4814', service: '24/7 Emergency' }
+        { name: 'Royal Brisbane and Women\'s Hospital', location: 'Herston', phone: '(07) 3646 8111', address: 'Butterfield St, Herston QLD 4029', service: '24/7 Emergency', website: 'https://www.health.qld.gov.au/rbwh' },
+        { name: 'Princess Alexandra Hospital', location: 'Woolloongabba', phone: '(07) 3176 2111', address: '199 Ipswich Rd, Woolloongabba QLD 4102', service: '24/7 Emergency', website: 'https://www.health.qld.gov.au/metrosouth/pa-hospital' },
+        { name: 'Gold Coast University Hospital', location: 'Southport', phone: '(07) 5687 0000', address: '1 Hospital Blvd, Southport QLD 4215', service: '24/7 Emergency', website: 'https://www.goldcoast.health.qld.gov.au' },
+        { name: 'Townsville University Hospital', location: 'Townsville', phone: '(07) 4433 1111', address: '100 Angus Smith Dr, Douglas QLD 4814', service: '24/7 Emergency', website: 'https://www.townsville.health.qld.gov.au' }
       ]
     },
     WA: {
@@ -374,9 +374,9 @@ export function CrisisSupport() {
         }
       ],
       hospitals: [
-        { name: 'Royal Perth Hospital', location: 'Perth', phone: '(08) 9224 2244', address: '197 Wellington St, Perth WA 6000', service: '24/7 Emergency' },
-        { name: 'Sir Charles Gairdner Hospital', location: 'Nedlands', phone: '(08) 6457 3333', address: 'Hospital Ave, Nedlands WA 6009', service: '24/7 Emergency' },
-        { name: 'Fiona Stanley Hospital', location: 'Murdoch', phone: '(08) 6152 2222', address: '11 Robin Warren Dr, Murdoch WA 6150', service: '24/7 Emergency' }
+        { name: 'Royal Perth Hospital', location: 'Perth', phone: '(08) 9224 2244', address: '197 Wellington St, Perth WA 6000', service: '24/7 Emergency', website: 'https://www.rph.wa.gov.au' },
+        { name: 'Sir Charles Gairdner Hospital', location: 'Nedlands', phone: '(08) 6457 3333', address: 'Hospital Ave, Nedlands WA 6009', service: '24/7 Emergency', website: 'https://www.scgh.health.wa.gov.au' },
+        { name: 'Fiona Stanley Hospital', location: 'Murdoch', phone: '(08) 6152 2222', address: '11 Robin Warren Dr, Murdoch WA 6150', service: '24/7 Emergency', website: 'https://www.fsh.health.wa.gov.au' }
       ]
     },
     SA: {
@@ -391,9 +391,9 @@ export function CrisisSupport() {
         }
       ],
       hospitals: [
-        { name: 'Royal Adelaide Hospital', location: 'Adelaide', phone: '(08) 7074 0000', address: 'Port Rd, Adelaide SA 5000', service: '24/7 Emergency' },
-        { name: 'Flinders Medical Centre', location: 'Bedford Park', phone: '(08) 8204 5511', address: 'Flinders Dr, Bedford Park SA 5042', service: '24/7 Emergency' },
-        { name: 'Lyell McEwin Hospital', location: 'Elizabeth Vale', phone: '(08) 8182 9000', address: 'Haydown Rd, Elizabeth Vale SA 5112', service: '24/7 Emergency' }
+        { name: 'Royal Adelaide Hospital', location: 'Adelaide', phone: '(08) 7074 0000', address: 'Port Rd, Adelaide SA 5000', service: '24/7 Emergency', website: 'https://www.sahealth.sa.gov.au/wps/wcm/connect/public+content/sa+health+internet/services/hospitals+and+health+services/metropolitan+hospitals/royal+adelaide+hospital' },
+        { name: 'Flinders Medical Centre', location: 'Bedford Park', phone: '(08) 8204 5511', address: 'Flinders Dr, Bedford Park SA 5042', service: '24/7 Emergency', website: 'https://www.sahealth.sa.gov.au/wps/wcm/connect/public+content/sa+health+internet/services/hospitals+and+health+services/metropolitan+hospitals/flinders+medical+centre' },
+        { name: 'Lyell McEwin Hospital', location: 'Elizabeth Vale', phone: '(08) 8182 9000', address: 'Haydown Rd, Elizabeth Vale SA 5112', service: '24/7 Emergency', website: 'https://www.sahealth.sa.gov.au/wps/wcm/connect/public+content/sa+health+internet/services/hospitals+and+health+services/metropolitan+hospitals/lyell+mcewin+hospital' }
       ]
     },
     ACT: {
@@ -408,8 +408,8 @@ export function CrisisSupport() {
         }
       ],
       hospitals: [
-        { name: 'Canberra Hospital', location: 'Garran', phone: '(02) 5124 0000', address: 'Yamba Dr, Garran ACT 2605', service: '24/7 Emergency' },
-        { name: 'Calvary Public Hospital', location: 'Bruce', phone: '(02) 6201 6111', address: 'Mary Potter Circuit, Bruce ACT 2617', service: '24/7 Emergency' }
+        { name: 'Canberra Hospital', location: 'Garran', phone: '(02) 5124 0000', address: 'Yamba Dr, Garran ACT 2605', service: '24/7 Emergency', website: 'https://www.canberrahospital.act.gov.au' },
+        { name: 'Calvary Public Hospital', location: 'Bruce', phone: '(02) 6201 6111', address: 'Mary Potter Circuit, Bruce ACT 2617', service: '24/7 Emergency', website: 'https://www.calvarypublic.org.au' }
       ]
     },
     NT: {
@@ -424,8 +424,8 @@ export function CrisisSupport() {
         }
       ],
       hospitals: [
-        { name: 'Royal Darwin Hospital', location: 'Tiwi', phone: '(08) 8920 6011', address: 'Rocklands Dr, Tiwi NT 0810', service: '24/7 Emergency' },
-        { name: 'Alice Springs Hospital', location: 'Alice Springs', phone: '(08) 8951 7777', address: 'Gap Rd, Alice Springs NT 0870', service: '24/7 Emergency' }
+        { name: 'Royal Darwin Hospital', location: 'Tiwi', phone: '(08) 8920 6011', address: 'Rocklands Dr, Tiwi NT 0810', service: '24/7 Emergency', website: 'https://www.health.nt.gov.au/hospitals/royal-darwin-hospital' },
+        { name: 'Alice Springs Hospital', location: 'Alice Springs', phone: '(08) 8951 7777', address: 'Gap Rd, Alice Springs NT 0870', service: '24/7 Emergency', website: 'https://www.health.nt.gov.au/hospitals/alice-springs-hospital' }
       ]
     }
   }
