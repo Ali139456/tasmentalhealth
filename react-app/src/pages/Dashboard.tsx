@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save, Eye } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save } from 'lucide-react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
@@ -745,10 +745,7 @@ export function Dashboard() {
 
               {/* Public Visibility Settings */}
               <div className="border-t border-gray-200 pt-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <Eye className="w-6 h-6 text-primary-600" />
-                  <label className="text-lg font-bold text-gray-900">Public Visibility Settings</label>
-                </div>
+                <label className="text-lg font-bold text-gray-900 mb-3 block">Public Visibility Settings</label>
                 <p className="text-sm text-gray-600 mb-4">
                   Choose which contact details you want to be publicly visible on your listing.
                 </p>
