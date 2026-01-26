@@ -170,19 +170,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Clear cached role
+      console.log('Signing out user...')
+      // Clear cached role first
       if (user?.id) {
         sessionStorage.removeItem(`user_role_${user.id}`)
       }
-      await supabase.auth.signOut()
+      
+      // Clear all session storage items related to auth
+      const keysToRemove: string[] = []
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i)
+        if (key && (key.startsWith('user_role_') || key.startsWith('sb-'))) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach(key => sessionStorage.removeItem(key))
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('Supabase signOut error:', error)
+        // Continue anyway to clear local state
+      }
+      
+      // Clear local state
       setUser(null)
       setSession(null)
       setRole(null)
+      
+      console.log('Sign out completed')
     } catch (error) {
-      // Clear cached role even on error
+      console.error('Error during sign out:', error)
+      // Clear everything even on error
       if (user?.id) {
         sessionStorage.removeItem(`user_role_${user.id}`)
       }
+      
+      // Clear all session storage
+      const keysToRemove: string[] = []
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i)
+        if (key && (key.startsWith('user_role_') || key.startsWith('sb-'))) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach(key => sessionStorage.removeItem(key))
+      
       setUser(null)
       setSession(null)
       setRole(null)
