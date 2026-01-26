@@ -829,7 +829,7 @@ export function Dashboard() {
                       disabled
                       className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl bg-gray-50"
                     />
-                    {user && (user as any).email_verified ? (
+                    {user && emailVerified ? (
                       <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" />
                         Email verified
