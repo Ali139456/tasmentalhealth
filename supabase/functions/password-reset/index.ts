@@ -99,21 +99,23 @@ serve(async (req) => {
       if (url.pathname.includes('/auth/v1/verify')) {
         const token = url.searchParams.get('token')
         const type = url.searchParams.get('type')
-        const redirectTo = url.searchParams.get('redirect_to')
         
         if (token && type === 'recovery') {
-          // Construct a direct link to our reset password page
-          // The verify endpoint will redirect here, and we'll handle the token
-          resetLink = `${safeRedirectUrl}?token=${token}&type=${type}`
-          console.log("Constructed custom reset link from verify endpoint")
-        } else if (redirectTo && !redirectTo.includes('/reset-password')) {
+          // Instead of using verify endpoint, construct direct link with token
+          // User will click this, and we'll handle token verification on our page
+          resetLink = `${safeRedirectUrl}?token=${encodeURIComponent(token)}&type=${type}`
+          console.log("Constructed direct reset link from verify endpoint token")
+        } else {
           // Fix redirect_to if it's missing the path
-          const fixedRedirect = redirectTo.endsWith('/') 
-            ? `${redirectTo}reset-password`
-            : `${redirectTo}/reset-password`
-          url.searchParams.set('redirect_to', fixedRedirect)
-          resetLink = url.toString()
-          console.log("Fixed redirect_to to include /reset-password")
+          const redirectTo = url.searchParams.get('redirect_to')
+          if (redirectTo && !redirectTo.includes('/reset-password')) {
+            const fixedRedirect = redirectTo.endsWith('/') 
+              ? `${redirectTo}reset-password`
+              : `${redirectTo}/reset-password`
+            url.searchParams.set('redirect_to', fixedRedirect)
+            resetLink = url.toString()
+            console.log("Fixed redirect_to to include /reset-password")
+          }
         }
       } else {
         // Try to extract access_token and refresh_token (for direct links)
