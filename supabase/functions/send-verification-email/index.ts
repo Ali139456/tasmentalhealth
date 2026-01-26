@@ -101,54 +101,17 @@ serve(async (req) => {
     }
 
     // Generate verification link using admin API
-    // For existing users, we need to use 'email' type with proper options
-    // Note: 'email' type is for email change verification, but can also be used for initial verification
+    // For existing users who need email verification, use 'magiclink' type
+    // This creates a one-time link that verifies the email when clicked
     console.log('Generating verification link for existing user:', email)
     
-    // Try 'email' type first (for existing users)
-    let linkData: any = null
-    let linkError: any = null
-    
-    const { data: emailLinkData, error: emailLinkError } = await supabase.auth.admin.generateLink({
-      type: 'email',
+    const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
       email: email,
       options: {
         redirectTo: `${APP_URL}/dashboard`,
       }
     })
-    
-    if (emailLinkError) {
-      console.log('Email type failed, trying magiclink type:', emailLinkError.message)
-      // Fallback: Try magiclink type which works for existing users
-      const { data: magicLinkData, error: magicLinkError } = await supabase.auth.admin.generateLink({
-        type: 'magiclink',
-        email: email,
-        options: {
-          redirectTo: `${APP_URL}/dashboard`,
-        }
-      })
-      
-      if (magicLinkError) {
-        console.log('Magiclink type also failed, trying recovery type:', magicLinkError.message)
-        // Last fallback: Use recovery type (works for any user)
-        const { data: recoveryLinkData, error: recoveryLinkError } = await supabase.auth.admin.generateLink({
-          type: 'recovery',
-          email: email,
-          options: {
-            redirectTo: `${APP_URL}/dashboard`,
-          }
-        })
-        
-        linkData = recoveryLinkData
-        linkError = recoveryLinkError
-      } else {
-        linkData = magicLinkData
-        linkError = null
-      }
-    } else {
-      linkData = emailLinkData
-      linkError = null
-    }
 
     if (linkError) {
       console.error('Error generating verification link:', JSON.stringify(linkError, null, 2))
