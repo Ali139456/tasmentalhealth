@@ -482,6 +482,35 @@ export function Dashboard() {
 
       <div className="py-12 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl">
+          {/* Email Verification Warning */}
+          {user && !(user as any).email_verified && (
+            <div className="mb-6 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-6 h-6 text-yellow-600" />
+                <div>
+                  <p className="font-semibold text-yellow-800">Email Verification Required</p>
+                  <p className="text-sm text-yellow-700">Please verify your email address to access all features.</p>
+                </div>
+              </div>
+              <button
+                onClick={async () => {
+                  const { error } = await supabase.auth.resend({
+                    type: 'signup',
+                    email: user.email || ''
+                  })
+                  if (error) {
+                    toast.error('Failed to resend verification email')
+                  } else {
+                    toast.success('Verification email sent! Check your inbox.')
+                  }
+                }}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-semibold"
+              >
+                Resend Email
+              </button>
+            </div>
+          )}
+          
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2 text-gray-900">My Dashboard</h1>
             <p className="text-gray-600 text-lg">Manage your listings and subscription</p>
