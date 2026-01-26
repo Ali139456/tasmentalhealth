@@ -141,12 +141,14 @@ export function Login() {
           })
 
           // Send verification email if not already confirmed
-          // Only send if Supabase didn't already send one (check if email_confirmed_at is null)
+          // IMPORTANT: To prevent duplicate verification emails, disable "Confirm email" in Supabase Dashboard:
+          // Settings → Authentication → Sign In / Providers → Email → Disable "Confirm email"
+          // This ensures only our custom verification email (via send-verification-email Edge Function) is sent
           if (authData.user && !authData.user.email_confirmed_at) {
-            // Use our custom Edge Function for reliable email delivery
-            // This runs asynchronously and doesn't block signup
+            // Add a small delay to avoid race condition if Supabase auto-sends verification email
+            // (This happens if "Confirm email" is enabled in Supabase Dashboard)
             const userEmail: string = authData.user.email || email
-            ;(async () => {
+            setTimeout(async () => {
               try {
                 console.log('Sending verification email to:', userEmail)
                 const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
@@ -163,7 +165,7 @@ export function Login() {
                 console.error('Error sending verification email:', emailError)
                 // Don't block signup if email fails
               }
-            })()
+            }, 1000) // 1 second delay to avoid race condition
           }
 
           // Complete signup immediately without waiting for emails
