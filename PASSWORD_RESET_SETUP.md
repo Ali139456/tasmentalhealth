@@ -25,6 +25,7 @@ Make sure these secrets are set in **Supabase Dashboard → Edge Functions → S
 - ✅ `RESEND_FROM_EMAIL` - Should be: `Tasmanian Mental Health Directory <noreply@tasmentalhealthdirectory.com.au>`
 - ✅ `SUPABASE_URL` - Your Supabase project URL
 - ✅ `SUPABASE_SERVICE_ROLE_KEY` - Your service role key
+- ✅ `APP_URL` - Your production URL: `https://tasmentalhealthdirectory.com.au` (IMPORTANT: prevents localhost redirects)
 
 ### 3. Test the Password Reset
 
