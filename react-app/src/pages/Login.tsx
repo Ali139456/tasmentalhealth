@@ -172,6 +172,10 @@ export function Login() {
             })()
           }
 
+          // Clear form fields
+          setEmail('')
+          setPassword('')
+          
           // Complete signup immediately without waiting for emails
           if (authData.user.email_confirmed_at || authData.session) {
             setSuccess('Account created successfully! Signing you in...')
@@ -183,7 +187,6 @@ export function Login() {
             setSuccess('Account created! Please check your email to verify your account. A verification email has been sent.')
             setIsSignUp(false)
           }
-          setPassword('')
         } else {
           throw new Error('Failed to create account. Please try again.')
         }
@@ -229,6 +232,10 @@ export function Login() {
             throw new Error('Administrators must use the Admin Login page. Please use the Admin Login link in the footer.')
           }
 
+          // Clear form fields before navigation
+          setEmail('')
+          setPassword('')
+          
           navigate('/dashboard')
           setTimeout(() => refreshUser().catch(() => {}), 100)
         } else {
