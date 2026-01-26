@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, User } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2, FileText, Upload, X, Plus } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2, FileText, Upload, X, Plus, Edit } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 import toast from 'react-hot-toast'
@@ -16,6 +16,7 @@ export function Admin() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'listings' | 'users' | 'subscriptions' | 'articles'>('listings')
   const [articles, setArticles] = useState<any[]>([])
+  const [counts, setCounts] = useState({ listings: 0, users: 0, articles: 0 })
   const [showArticleForm, setShowArticleForm] = useState(false)
   const [articleFormData, setArticleFormData] = useState({
     title: '',
@@ -32,6 +33,9 @@ export function Admin() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [savingArticle, setSavingArticle] = useState(false)
+  const [editingArticleId, setEditingArticleId] = useState<string | null>(null)
+  const [customCategory, setCustomCategory] = useState('')
+  const [showCustomCategory, setShowCustomCategory] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [userSearchQuery, setUserSearchQuery] = useState('')
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
@@ -42,14 +46,47 @@ export function Admin() {
 
   useEffect(() => {
     if (user && role === 'admin') {
+      fetchCounts()
       fetchData()
     } else if (user && role !== 'admin') {
       setLoading(false)
     }
-  }, [user, role, activeTab])
+  }, [user, role])
+
+  useEffect(() => {
+    if (user && role === 'admin') {
+      fetchData()
+    }
+  }, [activeTab])
+
+  // Fetch counts for all tabs on initial load
+  const fetchCounts = async () => {
+    try {
+      const [listingsResult, usersResult, articlesResult] = await Promise.all([
+        supabase.from('listings').select('id', { count: 'exact', head: true }),
+        supabase.from('users').select('id', { count: 'exact', head: true }),
+        supabase.from('resources').select('id', { count: 'exact', head: true })
+      ])
+
+      setCounts({
+        listings: listingsResult.count ?? 0,
+        users: usersResult.count ?? 0,
+        articles: articlesResult.count ?? 0
+      })
+    } catch (error) {
+      console.error('Error fetching counts:', error)
+      // Fallback: if count query fails, use length of fetched data
+      setCounts({
+        listings: listings.length,
+        users: users.length,
+        articles: articles.length
+      })
+    }
+  }
 
   const fetchData = async () => {
     try {
+      setLoading(true)
       if (activeTab === 'listings') {
         const { data, error } = await supabase
           .from('listings')
@@ -58,6 +95,8 @@ export function Admin() {
 
         if (error) throw error
         setListings(data || [])
+        // Update count
+        setCounts(prev => ({ ...prev, listings: data?.length || 0 }))
       } else if (activeTab === 'users') {
         const { data, error } = await supabase
           .from('users')
@@ -66,6 +105,8 @@ export function Admin() {
 
         if (error) throw error
         setUsers(data || [])
+        // Update count
+        setCounts(prev => ({ ...prev, users: data?.length || 0 }))
       } else if (activeTab === 'articles') {
         const { data, error } = await supabase
           .from('resources')
@@ -74,6 +115,8 @@ export function Admin() {
 
         if (error) throw error
         setArticles(data || [])
+        // Update count
+        setCounts(prev => ({ ...prev, articles: data?.length || 0 }))
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -132,6 +175,7 @@ export function Admin() {
       }
 
       await fetchData()
+      await fetchCounts()
       toast.success(`Listing ${action}d successfully!`)
     } catch (error: any) {
       console.error('Error updating listing:', error)
@@ -206,6 +250,7 @@ export function Admin() {
 
       if (error) throw error
       await fetchData()
+      await fetchCounts()
       setEditingUserId(null)
       toast.success('User role updated successfully!')
     } catch (error: any) {
@@ -298,51 +343,86 @@ export function Admin() {
       // Calculate read time
       const readTime = articleFormData.read_time || calculateReadTime(articleFormData.content)
 
-      // Check if slug already exists
-      const { data: existing } = await supabase
-        .from('resources')
-        .select('id')
-        .eq('slug', slug)
-        .single()
+      // Use custom category if provided, otherwise use selected category
+      const finalCategory = showCustomCategory && customCategory.trim() 
+        ? customCategory.trim() 
+        : articleFormData.category
 
-      if (existing) {
-        toast.error('An article with this slug already exists. Please change the title or slug.')
+      if (!finalCategory) {
+        toast.error('Please select or enter a category')
         setSavingArticle(false)
         return
       }
 
-      const { error } = await supabase
-        .from('resources')
-        .insert({
-          title: articleFormData.title,
-          slug,
-          category: articleFormData.category,
-          content: articleFormData.content,
-          excerpt: articleFormData.excerpt,
-          image_url: articleFormData.image_url || null,
-          tags: articleFormData.tags,
-          read_time: readTime,
-          published: articleFormData.published
-        })
+      if (editingArticleId) {
+        // Update existing article
+        // Check if slug already exists (excluding current article)
+        const { data: existing } = await supabase
+          .from('resources')
+          .select('id')
+          .eq('slug', slug)
+          .neq('id', editingArticleId)
+          .single()
 
-      if (error) throw error
+        if (existing) {
+          toast.error('An article with this slug already exists. Please change the title or slug.')
+          setSavingArticle(false)
+          return
+        }
 
-      toast.success('Article created successfully!')
-      setShowArticleForm(false)
-      setArticleFormData({
-        title: '',
-        slug: '',
-        category: '',
-        content: '',
-        excerpt: '',
-        image_url: '',
-        tags: [],
-        read_time: 0,
-        published: false
-      })
-      setImagePreview(null)
-      setTagInput('')
-      fetchData()
+        const { error } = await supabase
+          .from('resources')
+          .update({
+            title: articleFormData.title,
+            slug,
+            category: finalCategory,
+            content: articleFormData.content,
+            excerpt: articleFormData.excerpt,
+            image_url: articleFormData.image_url || null,
+            tags: articleFormData.tags,
+            read_time: readTime,
+            published: articleFormData.published
+          })
+          .eq('id', editingArticleId)
+
+        if (error) throw error
+        toast.success('Article updated successfully!')
+      } else {
+        // Create new article
+        // Check if slug already exists
+        const { data: existing } = await supabase
+          .from('resources')
+          .select('id')
+          .eq('slug', slug)
+          .single()
+
+        if (existing) {
+          toast.error('An article with this slug already exists. Please change the title or slug.')
+          setSavingArticle(false)
+          return
+        }
+
+        const { error } = await supabase
+          .from('resources')
+          .insert({
+            title: articleFormData.title,
+            slug,
+            category: finalCategory,
+            content: articleFormData.content,
+            excerpt: articleFormData.excerpt,
+            image_url: articleFormData.image_url || null,
+            tags: articleFormData.tags,
+            read_time: readTime,
+            published: articleFormData.published
+          })
+
+        if (error) throw error
+        toast.success('Article created successfully!')
+      }
+
+      handleCancelEdit()
+      await fetchData()
+      await fetchCounts()
     } catch (err: any) {
       console.error('Error creating article:', err)
       toast.error(err.message || 'Failed to create article')
@@ -351,13 +431,75 @@ export function Admin() {
     }
   }
 
-  // Auto-generate slug when title changes
+  // Auto-generate slug when title changes (always update slug from title)
   const handleTitleChange = (title: string) => {
+    const newSlug = generateSlug(title)
     setArticleFormData(prev => ({
       ...prev,
       title,
-      slug: prev.slug || generateSlug(title)
+      slug: newSlug
     }))
+  }
+
+  // Load article for editing
+  const handleEditArticle = (article: any) => {
+    setEditingArticleId(article.id)
+    setArticleFormData({
+      title: article.title,
+      slug: article.slug,
+      category: article.category,
+      content: article.content,
+      excerpt: article.excerpt,
+      image_url: article.image_url || '',
+      tags: article.tags || [],
+      read_time: article.read_time || 0,
+      published: article.published || false
+    })
+    setImagePreview(article.image_url || null)
+    setShowArticleForm(true)
+  }
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingArticleId(null)
+    setArticleFormData({
+      title: '',
+      slug: '',
+      category: '',
+      content: '',
+      excerpt: '',
+      image_url: '',
+      tags: [],
+      read_time: 0,
+      published: false
+    })
+    setImagePreview(null)
+    setTagInput('')
+    setShowArticleForm(false)
+    setShowCustomCategory(false)
+    setCustomCategory('')
+  }
+
+  // Handle delete article
+  const handleDeleteArticle = async (articleId: string, title: string) => {
+    const confirmed = window.confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)
+    if (!confirmed) return
+
+    try {
+      const { error } = await supabase
+        .from('resources')
+        .delete()
+        .eq('id', articleId)
+
+      if (error) throw error
+
+      toast.success('Article deleted successfully')
+      await fetchData()
+      await fetchCounts()
+    } catch (err: any) {
+      console.error('Error deleting article:', err)
+      toast.error(err.message || 'Failed to delete article')
+    }
   }
 
   // Auto-calculate read time when content changes
@@ -429,6 +571,7 @@ export function Admin() {
 
       // Response is successful, no need to parse JSON
       await fetchData()
+      await fetchCounts()
       toast.success('User deleted successfully!', { id: deleteToast })
     } catch (error: any) {
       console.error('Error deleting user:', error)
@@ -487,7 +630,7 @@ export function Admin() {
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
-            Listings ({listings.length})
+            Listings ({counts.listings})
           </button>
           <button
             onClick={() => setActiveTab('users')}
@@ -497,7 +640,7 @@ export function Admin() {
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
-            Users ({users.length})
+            Users ({counts.users})
           </button>
           <button
             onClick={() => setActiveTab('subscriptions')}
@@ -517,7 +660,7 @@ export function Admin() {
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
-            Articles ({articles.length})
+            Articles ({counts.articles})
           </button>
         </div>
 
@@ -882,7 +1025,9 @@ export function Admin() {
             {/* Article Form */}
             {showArticleForm && (
               <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Create New Article</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-6">
+                  {editingArticleId ? 'Edit Article' : 'Create New Article'}
+                </h3>
                 <form onSubmit={handleSubmitArticle} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
@@ -918,18 +1063,51 @@ export function Admin() {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Category *
                     </label>
-                    <select
-                      required
-                      value={articleFormData.category}
-                      onChange={(e) => setArticleFormData(prev => ({ ...prev, category: e.target.value }))}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    >
-                      <option value="">Select category...</option>
-                      <option value="For People Seeking Support">For People Seeking Support</option>
-                      <option value="For Professionals & Clinics">For Professionals & Clinics</option>
-                      <option value="For Families & Carers">For Families & Carers</option>
-                      <option value="For Professionals & Employers">For Professionals & Employers</option>
-                    </select>
+                    {!showCustomCategory ? (
+                      <div className="space-y-2">
+                        <select
+                          required
+                          value={articleFormData.category}
+                          onChange={(e) => setArticleFormData(prev => ({ ...prev, category: e.target.value }))}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        >
+                          <option value="">Select category...</option>
+                          <option value="For People Seeking Support">For People Seeking Support</option>
+                          <option value="For Professionals & Clinics">For Professionals & Clinics</option>
+                          <option value="For Families & Carers">For Families & Carers</option>
+                          <option value="For Professionals & Employers">For Professionals & Employers</option>
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => setShowCustomCategory(true)}
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          + Add custom category
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          required
+                          value={customCategory}
+                          onChange={(e) => setCustomCategory(e.target.value)}
+                          placeholder="Enter custom category name"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowCustomCategory(false)
+                            setCustomCategory('')
+                            setArticleFormData(prev => ({ ...prev, category: '' }))
+                          }}
+                          className="text-sm text-gray-600 hover:text-gray-700 font-medium"
+                        >
+                          ← Use predefined categories
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -1068,33 +1246,18 @@ export function Admin() {
                       {savingArticle ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          Saving...
+                          {editingArticleId ? 'Updating...' : 'Creating...'}
                         </>
                       ) : (
                         <>
                           <FileText className="w-5 h-5" />
-                          Create Article
+                          {editingArticleId ? 'Update Article' : 'Create Article'}
                         </>
                       )}
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        setShowArticleForm(false)
-                        setArticleFormData({
-                          title: '',
-                          slug: '',
-                          category: '',
-                          content: '',
-                          excerpt: '',
-                          image_url: '',
-                          tags: [],
-                          read_time: 0,
-                          published: false
-                        })
-                        setImagePreview(null)
-                        setTagInput('')
-                      }}
+                      onClick={handleCancelEdit}
                       className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-all font-semibold"
                     >
                       Cancel
@@ -1115,12 +1278,13 @@ export function Admin() {
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Read Time</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Created</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {articles.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                        <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                           No articles yet. Create your first article above.
                         </td>
                       </tr>
@@ -1152,6 +1316,24 @@ export function Admin() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {format(new Date(article.created_at), 'MMM d, yyyy')}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleEditArticle(article)}
+                                className="text-primary-600 hover:text-primary-900 transition-colors"
+                                title="Edit"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteArticle(article.id, article.title)}
+                                className="text-red-600 hover:text-red-900 transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))

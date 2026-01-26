@@ -1,19 +1,86 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 import { RESOURCES } from '../lib/resourceContent'
 
-const CATEGORIES = ['All', 'For People Seeking Support', 'For Professionals & Clinics', 'For Families & Carers', 'For Professionals & Employers']
+const BASE_CATEGORIES = ['All', 'For People Seeking Support', 'For Professionals & Clinics', 'For Families & Carers', 'For Professionals & Employers']
 const RESOURCES_PER_PAGE = 6
+
+interface Article {
+  id: string
+  title: string
+  slug: string
+  category: string
+  excerpt: string
+  image_url: string | null
+  tags: string[]
+  read_time: number
+  published: boolean
+  created_at: string
+}
 
 export function Resources() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
+  const [articles, setArticles] = useState<Article[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const filteredResources = RESOURCES.filter(resource => {
+  // Fetch articles from database
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('published', true)
+          .order('created_at', { ascending: false })
+
+        if (error) throw error
+        setArticles(data || [])
+      } catch (err) {
+        console.error('Error fetching articles:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchArticles()
+  }, [])
+
+  // Combine database articles with static resources
+  const allResources = [
+    ...articles.map(article => ({
+      id: article.id,
+      title: article.title,
+      category: article.category,
+      excerpt: article.excerpt,
+      image: article.image_url || '/images/resource-ocean.jpg',
+      tags: article.tags || [],
+      readTime: article.read_time,
+      slug: article.slug
+    })),
+    ...RESOURCES.map(resource => ({
+      id: resource.id.toString(),
+      title: resource.title,
+      category: resource.category,
+      excerpt: resource.excerpt,
+      image: resource.image,
+      tags: resource.tags,
+      readTime: resource.readTime,
+      slug: resource.slug
+    }))
+  ]
+
+  // Get unique categories from all resources
+  const uniqueCategories = Array.from(new Set(allResources.map(r => r.category)))
+  const CATEGORIES = ['All', ...uniqueCategories.sort()]
+
+  const filteredResources = allResources.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+      resource.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      resource.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     const matchesCategory = selectedCategory === 'All' || resource.category === selectedCategory
     return matchesSearch && matchesCategory
   })
@@ -100,7 +167,17 @@ export function Resources() {
 
         {/* Resources Grid */}
         <div id="resources-grid" className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
-          {paginatedResources.map(resource => (
+          {loading ? (
+            <div className="col-span-full text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+              <p className="mt-4 text-gray-600">Loading articles...</p>
+            </div>
+          ) : paginatedResources.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-600 text-lg">No articles found matching your search.</p>
+            </div>
+          ) : (
+            paginatedResources.map(resource => (
             <article key={resource.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1 border border-gray-100">
               <div className="relative overflow-hidden">
                 <img
@@ -144,7 +221,8 @@ export function Resources() {
                 </div>
               </div>
             </article>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Pagination Controls */}

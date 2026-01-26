@@ -1,11 +1,154 @@
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Clock, Calendar, Users, Share2, BookOpen } from 'lucide-react'
 import { RESOURCES } from '../lib/resourceContent'
+import { supabase } from '../lib/supabase'
+import { format } from 'date-fns'
+import toast from 'react-hot-toast'
+
+interface DatabaseArticle {
+  id: string
+  title: string
+  slug: string
+  category: string
+  content: string
+  excerpt: string
+  image_url: string | null
+  tags: string[]
+  read_time: number
+  published: boolean
+  created_at: string
+  updated_at: string
+}
+
+// Parse content from database (plain text) into structured format
+function parseContent(content: string): Array<{ heading?: string; paragraphs: string[] }> {
+  if (!content) return []
+  
+  // Try to parse as JSON first (for structured content)
+  try {
+    const parsed = JSON.parse(content)
+    if (Array.isArray(parsed)) {
+      return parsed
+    }
+  } catch {
+    // Not JSON, treat as plain text
+  }
+  
+  // Split content by double newlines (paragraphs) and detect headings
+  const sections: Array<{ heading?: string; paragraphs: string[] }> = []
+  const lines = content.split('\n\n').filter(line => line.trim())
+  
+  let currentSection: { heading?: string; paragraphs: string[] } = { paragraphs: [] }
+  
+  for (const line of lines) {
+    const trimmed = line.trim()
+    
+    // Detect headings (lines that are short and end without period, or start with numbers)
+    if (trimmed.length < 100 && (trimmed.match(/^\d+\./) || (!trimmed.endsWith('.') && !trimmed.endsWith('!') && !trimmed.endsWith('?')))) {
+      // If we have content in current section, save it
+      if (currentSection.paragraphs.length > 0 || currentSection.heading) {
+        sections.push(currentSection)
+      }
+      currentSection = { heading: trimmed, paragraphs: [] }
+    } else {
+      currentSection.paragraphs.push(trimmed)
+    }
+  }
+  
+  // Add the last section
+  if (currentSection.paragraphs.length > 0 || currentSection.heading) {
+    sections.push(currentSection)
+  }
+  
+  // If no sections were created, create one with all content
+  if (sections.length === 0) {
+    sections.push({ paragraphs: content.split('\n\n').filter(p => p.trim()) })
+  }
+  
+  return sections
+}
 
 export function ResourceDetail() {
   const { slug } = useParams<{ slug: string }>()
+  const [article, setArticle] = useState<DatabaseArticle | null>(null)
+  const [relatedArticles, setRelatedArticles] = useState<DatabaseArticle[]>([])
+  const [loading, setLoading] = useState(true)
   
-  const resource = RESOURCES.find(r => r.slug === slug)
+  // Fetch article from database
+  useEffect(() => {
+    const fetchArticle = async () => {
+      if (!slug) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('slug', slug)
+          .eq('published', true)
+          .single()
+
+        if (error && error.code !== 'PGRST116') {
+          throw error
+        }
+
+        if (data) {
+          setArticle(data)
+          
+          // Fetch related articles (same category, excluding current)
+          const { data: related, error: relatedError } = await supabase
+            .from('resources')
+            .select('*')
+            .eq('published', true)
+            .eq('category', data.category)
+            .neq('id', data.id)
+            .limit(3)
+            .order('created_at', { ascending: false })
+
+          if (!relatedError && related) {
+            setRelatedArticles(related)
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching article:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchArticle()
+  }, [slug])
+
+  // Fallback to static resources
+  const staticResource = RESOURCES.find(r => r.slug === slug)
+  
+  // Use database article if available, otherwise use static resource
+  const resource = article ? {
+    id: article.id as any, // Convert string to any for compatibility with static resources
+    title: article.title,
+    slug: article.slug,
+    category: article.category,
+    excerpt: article.excerpt,
+    image: article.image_url || undefined,
+    tags: article.tags || [],
+    readTime: article.read_time,
+    updated: format(new Date(article.updated_at || article.created_at), 'MMMM yyyy'),
+    content: parseContent(article.content)
+  } : staticResource
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-primary-50/20">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading article...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!resource) {
     return (
@@ -76,10 +219,12 @@ export function ResourceDetail() {
                 <Clock className="w-5 h-5" />
                 <span className="text-sm font-semibold">{resource.readTime} min read</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
-                <Users className="w-5 h-5" />
-                <span className="text-sm font-semibold">{resource.audience || 'General'}</span>
-              </div>
+              {!article && (
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
+                  <Users className="w-5 h-5" />
+                  <span className="text-sm font-semibold">{resource.audience || 'General'}</span>
+                </div>
+              )}
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl">
                 <Calendar className="w-5 h-5" />
                 <span className="text-sm font-semibold">{resource.updated || 'January 2026'}</span>
@@ -117,7 +262,32 @@ export function ResourceDetail() {
             {/* Article Meta */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-8 border-b-2 border-gray-100">
                   <div className="flex items-center gap-4">
-                    <button className="flex items-center gap-2 px-5 py-3 bg-primary-50 text-primary-600 rounded-xl hover:bg-primary-100 transition-all shadow-md hover:shadow-lg group">
+                    <button 
+                      onClick={async () => {
+                        try {
+                          // Try native share API first (mobile)
+                          if (navigator.share) {
+                            await navigator.share({
+                              title: resource.title,
+                              text: resource.excerpt,
+                              url: window.location.href
+                            })
+                            return
+                          }
+                        } catch (err) {
+                          // User cancelled share, fall through to clipboard
+                        }
+                        
+                        // Copy to clipboard
+                        try {
+                          await navigator.clipboard.writeText(window.location.href)
+                          toast.success('Link copied to clipboard!')
+                        } catch (err) {
+                          toast.error('Failed to copy link')
+                        }
+                      }}
+                      className="flex items-center gap-2 px-5 py-3 bg-primary-50 text-primary-600 rounded-xl hover:bg-primary-100 transition-all shadow-md hover:shadow-lg group"
+                    >
                       <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                       <span className="text-sm font-semibold">Share Article</span>
                     </button>
@@ -206,20 +376,43 @@ export function ResourceDetail() {
                 Related Articles
               </h4>
               <div className="space-y-4">
-                {RESOURCES.filter(r => r.id !== resource.id).slice(0, 3).map(related => (
-                  <Link
-                    key={related.id}
-                    to={`/resources/${related.slug}`}
-                    className="block p-4 hover:bg-primary-50 transition-all group"
-                  >
-                    <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
-                      {related.title}
-                    </h5>
-                    <div className="text-xs text-gray-500">
-                      <span>{related.readTime} min read</span>
-                    </div>
-                  </Link>
-                ))}
+                {article ? (
+                  // Show related articles from database
+                  relatedArticles.length > 0 ? (
+                    relatedArticles.map(related => (
+                      <Link
+                        key={related.id}
+                        to={`/resources/${related.slug}`}
+                        className="block p-4 hover:bg-primary-50 transition-all group"
+                      >
+                        <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                          {related.title}
+                        </h5>
+                        <div className="text-xs text-gray-500">
+                          <span>{related.read_time} min read</span>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No related articles found.</p>
+                  )
+                ) : (
+                  // Fallback to static resources
+                  RESOURCES.filter(r => r.id !== resource.id).slice(0, 3).map(related => (
+                    <Link
+                      key={related.id}
+                      to={`/resources/${related.slug}`}
+                      className="block p-4 hover:bg-primary-50 transition-all group"
+                    >
+                      <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                        {related.title}
+                      </h5>
+                      <div className="text-xs text-gray-500">
+                        <span>{related.readTime} min read</span>
+                      </div>
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
 
