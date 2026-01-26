@@ -59,11 +59,21 @@ serve(async (req) => {
 
     // Verify the user
     const token = authHeader.replace("Bearer ", "")
+    console.log('Token received, length:', token.length)
+    
+    // Use admin API to verify the user token
     const { data: { user: requestingUser }, error: authError } = await supabase.auth.getUser(token)
     
+    console.log('Auth check result:', {
+      hasUser: !!requestingUser,
+      userId: requestingUser?.id,
+      authError: authError?.message
+    })
+    
     if (authError || !requestingUser) {
+      console.error('Authentication failed:', authError)
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
+        JSON.stringify({ error: "Unauthorized", details: authError?.message || "Invalid token" }),
         {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -72,13 +82,32 @@ serve(async (req) => {
     }
 
     // Verify the requesting user is an admin
-    const { data: adminCheck } = await supabase
+    console.log('Checking admin role for user:', requestingUser.id)
+    const { data: adminCheck, error: adminCheckError } = await supabase
       .from("users")
       .select("role")
       .eq("id", requestingUser.id)
       .single()
 
+    console.log('Admin check result:', {
+      hasData: !!adminCheck,
+      role: adminCheck?.role,
+      error: adminCheckError?.message
+    })
+
+    if (adminCheckError) {
+      console.error('Error checking admin role:', adminCheckError)
+      return new Response(
+        JSON.stringify({ error: "Failed to verify admin status", details: adminCheckError.message }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      )
+    }
+
     if (!adminCheck || adminCheck.role !== 'admin') {
+      console.warn('User is not an admin:', { userId: requestingUser.id, role: adminCheck?.role })
       return new Response(
         JSON.stringify({ error: "Only admins can delete users" }),
         {
@@ -87,6 +116,8 @@ serve(async (req) => {
         }
       )
     }
+
+    console.log('Admin verification passed')
 
     const requestBody = await req.json()
     console.log('Request body:', requestBody)
