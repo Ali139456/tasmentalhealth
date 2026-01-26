@@ -148,22 +148,42 @@ serve(async (req) => {
       
       // Check if it's a Supabase verify endpoint
       if (url.pathname.includes('/auth/v1/verify')) {
-        const token = url.searchParams.get('token')
-        const type = url.searchParams.get('type')
-        if (token && (type === 'email' || type === 'signup' || type === 'magiclink')) {
-          // Construct direct verification URL
-          finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(token)}&type=${type}`
+        const token = url.searchParams.get('token') || url.searchParams.get('token_hash')
+        const type = url.searchParams.get('type') || 'magiclink'
+        if (token) {
+          // Construct direct verification URL with token in query params (not hash)
+          finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(token)}&type=${encodeURIComponent(type)}`
+        } else {
+          // If no token in query params, check hash fragment
+          const hash = url.hash
+          if (hash) {
+            const hashParams = new URLSearchParams(hash.substring(1))
+            const hashToken = hashParams.get('token') || hashParams.get('token_hash') || hashParams.get('access_token')
+            const hashType = hashParams.get('type') || 'magiclink'
+            if (hashToken) {
+              finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(hashToken)}&type=${encodeURIComponent(hashType)}`
+            }
+          }
         }
       } 
-      // Check for token_hash (used by magiclink)
+      // Check for token_hash in query params (used by magiclink)
       else if (url.searchParams.has('token_hash')) {
         const tokenHash = url.searchParams.get('token_hash')
         const type = url.searchParams.get('type') || 'magiclink'
         if (tokenHash) {
-          finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(tokenHash)}&type=${type}`
+          finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(tokenHash)}&type=${encodeURIComponent(type)}`
         }
       }
-      // If it's already a direct link, use it as-is
+      // Check hash fragment for tokens
+      else if (url.hash) {
+        const hashParams = new URLSearchParams(url.hash.substring(1))
+        const hashToken = hashParams.get('token') || hashParams.get('token_hash') || hashParams.get('access_token')
+        const hashType = hashParams.get('type') || 'magiclink'
+        if (hashToken) {
+          finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(hashToken)}&type=${encodeURIComponent(hashType)}`
+        }
+      }
+      // If it's already a direct link to our app, use it as-is
       else if (verificationUrl.includes(APP_URL)) {
         finalVerificationUrl = verificationUrl
       }

@@ -149,7 +149,7 @@ export function Events() {
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-primary-100 rounded-full mb-6">
                   <Calendar className="w-10 h-10 text-primary-600" />
-                </div>
+        </div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
                   Coming Soon
                 </h2>
@@ -170,12 +170,12 @@ export function Events() {
                       disabled={loading}
                       className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
-                  </div>
+          </div>
                   <button
                     type="submit"
                     disabled={loading}
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+              >
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -203,11 +203,11 @@ export function Events() {
                 {error && (
                   <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-center">
                     <p className="text-red-800 font-semibold">{error}</p>
-                  </div>
+                      </div>
                 )}
-              </div>
-            </div>
-          </div>
+                      </div>
+                    </div>
+                  </div>
 
           {/* Partner with Us Card */}
           <div className="bg-white rounded-2xl shadow-lg p-8 sm:p-12">
@@ -231,8 +231,8 @@ export function Events() {
                   <MessageCircle className="w-5 h-5" />
                   Contact Team
                 </a>
-              </div>
-            </div>
+          </div>
+          </div>
           </div>
         </div>
       </section>

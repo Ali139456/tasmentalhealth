@@ -34,14 +34,11 @@ export function Login() {
         }
 
         // Sign up flow
-        // Note: If "Confirm email" is enabled in Supabase Dashboard, Supabase will auto-send a verification email.
-        // To avoid duplicates, disable "Confirm email" in Supabase Dashboard → Authentication → Sign In / Providers
-        // and only use our custom verification email via send-verification-email Edge Function.
         const { data: authData, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/verify`,
+            emailRedirectTo: `${window.location.origin}/dashboard`,
           }
         })
 
@@ -141,14 +138,11 @@ export function Login() {
           })
 
           // Send verification email if not already confirmed
-          // IMPORTANT: To prevent duplicate verification emails, disable "Confirm email" in Supabase Dashboard:
-          // Settings → Authentication → Sign In / Providers → Email → Disable "Confirm email"
-          // This ensures only our custom verification email (via send-verification-email Edge Function) is sent
           if (authData.user && !authData.user.email_confirmed_at) {
-            // Add a small delay to avoid race condition if Supabase auto-sends verification email
-            // (This happens if "Confirm email" is enabled in Supabase Dashboard)
+            // Always use our custom Edge Function for reliable email delivery
+            // This runs asynchronously and doesn't block signup
             const userEmail: string = authData.user.email || email
-            setTimeout(async () => {
+            ;(async () => {
               try {
                 console.log('Sending verification email to:', userEmail)
                 const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
@@ -157,7 +151,17 @@ export function Login() {
                 
                 if (functionError) {
                   console.error('Edge Function error:', functionError)
-                  // Don't fallback to Supabase resend to avoid duplicates
+                  // Fallback: Try Supabase's built-in resend
+                  const { error: resendError } = await supabase.auth.resend({
+                    type: 'signup',
+                    email: userEmail
+                  })
+                  
+                  if (resendError) {
+                    console.error('Supabase resend also failed:', resendError)
+                  } else {
+                    console.log('Verification email sent via Supabase fallback')
+                  }
                 } else {
                   console.log('Verification email sent successfully via Edge Function:', data)
                 }
@@ -165,7 +169,7 @@ export function Login() {
                 console.error('Error sending verification email:', emailError)
                 // Don't block signup if email fails
               }
-            }, 1000) // 1 second delay to avoid race condition
+            })()
           }
 
           // Complete signup immediately without waiting for emails

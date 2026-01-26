@@ -20,8 +20,29 @@ export function VerifyEmail() {
 
     const verifyEmail = async () => {
       try {
-        const token = searchParams.get('token')
-        const type = searchParams.get('type')
+        // Try to get token from query params first
+        let token = searchParams.get('token')
+        let type = searchParams.get('type')
+
+        // If not in query params, check hash fragment (Supabase sometimes puts it there)
+        if (!token) {
+          const hash = window.location.hash
+          if (hash) {
+            const hashParams = new URLSearchParams(hash.substring(1)) // Remove the #
+            token = hashParams.get('token') || hashParams.get('access_token') || hashParams.get('token_hash')
+            type = hashParams.get('type') || type
+          }
+        }
+
+        // Also check if Supabase redirected with tokens in hash (format: #access_token=...&type=...)
+        if (!token && window.location.hash) {
+          const hashMatch = window.location.hash.match(/[#&]token=([^&]+)/) || 
+                           window.location.hash.match(/[#&]access_token=([^&]+)/) ||
+                           window.location.hash.match(/[#&]token_hash=([^&]+)/)
+          if (hashMatch) {
+            token = decodeURIComponent(hashMatch[1])
+          }
+        }
 
         if (!token) {
           setError('Invalid verification link. Missing token.')
