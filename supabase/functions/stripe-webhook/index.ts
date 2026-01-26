@@ -144,6 +144,77 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }, {
       onConflict: 'stripe_subscription_id'
     })
+
+  // Send subscription confirmation email
+  try {
+    // Get user and listing details
+    const { data: userData } = await supabase
+      .from("users")
+      .select("email")
+      .eq("id", userId)
+      .single()
+
+    const { data: listingData } = await supabase
+      .from("listings")
+      .select("practice_name")
+      .eq("id", listingId)
+      .single()
+
+    if (userData?.email && listingData?.practice_name) {
+      // Invoke send-email function
+      await supabase.functions.invoke('send-email', {
+        body: {
+          to: userData.email,
+          subject: 'Subscription Confirmed - Tasmanian Mental Health Directory',
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; }
+                .header { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { padding: 30px 20px; }
+                .button { display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: 600; }
+                .success { background-color: #10b981; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #e5e5e5; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1 style="margin: 0;">Subscription Active</h1>
+                </div>
+                <div class="content">
+                  <div class="success">
+                    <h2 style="margin: 0;">✓ Subscription Confirmed!</h2>
+                  </div>
+                  <p>Hello,</p>
+                  <p>Your subscription for featured listing "<strong>${listingData.practice_name}</strong>" is now active.</p>
+                  <p><strong>Subscription Status:</strong> ${subscription.status === 'active' ? 'Active' : 'Past Due'}</p>
+                  <p><strong>Next Billing Date:</strong> ${new Date(subscription.current_period_end * 1000).toLocaleDateString('en-AU', { dateStyle: 'long' })}</p>
+                  <p>Your listing is now featured and will appear higher in search results.</p>
+                  <p style="text-align: center;">
+                    <a href="${Deno.env.get('APP_URL') || 'https://www.tasmentalhealthdirectory.com.au'}/dashboard" class="button">Manage Subscription</a>
+                  </p>
+                </div>
+                <div class="footer">
+                  <p>This email was sent to ${userData.email}.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `
+        }
+      })
+      console.log('Subscription confirmation email sent to:', userData.email)
+    }
+  } catch (emailError) {
+    console.error('Failed to send subscription confirmation email:', emailError)
+    // Don't fail webhook if email fails
+  }
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
