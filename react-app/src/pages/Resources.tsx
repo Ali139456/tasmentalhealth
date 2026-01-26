@@ -24,28 +24,44 @@ export function Resources() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
   const [articles, setArticles] = useState<Article[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start with false to show static resources immediately
 
-  // Fetch articles from database
+  // Fetch articles from database (only fields needed for listing)
   useEffect(() => {
+    let isMounted = true
+    
     const fetchArticles = async () => {
+      setLoading(true)
       try {
         const { data, error } = await supabase
           .from('resources')
-          .select('*')
+          .select('id, title, slug, category, excerpt, image_url, tags, read_time, published, created_at')
           .eq('published', true)
           .order('created_at', { ascending: false })
 
         if (error) throw error
-        setArticles(data || [])
+        
+        if (isMounted) {
+          setArticles(data || [])
+        }
       } catch (err) {
         console.error('Error fetching articles:', err)
+        // On error, still show static resources
+        if (isMounted) {
+          setArticles([])
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchArticles()
+    
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   // Combine database articles with static resources
@@ -166,7 +182,7 @@ export function Resources() {
 
         {/* Resources Grid */}
         <div id="resources-grid" className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
-          {loading ? (
+          {loading && articles.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
               <p className="mt-4 text-gray-600">Loading articles...</p>
