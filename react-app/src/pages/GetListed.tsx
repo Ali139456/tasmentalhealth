@@ -57,12 +57,16 @@ export function GetListed() {
           redirectTo: `${window.location.origin}/reset-password`,
         })
 
+        // Prepare listing data, excluding avatar_url (column doesn't exist in database)
+        const { avatar_url, ...listingData } = formData
+        const insertData = {
+          user_id: authData.user?.id,
+          ...listingData
+        }
+
         const { error: listingError } = await supabase
           .from('listings')
-          .insert({
-            user_id: authData.user?.id,
-            ...formData,
-          })
+          .insert(insertData)
 
         if (listingError) throw listingError
 
@@ -106,12 +110,16 @@ export function GetListed() {
           navigate('/login')
         }, 3000)
       } else {
+        // Prepare listing data, excluding avatar_url (column doesn't exist in database)
+        const { avatar_url, ...listingData } = formData
+        const insertData = {
+          user_id: user.id,
+          ...listingData
+        }
+
         const { error: listingError } = await supabase
           .from('listings')
-          .insert({
-            user_id: user.id,
-            ...formData,
-          })
+          .insert(insertData)
 
         if (listingError) throw listingError
 
