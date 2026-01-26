@@ -93,45 +93,85 @@ export function ResetPassword() {
     setLoading(true)
 
     try {
+      // Check for tokens in both query params and hash fragments
       const token = searchParams.get('token')
       const accessToken = searchParams.get('access_token')
       const refreshToken = searchParams.get('refresh_token')
+      const type = searchParams.get('type')
+      
+      // Check hash fragments (Supabase sometimes uses hash for tokens)
+      const hash = window.location.hash
+      let hashAccessToken = null
+      let hashRefreshToken = null
+      let hashType = null
+      
+      if (hash) {
+        const hashParams = new URLSearchParams(hash.substring(1))
+        hashAccessToken = hashParams.get('access_token')
+        hashRefreshToken = hashParams.get('refresh_token')
+        hashType = hashParams.get('type')
+      }
+      
+      // Use hash params if available, otherwise use query params
+      const finalAccessToken = hashAccessToken || accessToken
+      const finalRefreshToken = hashRefreshToken || refreshToken
+      const finalType = hashType || type
       
       let sessionData: any = null
       
-      // Handle Supabase verify endpoint token format
-      if (token && !accessToken) {
-        // Exchange the token for a session by verifying it
-        const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
-          token_hash: token,
-          type: 'recovery'
-        })
-        
-        if (verifyError) {
-          // If verifyOtp doesn't work, try using the token directly
-          // Supabase verify endpoint should have already verified, so try to get session
-          const { data: session, error: sessionError } = await supabase.auth.getSession()
-          if (sessionError || !session.session) {
-            throw new Error('Invalid or expired reset link. Please request a new password reset.')
-          }
-          sessionData = { user: session.session.user, session: session.session }
-        } else {
-          sessionData = verifyData
-        }
-      } else if (accessToken && refreshToken) {
+      // First, try to get existing session (Supabase might have set it via redirect)
+      const { data: existingSession, error: sessionError } = await supabase.auth.getSession()
+      
+      if (existingSession?.session && !sessionError) {
+        // We already have a valid session from the redirect
+        sessionData = existingSession
+      } else if (finalAccessToken && finalRefreshToken) {
         // Handle direct link format with access_token and refresh_token
-        if (!accessToken || !refreshToken) {
-          throw new Error('Invalid reset link. Please request a new password reset.')
-        }
-
         // Set the session with the tokens from the reset link
-        const { data: session, error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
+        const { data: session, error: setSessionError } = await supabase.auth.setSession({
+          access_token: finalAccessToken,
+          refresh_token: finalRefreshToken,
         })
 
-        if (sessionError) throw sessionError
+        if (setSessionError) throw setSessionError
         sessionData = session
+      } else if (token && finalType === 'recovery') {
+        // Handle Supabase verify endpoint token format
+        // Use the recovery token to verify and get a session
+        try {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+          const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+          
+          // Verify the token via Supabase API
+          const verifyResponse = await fetch(`${supabaseUrl}/auth/v1/verify`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey || '',
+            },
+            body: JSON.stringify({
+              token_hash: token,
+              type: 'recovery',
+            }),
+          })
+          
+          if (!verifyResponse.ok) {
+            const errorData = await verifyResponse.json()
+            throw new Error(errorData.error_description || 'Token verification failed')
+          }
+          
+          // After verification, try to get the session
+          const { data: session, error: getSessionError } = await supabase.auth.getSession()
+          
+          if (getSessionError || !session.session) {
+            throw new Error('Session not found after verification. Please request a new password reset link.')
+          }
+          
+          sessionData = { user: session.session.user, session: session.session }
+        } catch (verifyErr: any) {
+          console.error('Token verification error:', verifyErr)
+          throw new Error(verifyErr.message || 'Invalid or expired reset link. Please request a new password reset.')
+        }
       } else {
         throw new Error('Invalid reset link. Please request a new password reset.')
       }
