@@ -101,12 +101,14 @@ serve(async (req) => {
     }
 
     // Generate verification link using admin API
-    console.log('Generating verification link for:', email)
+    // Use 'email' type for existing users who need to verify their email
+    // 'signup' type is only for new user registration
+    console.log('Generating verification link for existing user:', email)
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-      type: 'signup',
+      type: 'email',
       email: email,
       options: {
-        redirectTo: `${APP_URL}/dashboard`,
+        emailRedirectTo: `${APP_URL}/dashboard`,
       }
     })
 
@@ -144,7 +146,7 @@ serve(async (req) => {
       if (url.pathname.includes('/auth/v1/verify')) {
         const token = url.searchParams.get('token')
         const type = url.searchParams.get('type')
-        if (token && type === 'signup') {
+        if (token && (type === 'email' || type === 'signup')) {
           // Construct direct verification URL
           finalVerificationUrl = `${APP_URL}/auth/verify?token=${encodeURIComponent(token)}&type=${type}`
         }
