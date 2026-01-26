@@ -137,6 +137,49 @@ export function Login() {
             console.error('Email sending error (non-blocking):', err)
           })
 
+          // Send verification email if not already confirmed
+          if (!authData.user.email_confirmed_at) {
+            try {
+              // Send Supabase verification email
+              const { error: resendError } = await supabase.auth.resend({
+                type: 'signup',
+                email: authData.user.email || email
+              })
+              
+              if (resendError) {
+                console.error('Error sending Supabase verification email:', resendError)
+                // Fallback: Send custom verification email
+                try {
+                  const { data: verifyData, error: verifyError } = await supabase.auth.generateLink({
+                    type: 'signup',
+                    email: authData.user.email || email
+                  })
+                  
+                  if (!verifyError && verifyData?.properties?.action_link) {
+                    const template = getEmailTemplate('signup_verification', {
+                      email: authData.user.email || email,
+                      userName: (authData.user.email || email).split('@')[0],
+                      verificationUrl: verifyData.properties.action_link
+                    })
+                    
+                    await sendEmail({
+                      to: authData.user.email || email,
+                      subject: template.subject,
+                      html: template.html
+                    })
+                    console.log('Custom verification email sent')
+                  }
+                } catch (customEmailError) {
+                  console.error('Failed to send custom verification email:', customEmailError)
+                }
+              } else {
+                console.log('Supabase verification email sent')
+              }
+            } catch (emailError) {
+              console.error('Error sending verification email:', emailError)
+            }
+          }
+
           // Complete signup immediately without waiting for emails
           if (authData.user.email_confirmed_at || authData.session) {
             setSuccess('Account created successfully! Signing you in...')
@@ -145,21 +188,8 @@ export function Login() {
               refreshUser().catch(() => {})
             }, 500)
           } else {
-            setSuccess('Account created! Attempting to sign you in...')
-            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-              email,
-              password,
-            })
-            
-            if (signInData?.user && !signInError) {
-              setTimeout(() => {
-                navigate('/dashboard')
-                refreshUser().catch(() => {})
-              }, 500)
-            } else {
-              setSuccess('Account created! Please check your email to verify your account, or sign in directly if email confirmation is disabled.')
-              setIsSignUp(false)
-            }
+            setSuccess('Account created! Please check your email to verify your account. A verification email has been sent.')
+            setIsSignUp(false)
           }
           setPassword('')
         } else {
