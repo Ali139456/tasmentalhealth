@@ -138,14 +138,15 @@ export function Login() {
           })
 
           // Send verification email if not already confirmed
-          if (!authData.user.email_confirmed_at) {
+          if (authData.user && !authData.user.email_confirmed_at) {
             // Always use our custom Edge Function for reliable email delivery
             // This runs asynchronously and doesn't block signup
+            const userEmail = authData.user.email || email
             (async () => {
               try {
-                console.log('Sending verification email to:', authData.user.email || email)
+                console.log('Sending verification email to:', userEmail)
                 const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
-                  body: { email: authData.user.email || email }
+                  body: { email: userEmail }
                 })
                 
                 if (functionError) {
@@ -153,7 +154,7 @@ export function Login() {
                   // Fallback: Try Supabase's built-in resend
                   const { error: resendError } = await supabase.auth.resend({
                     type: 'signup',
-                    email: authData.user.email || email
+                    email: userEmail
                   })
                   
                   if (resendError) {
