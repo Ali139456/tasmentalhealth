@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, User } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2 } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2, FileText, Upload, X, Plus } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 import toast from 'react-hot-toast'
@@ -14,7 +14,24 @@ export function Admin() {
   const [listings, setListings] = useState<Listing[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'listings' | 'users' | 'subscriptions'>('listings')
+  const [activeTab, setActiveTab] = useState<'listings' | 'users' | 'subscriptions' | 'articles'>('listings')
+  const [articles, setArticles] = useState<any[]>([])
+  const [showArticleForm, setShowArticleForm] = useState(false)
+  const [articleFormData, setArticleFormData] = useState({
+    title: '',
+    slug: '',
+    category: '',
+    content: '',
+    excerpt: '',
+    image_url: '',
+    tags: [] as string[],
+    read_time: 0,
+    published: false
+  })
+  const [tagInput, setTagInput] = useState('')
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [savingArticle, setSavingArticle] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [userSearchQuery, setUserSearchQuery] = useState('')
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
@@ -49,6 +66,14 @@ export function Admin() {
 
         if (error) throw error
         setUsers(data || [])
+      } else if (activeTab === 'articles') {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) throw error
+        setArticles(data || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -187,6 +212,161 @@ export function Admin() {
       console.error('Error updating user role:', error)
       toast.error(`Failed to update user role: ${error.message}`)
     }
+  }
+
+  // Generate slug from title
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+  }
+
+  // Calculate read time from content (average reading speed: 200 words per minute)
+  const calculateReadTime = (content: string) => {
+    const words = content.trim().split(/\s+/).length
+    return Math.max(1, Math.ceil(words / 200))
+  }
+
+  // Handle image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB')
+      return
+    }
+
+    setUploadingImage(true)
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `articles/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
+      const filePath = fileName
+
+      const { error: uploadError } = await supabase.storage
+        .from('listings')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('listings')
+        .getPublicUrl(filePath)
+
+      setArticleFormData(prev => ({ ...prev, image_url: publicUrl }))
+      setImagePreview(publicUrl)
+      toast.success('Image uploaded successfully')
+    } catch (err: any) {
+      console.error('Error uploading image:', err)
+      toast.error(err.message || 'Failed to upload image')
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
+  // Handle tag input
+  const handleAddTag = () => {
+    if (tagInput.trim() && !articleFormData.tags.includes(tagInput.trim())) {
+      setArticleFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, tagInput.trim()]
+      }))
+      setTagInput('')
+    }
+  }
+
+  const handleRemoveTag = (tag: string) => {
+    setArticleFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(t => t !== tag)
+    }))
+  }
+
+  // Handle article form submission
+  const handleSubmitArticle = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSavingArticle(true)
+
+    try {
+      // Generate slug if not provided
+      const slug = articleFormData.slug || generateSlug(articleFormData.title)
+      
+      // Calculate read time
+      const readTime = articleFormData.read_time || calculateReadTime(articleFormData.content)
+
+      // Check if slug already exists
+      const { data: existing } = await supabase
+        .from('resources')
+        .select('id')
+        .eq('slug', slug)
+        .single()
+
+      if (existing) {
+        toast.error('An article with this slug already exists. Please change the title or slug.')
+        setSavingArticle(false)
+        return
+      }
+
+      const { error } = await supabase
+        .from('resources')
+        .insert({
+          title: articleFormData.title,
+          slug,
+          category: articleFormData.category,
+          content: articleFormData.content,
+          excerpt: articleFormData.excerpt,
+          image_url: articleFormData.image_url || null,
+          tags: articleFormData.tags,
+          read_time: readTime,
+          published: articleFormData.published
+        })
+
+      if (error) throw error
+
+      toast.success('Article created successfully!')
+      setShowArticleForm(false)
+      setArticleFormData({
+        title: '',
+        slug: '',
+        category: '',
+        content: '',
+        excerpt: '',
+        image_url: '',
+        tags: [],
+        read_time: 0,
+        published: false
+      })
+      setImagePreview(null)
+      setTagInput('')
+      fetchData()
+    } catch (err: any) {
+      console.error('Error creating article:', err)
+      toast.error(err.message || 'Failed to create article')
+    } finally {
+      setSavingArticle(false)
+    }
+  }
+
+  // Auto-generate slug when title changes
+  const handleTitleChange = (title: string) => {
+    setArticleFormData(prev => ({
+      ...prev,
+      title,
+      slug: prev.slug || generateSlug(title)
+    }))
+  }
+
+  // Auto-calculate read time when content changes
+  const handleContentChange = (content: string) => {
+    setArticleFormData(prev => ({
+      ...prev,
+      content,
+      read_time: calculateReadTime(content)
+    }))
   }
 
   const handleDeleteUser = async (userId: string, userEmail: string) => {
@@ -328,6 +508,16 @@ export function Admin() {
             }`}
           >
             Subscriptions
+          </button>
+          <button
+            onClick={() => setActiveTab('articles')}
+            className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
+              activeTab === 'articles'
+                ? 'bg-red-600 text-white shadow-md'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Articles ({articles.length})
           </button>
         </div>
 
@@ -672,6 +862,304 @@ export function Admin() {
         {activeTab === 'subscriptions' && (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <p className="text-gray-600">Subscription management coming soon...</p>
+          </div>
+        )}
+
+        {/* Articles Tab */}
+        {activeTab === 'articles' && (
+          <div>
+            <div className="mb-6 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Articles / Resources</h2>
+              <button
+                onClick={() => setShowArticleForm(!showArticleForm)}
+                className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all font-semibold flex items-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                {showArticleForm ? 'Cancel' : 'New Article'}
+              </button>
+            </div>
+
+            {/* Article Form */}
+            {showArticleForm && (
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
+                <h3 className="text-xl font-bold text-gray-900 mb-6">Create New Article</h3>
+                <form onSubmit={handleSubmitArticle} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Title *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={articleFormData.title}
+                        onChange={(e) => handleTitleChange(e.target.value)}
+                        placeholder="Article title"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Slug *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={articleFormData.slug}
+                        onChange={(e) => setArticleFormData(prev => ({ ...prev, slug: e.target.value }))}
+                        placeholder="article-slug"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Category *
+                    </label>
+                    <select
+                      required
+                      value={articleFormData.category}
+                      onChange={(e) => setArticleFormData(prev => ({ ...prev, category: e.target.value }))}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    >
+                      <option value="">Select category...</option>
+                      <option value="For People Seeking Support">For People Seeking Support</option>
+                      <option value="For Professionals & Clinics">For Professionals & Clinics</option>
+                      <option value="For Families & Carers">For Families & Carers</option>
+                      <option value="For Professionals & Employers">For Professionals & Employers</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Excerpt *
+                    </label>
+                    <textarea
+                      required
+                      value={articleFormData.excerpt}
+                      onChange={(e) => setArticleFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+                      placeholder="Short description of the article"
+                      rows={3}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Content *
+                    </label>
+                    <textarea
+                      required
+                      value={articleFormData.content}
+                      onChange={(e) => handleContentChange(e.target.value)}
+                      placeholder="Full article content"
+                      rows={10}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none font-mono text-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Read time: {articleFormData.read_time} min (auto-calculated)
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Image
+                    </label>
+                    {imagePreview && (
+                      <div className="mb-3 relative w-32 h-32 rounded-xl overflow-hidden border-2 border-primary-200">
+                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setImagePreview(null)
+                            setArticleFormData(prev => ({ ...prev, image_url: '' }))
+                          }}
+                          className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploadingImage}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
+                      />
+                      {uploadingImage && (
+                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                          <Loader2 className="w-5 h-5 animate-spin text-primary-500" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Recommended: 1200x630px</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Tags
+                    </label>
+                    <div className="flex gap-2 mb-3">
+                      <input
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            handleAddTag()
+                          }
+                        }}
+                        placeholder="Add a tag and press Enter"
+                        className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddTag}
+                        className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-all"
+                      >
+                        Add
+                      </button>
+                    </div>
+                    {articleFormData.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {articleFormData.tags.map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm"
+                          >
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTag(tag)}
+                              className="hover:text-primary-900"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="published"
+                      checked={articleFormData.published}
+                      onChange={(e) => setArticleFormData(prev => ({ ...prev, published: e.target.checked }))}
+                      className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                    <label htmlFor="published" className="text-sm font-semibold text-gray-700">
+                      Publish immediately
+                    </label>
+                  </div>
+
+                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <button
+                      type="submit"
+                      disabled={savingArticle}
+                      className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-all font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {savingArticle ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="w-5 h-5" />
+                          Create Article
+                        </>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowArticleForm(false)
+                        setArticleFormData({
+                          title: '',
+                          slug: '',
+                          category: '',
+                          content: '',
+                          excerpt: '',
+                          image_url: '',
+                          tags: [],
+                          read_time: 0,
+                          published: false
+                        })
+                        setImagePreview(null)
+                        setTagInput('')
+                      }}
+                      className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-all font-semibold"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Articles List */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Title</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Category</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Read Time</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Created</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {articles.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                          No articles yet. Create your first article above.
+                        </td>
+                      </tr>
+                    ) : (
+                      articles.map((article) => (
+                        <tr key={article.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{article.title}</div>
+                            <div className="text-xs text-gray-500">/{article.slug}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-700">
+                              {article.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {article.published ? (
+                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                                Published
+                              </span>
+                            ) : (
+                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">
+                                Draft
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {article.read_time} min
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {format(new Date(article.created_at), 'MMM d, yyyy')}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
       </div>
