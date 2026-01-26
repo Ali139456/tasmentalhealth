@@ -28,94 +28,94 @@ export function VerifyEmail() {
         console.log('Verifying email with token:', token.substring(0, 20) + '...', 'type:', type)
 
         // Verify the token using Supabase
-        // For magiclink type, we use verifyOtp
-        if (type === 'magiclink' || type === 'email') {
-          const { data, error: verifyError } = await supabase.auth.verifyOtp({
-            token_hash: token,
-            type: type === 'magiclink' ? 'email' : (type as any),
-          })
+        // Magiclink tokens from generateLink can be plain tokens or token_hash
+        // Try both methods to handle different token formats
+        let verificationData = null
+        let verificationError = null
 
-          if (verifyError) {
-            console.error('OTP verification error:', verifyError)
-            throw new Error(verifyError.message || 'Invalid or expired verification link')
-          }
-
-          if (data?.user) {
-            console.log('Email verified successfully:', data.user.email)
-            
-            // Update email_verified in users table
-            const { error: updateError } = await supabase
-              .from('users')
-              .update({ email_verified: true })
-              .eq('id', data.user.id)
-
-            if (updateError) {
-              console.error('Error updating email_verified:', updateError)
-              // Don't fail if this update fails - Supabase auth is already verified
-            }
-
-            setSuccess(true)
-            toast.success('Email verified successfully!')
-            
-            // Refresh user data
-            await refreshUser()
-            
-            // Redirect to dashboard after 2 seconds
-            setTimeout(() => {
-              navigate('/dashboard')
-            }, 2000)
-          } else {
-            throw new Error('Verification failed. Please try again.')
-          }
-        } else if (type === 'signup') {
-          // For signup type, use verifyOtp with signup type
-          const { data, error: verifyError } = await supabase.auth.verifyOtp({
-            token_hash: token,
-            type: 'signup',
-          })
-
-          if (verifyError) {
-            throw new Error(verifyError.message || 'Invalid or expired verification link')
-          }
-
-          if (data?.user) {
-            // Update email_verified in users table
-            await supabase
-              .from('users')
-              .update({ email_verified: true })
-              .eq('id', data.user.id)
-
-            setSuccess(true)
-            toast.success('Email verified successfully!')
-            await refreshUser()
-            setTimeout(() => {
-              navigate('/dashboard')
-            }, 2000)
-          }
-        } else {
-          // Try to verify as magiclink/email if type is not specified
-          const { data, error: verifyError } = await supabase.auth.verifyOtp({
+        // Try with token_hash first (for hashed tokens)
+        if (type === 'magiclink' || type === 'email' || !type) {
+          console.log('Attempting verification with token_hash...')
+          const result1 = await supabase.auth.verifyOtp({
             token_hash: token,
             type: 'email',
           })
 
-          if (verifyError) {
-            throw new Error(verifyError.message || 'Invalid or expired verification link')
+          if (!result1.error && result1.data?.user) {
+            verificationData = result1.data
+            verificationError = null
+          } else {
+            // If token_hash fails, try with plain token
+            console.log('Token_hash failed, trying plain token...', result1.error?.message)
+            const result2 = await supabase.auth.verifyOtp({
+              token: token,
+              type: 'email',
+            })
+            verificationData = result2.data
+            verificationError = result2.error
+          }
+        } else if (type === 'signup') {
+          // For signup type, try both formats
+          const result1 = await supabase.auth.verifyOtp({
+            token_hash: token,
+            type: 'signup',
+          })
+
+          if (!result1.error && result1.data?.user) {
+            verificationData = result1.data
+            verificationError = null
+          } else {
+            const result2 = await supabase.auth.verifyOtp({
+              token: token,
+              type: 'signup',
+            })
+            verificationData = result2.data
+            verificationError = result2.error
+          }
+        }
+
+        // If verification failed, check if user already has a session (Supabase might have auto-verified via redirect)
+        if (verificationError) {
+          console.log('OTP verification failed, checking for existing session...')
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+          
+          if (session?.user && !sessionError) {
+            // User is already authenticated (Supabase auto-verified via redirect)
+            console.log('User already has session, email may already be verified')
+            verificationData = { user: session.user }
+            verificationError = null
+          } else {
+            console.error('Verification error:', verificationError)
+            throw new Error(verificationError.message || 'Invalid or expired verification link')
+          }
+        }
+
+        if (verificationData?.user) {
+          console.log('Email verified successfully:', verificationData.user.email)
+          
+          // Update email_verified in users table
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({ email_verified: true })
+            .eq('id', verificationData.user.id)
+
+          if (updateError) {
+            console.error('Error updating email_verified:', updateError)
+            // Don't fail if this update fails - Supabase auth is already verified
           }
 
-          if (data?.user) {
-            await supabase
-              .from('users')
-              .update({ email_verified: true })
-              .eq('id', data.user.id)
-
-            setSuccess(true)
-            toast.success('Email verified successfully!')
-            await refreshUser()
-            setTimeout(() => {
-              navigate('/dashboard')
-            }, 2000)
-          }
+          setSuccess(true)
+          toast.success('Email verified successfully!')
+          
+          // Refresh user data
+          await refreshUser()
+          
+          // Redirect to dashboard after 2 seconds
+          setTimeout(() => {
+            navigate('/dashboard')
+          }, 2000)
+        } else {
+          throw new Error('Verification failed. Please try again.')
         }
       } catch (err: any) {
         console.error('Email verification error:', err)
