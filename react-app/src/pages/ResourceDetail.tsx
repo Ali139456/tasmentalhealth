@@ -98,19 +98,43 @@ export function ResourceDetail() {
         if (data) {
           setArticle(data)
           
-          // Fetch related articles (same category, excluding current)
-          const { data: related, error: relatedError } = await supabase
+          // Fetch related articles (same category first, then others if needed)
+          let related: DatabaseArticle[] = []
+          
+          // First, try to get articles from the same category
+          const { data: sameCategory, error: sameCategoryError } = await supabase
             .from('resources')
-            .select('*')
+            .select('id, title, slug, category, excerpt, image_url, tags, read_time, published, created_at')
             .eq('published', true)
             .eq('category', data.category)
             .neq('id', data.id)
-            .limit(3)
+            .limit(4)
             .order('created_at', { ascending: false })
 
-          if (!relatedError && related) {
-            setRelatedArticles(related)
+          if (!sameCategoryError && sameCategory) {
+            related = sameCategory
           }
+
+          // If we don't have enough articles (less than 4), fetch from other categories
+          if (related.length < 4) {
+            const { data: otherCategory, error: otherCategoryError } = await supabase
+              .from('resources')
+              .select('id, title, slug, category, excerpt, image_url, tags, read_time, published, created_at')
+              .eq('published', true)
+              .neq('category', data.category)
+              .neq('id', data.id)
+              .limit(4 - related.length)
+              .order('created_at', { ascending: false })
+
+            if (!otherCategoryError && otherCategory) {
+              // Combine and remove duplicates
+              const existingIds = new Set(related.map(a => a.id))
+              const additional = otherCategory.filter(a => !existingIds.has(a.id))
+              related = [...related, ...additional].slice(0, 4)
+            }
+          }
+
+          setRelatedArticles(related)
         }
       } catch (err) {
         console.error('Error fetching article:', err)
@@ -399,7 +423,7 @@ export function ResourceDetail() {
                   )
                 ) : (
                   // Fallback to static resources
-                  RESOURCES.filter(r => r.id !== resource.id).slice(0, 3).map(related => (
+                  RESOURCES.filter(r => r.id !== resource.id).slice(0, 4).map(related => (
                     <Link
                       key={related.id}
                       to={`/resources/${related.slug}`}
