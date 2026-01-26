@@ -36,6 +36,24 @@ export function Dashboard() {
   const [emailVerified, setEmailVerified] = useState<boolean | null>(null)
 
   useEffect(() => {
+    // Check for error parameters in URL hash (from expired verification links)
+    const hash = window.location.hash
+    if (hash) {
+      const hashParams = new URLSearchParams(hash.substring(1))
+      const error = hashParams.get('error')
+      const errorCode = hashParams.get('error_code')
+      const errorDescription = hashParams.get('error_description')
+      
+      if (errorCode === 'otp_expired' || error === 'access_denied') {
+        const errorMsg = errorDescription 
+          ? decodeURIComponent(errorDescription.replace(/\+/g, ' '))
+          : 'Your verification link has expired. Please request a new one.'
+        toast.error(errorMsg, { duration: 6000 })
+        // Clean up the hash to prevent showing error again
+        window.history.replaceState(null, '', window.location.pathname + window.location.search)
+      }
+    }
+
     if (user) {
       fetchData()
       
