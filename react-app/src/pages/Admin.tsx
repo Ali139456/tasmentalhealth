@@ -40,6 +40,9 @@ export function Admin() {
   const [userSearchQuery, setUserSearchQuery] = useState('')
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [editingRole, setEditingRole] = useState<'admin' | 'lister' | 'public'>('lister')
+  const [editingUserEmail, setEditingUserEmail] = useState('')
+  const [editingUserVerified, setEditingUserVerified] = useState(false)
+  const [updatingUser, setUpdatingUser] = useState(false)
   const [currentListingsPage, setCurrentListingsPage] = useState(1)
   const [currentUsersPage, setCurrentUsersPage] = useState(1)
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
@@ -256,6 +259,58 @@ export function Admin() {
     } catch (error: any) {
       console.error('Error updating user role:', error)
       toast.error(`Failed to update user role: ${error.message}`)
+    }
+  }
+
+  const handleStartEditUser = (userItem: User) => {
+    setEditingUserId(userItem.id)
+    setEditingRole(userItem.role as 'admin' | 'lister' | 'public')
+    setEditingUserEmail(userItem.email)
+    setEditingUserVerified(userItem.email_verified || false)
+  }
+
+  const handleCancelEditUser = () => {
+    setEditingUserId(null)
+    setEditingRole('lister')
+    setEditingUserEmail('')
+    setEditingUserVerified(false)
+  }
+
+  const handleUpdateUser = async (userId: string) => {
+    setUpdatingUser(true)
+    try {
+      const userItem = users.find(u => u.id === userId)
+      if (!userItem) throw new Error('User not found')
+
+      const updates: any = {
+        role: editingRole,
+        email_verified: editingUserVerified
+      }
+
+      // Update email if changed
+      if (editingUserEmail !== userItem.email) {
+        updates.email = editingUserEmail
+        // Also update auth.users email via admin API (would need Edge Function for this)
+        // For now, we'll update the users table and note that auth email needs manual update
+        toast('Email updated in database. Note: Auth email update requires admin privileges.', { duration: 5000 })
+      }
+
+      const { error } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id', userId)
+
+      if (error) throw error
+
+      await fetchData()
+      await fetchCounts()
+      handleCancelEditUser()
+      toast.success('User updated successfully!')
+    } catch (error: any) {
+      console.error('Error updating user:', error)
+      toast.error(`Failed to update user: ${error.message}`)
+    } finally {
+      setUpdatingUser(false)
     }
   }
 
@@ -909,8 +964,17 @@ export function Admin() {
                       <tbody className="bg-white divide-y divide-gray-100">
                         {paginatedUsers.map(userItem => (
                       <tr key={userItem.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                          {userItem.email}
+                        <td className="px-6 py-4">
+                          {editingUserId === userItem.id ? (
+                            <input
+                              type="email"
+                              value={editingUserEmail}
+                              onChange={(e) => setEditingUserEmail(e.target.value)}
+                              className="px-3 py-1.5 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white w-full"
+                            />
+                          ) : (
+                            <span className="text-sm font-semibold text-gray-900">{userItem.email}</span>
+                          )}
                         </td>
                         <td className="px-6 py-4">
                           {editingUserId === userItem.id ? (
@@ -934,14 +998,28 @@ export function Admin() {
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          {userItem.email_verified ? (
-                            <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-green-100 text-green-800">
-                              Verified
-                            </span>
+                          {editingUserId === userItem.id ? (
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={editingUserVerified}
+                                onChange={(e) => setEditingUserVerified(e.target.checked)}
+                                className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                              />
+                              <span className="text-xs font-semibold text-gray-700">
+                                {editingUserVerified ? 'Verified' : 'Pending'}
+                              </span>
+                            </label>
                           ) : (
-                            <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">
-                              Pending
-                            </span>
+                            userItem.email_verified ? (
+                              <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-green-100 text-green-800">
+                                Verified
+                              </span>
+                            ) : (
+                              <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">
+                                Pending
+                              </span>
+                            )
                           )}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600">
@@ -952,17 +1030,23 @@ export function Admin() {
                             {editingUserId === userItem.id ? (
                               <>
                                 <button
-                                  onClick={() => handleUpdateUserRole(userItem.id, editingRole)}
-                                  className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold text-xs"
+                                  onClick={() => handleUpdateUser(userItem.id)}
+                                  disabled={updatingUser}
+                                  className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                                 >
-                                  Save
+                                  {updatingUser ? (
+                                    <>
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                      Saving...
+                                    </>
+                                  ) : (
+                                    'Save'
+                                  )}
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    setEditingUserId(null)
-                                    setEditingRole('lister')
-                                  }}
-                                  className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold text-xs"
+                                  onClick={handleCancelEditUser}
+                                  disabled={updatingUser}
+                                  className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   Cancel
                                 </button>
@@ -970,13 +1054,10 @@ export function Admin() {
                             ) : (
                               <>
                                 <button
-                                  onClick={() => {
-                                    setEditingUserId(userItem.id)
-                                    setEditingRole(userItem.role as 'admin' | 'lister' | 'public')
-                                  }}
+                                  onClick={() => handleStartEditUser(userItem)}
                                   className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-semibold text-xs"
                                 >
-                                  Edit Role
+                                  Edit
                                 </button>
                                 <button
                                   onClick={() => handleDeleteUser(userItem.id, userItem.email)}

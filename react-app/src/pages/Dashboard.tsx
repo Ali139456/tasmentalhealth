@@ -24,6 +24,15 @@ export function Dashboard() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
+  const [editingAccount, setEditingAccount] = useState(false)
+  const [accountFormData, setAccountFormData] = useState({
+    email: '',
+    first_name: '',
+    last_name: '',
+    phone: ''
+  })
+  const [updatingAccount, setUpdatingAccount] = useState(false)
+  const [userProfile, setUserProfile] = useState<any>(null)
 
   useEffect(() => {
     if (user) {
@@ -134,10 +143,100 @@ export function Dashboard() {
           setSubscription(subData)
         }
       }
+
+      // Fetch user profile
+      if (user?.id) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle()
+
+        if (!profileError && profileData) {
+          setUserProfile(profileData)
+          setAccountFormData({
+            email: user.email || '',
+            first_name: profileData.first_name || '',
+            last_name: profileData.last_name || '',
+            phone: profileData.phone || ''
+          })
+        } else {
+          // Initialize with user email if no profile exists
+          setAccountFormData({
+            email: user.email || '',
+            first_name: '',
+            last_name: '',
+            phone: ''
+          })
+        }
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleUpdateAccount = async () => {
+    if (!user?.id) return
+    
+    setUpdatingAccount(true)
+    try {
+      const emailChanged = accountFormData.email !== user.email
+      
+      // Update email if changed (requires verification)
+      if (emailChanged) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: accountFormData.email
+        })
+        if (emailError) throw emailError
+        toast.success('Email update initiated. Please check your new email for verification.')
+      }
+      
+      // Update or create user profile
+      if (userProfile) {
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .update({
+            first_name: accountFormData.first_name || null,
+            last_name: accountFormData.last_name || null,
+            phone: accountFormData.phone || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id)
+        
+        if (profileError) throw profileError
+      } else {
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .insert({
+            user_id: user.id,
+            first_name: accountFormData.first_name || null,
+            last_name: accountFormData.last_name || null,
+            phone: accountFormData.phone || null
+          })
+        
+        if (profileError) throw profileError
+      }
+      
+      // Update users table email if changed
+      if (emailChanged) {
+        const { error: userError } = await supabase
+          .from('users')
+          .update({ email: accountFormData.email })
+          .eq('id', user.id)
+        
+        if (userError) throw userError
+      }
+      
+      await fetchData()
+      setEditingAccount(false)
+      toast.success('Account updated successfully!')
+    } catch (error: any) {
+      console.error('Error updating account:', error)
+      toast.error(error.message || 'Failed to update account. Please try again.')
+    } finally {
+      setUpdatingAccount(false)
     }
   }
 
@@ -572,29 +671,163 @@ export function Dashboard() {
 
           {/* Account Settings */}
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 mt-8 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">Account Settings</h2>
+              {!editingAccount && (
+                <button
+                  onClick={() => setEditingAccount(true)}
+                  className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-semibold flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit Account
+                </button>
+              )}
             </div>
             <div className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                  <input
-                    type="email"
-                    value={user?.email || ''}
-                    disabled
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl bg-gray-50"
-                  />
+              {editingAccount ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      value={accountFormData.email}
+                      onChange={(e) => setAccountFormData({ ...accountFormData, email: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Changing email will require verification</p>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                      <input
+                        type="text"
+                        value={accountFormData.first_name}
+                        onChange={(e) => setAccountFormData({ ...accountFormData, first_name: e.target.value })}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                      <input
+                        type="text"
+                        value={accountFormData.last_name}
+                        onChange={(e) => setAccountFormData({ ...accountFormData, last_name: e.target.value })}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+                    <input
+                      type="tel"
+                      value={accountFormData.phone}
+                      onChange={(e) => setAccountFormData({ ...accountFormData, phone: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      onClick={handleUpdateAccount}
+                      disabled={updatingAccount}
+                      className="px-6 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {updatingAccount ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          Save Changes
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingAccount(false)
+                        // Reset form data
+                        if (userProfile) {
+                          setAccountFormData({
+                            email: user?.email || '',
+                            first_name: userProfile.first_name || '',
+                            last_name: userProfile.last_name || '',
+                            phone: userProfile.phone || ''
+                          })
+                        } else {
+                          setAccountFormData({
+                            email: user?.email || '',
+                            first_name: '',
+                            last_name: '',
+                            phone: ''
+                          })
+                        }
+                      }}
+                      className="px-6 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-semibold"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <button 
-                    onClick={() => setShowPasswordModal(true)}
-                    className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-semibold"
-                  >
-                    Change Password
-                  </button>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                    <input
+                      type="email"
+                      value={user?.email || ''}
+                      disabled
+                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl bg-gray-50"
+                    />
+                    {user && (user as any).email_verified ? (
+                      <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        Email verified
+                      </p>
+                    ) : (
+                      <p className="text-xs text-yellow-600 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        Email verification pending
+                      </p>
+                    )}
+                  </div>
+                  {(accountFormData.first_name || accountFormData.last_name || accountFormData.phone) && (
+                    <>
+                      {(accountFormData.first_name || accountFormData.last_name) && (
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                          <input
+                            type="text"
+                            value={`${accountFormData.first_name} ${accountFormData.last_name}`.trim()}
+                            disabled
+                            className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl bg-gray-50"
+                          />
+                        </div>
+                      )}
+                      {accountFormData.phone && (
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+                          <input
+                            type="tel"
+                            value={accountFormData.phone}
+                            disabled
+                            className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl bg-gray-50"
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
+                  <div>
+                    <button 
+                      onClick={() => setShowPasswordModal(true)}
+                      className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-semibold"
+                    >
+                      Change Password
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

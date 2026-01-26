@@ -24,8 +24,23 @@ import { ResetPassword } from './pages/ResetPassword'
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode; requireAdmin?: boolean }) {
   const { user, role, loading } = useAuth()
+  const [emailVerified, setEmailVerified] = useState<boolean | null>(null)
 
-  if (loading) {
+  useEffect(() => {
+    if (user?.id) {
+      // Check email verification status
+      supabase
+        .from('users')
+        .select('email_verified')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          setEmailVerified(data?.email_verified || false)
+        })
+    }
+  }, [user])
+
+  if (loading || emailVerified === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -35,6 +50,29 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
 
   if (!user) {
     return <Navigate to="/login" replace />
+  }
+
+  // Block unverified users (except admins)
+  if (!requireAdmin && !emailVerified && role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-8 max-w-md text-center">
+          <h2 className="text-2xl font-bold text-yellow-800 mb-4">Email Verification Required</h2>
+          <p className="text-yellow-700 mb-6">
+            Please verify your email address before accessing your account. Check your inbox for a verification email.
+          </p>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut()
+              window.location.href = '/login'
+            }}
+            className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+          >
+            Back to Login
+          </button>
+        </div>
+      </div>
+    )
   }
 
   if (requireAdmin && role !== 'admin') {
