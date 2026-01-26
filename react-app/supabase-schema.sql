@@ -261,12 +261,17 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- Function to sync email verification status
+-- Only updates when email_confirmed_at changes FROM NULL to NOT NULL (actual verification)
 CREATE OR REPLACE FUNCTION sync_email_verification()
 RETURNS TRIGGER AS $$
 BEGIN
-  UPDATE public.users
-  SET email_verified = (NEW.email_confirmed_at IS NOT NULL)
-  WHERE id = NEW.id;
+  -- Only update if email_confirmed_at changed from NULL to a value (actual verification)
+  -- Don't sync if it was already set (prevents auto-verification during signup)
+  IF OLD.email_confirmed_at IS NULL AND NEW.email_confirmed_at IS NOT NULL THEN
+    UPDATE public.users
+    SET email_verified = TRUE
+    WHERE id = NEW.id;
+  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

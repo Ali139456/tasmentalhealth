@@ -17,6 +17,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Fix the sync trigger to only update when email_confirmed_at changes FROM NULL to NOT NULL
+-- This prevents auto-verification during signup
+CREATE OR REPLACE FUNCTION sync_email_verification()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Only update if email_confirmed_at changed from NULL to a value (actual verification)
+  -- Don't sync if it was already set (prevents auto-verification during signup)
+  IF OLD.email_confirmed_at IS NULL AND NEW.email_confirmed_at IS NOT NULL THEN
+    UPDATE public.users
+    SET email_verified = TRUE
+    WHERE id = NEW.id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Also update any existing users who were incorrectly marked as verified
 -- This fixes users who were created before this fix
 UPDATE public.users
