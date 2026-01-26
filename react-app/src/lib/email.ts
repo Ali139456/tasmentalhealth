@@ -2,6 +2,70 @@
 // See BACKEND_SETUP.md for implementation options
 import { supabase } from './supabase'
 
+// Email validation function
+export function isValidEmail(email: string): boolean {
+  if (!email || typeof email !== 'string') return false
+  
+  // Basic email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) return false
+  
+  // Check for common fake/invalid email patterns
+  const invalidPatterns = [
+    /^test@/i,
+    /^fake@/i,
+    /^temp@/i,
+    /@test\./i,
+    /@example\./i,
+    /@fake\./i,
+    /@temp\./i,
+    /@localhost/i,
+    /@123\./i,
+    /^[a-z0-9]+@[a-z0-9]+$/i, // Missing TLD (e.g., test@test)
+  ]
+  
+  // Check if email matches any invalid pattern
+  for (const pattern of invalidPatterns) {
+    if (pattern.test(email)) {
+      return false
+    }
+  }
+  
+  // Check for valid TLD (at least 2 characters)
+  const parts = email.split('@')
+  if (parts.length !== 2) return false
+  
+  const domain = parts[1]
+  const domainParts = domain.split('.')
+  if (domainParts.length < 2) return false
+  
+  const tld = domainParts[domainParts.length - 1]
+  if (tld.length < 2) return false
+  
+  return true
+}
+
+// Get admin email addresses
+export async function getAdminEmails(): Promise<string[]> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('email')
+      .eq('role', 'admin')
+      .eq('email_verified', true)
+
+    if (error) {
+      console.error('Error fetching admin emails:', error)
+      return []
+    }
+
+    return data?.map(user => user.email).filter(Boolean) || []
+  } catch (err) {
+    console.error('Error fetching admin emails:', err)
+    return []
+  }
+}
+
 export interface EmailOptions {
   to: string
   subject: string
@@ -513,6 +577,124 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
             </div>
             <div class="footer">
               <p>This email was sent to ${data.email || 'you'}.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    }),
+    account_deleted: (data) => ({
+      subject: 'Your Account Has Been Deleted - Tasmanian Mental Health Directory',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>${baseStyles}</style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0;">Account Deleted</h1>
+            </div>
+            <div class="content">
+              <p>Hello${data.userName ? ` ${data.userName}` : ''},</p>
+              <p>We are writing to inform you that your account with the <strong>Tasmanian Mental Health Directory</strong> has been deleted by an administrator.</p>
+              <div class="warning">
+                <p style="margin: 0;"><strong>What this means:</strong></p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                  <li>Your account and all associated data have been permanently removed</li>
+                  <li>All your listings have been deleted</li>
+                  <li>You will no longer be able to access your dashboard</li>
+                </ul>
+              </div>
+              <p>If you believe this was done in error, please contact us immediately.</p>
+              <p>If you have any questions or concerns, please don't hesitate to reach out to our support team.</p>
+              <p>Best regards,<br>The Tasmanian Mental Health Directory Team</p>
+            </div>
+            <div class="footer">
+              <p>This email was sent to ${data.email || 'you'}. If you have questions, please contact our support team.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    }),
+    admin_user_signup: (data) => ({
+      subject: 'New User Signup - Tasmanian Mental Health Directory',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>${baseStyles}</style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0;">New User Signup</h1>
+            </div>
+            <div class="content">
+              <p>Hello Admin,</p>
+              <p>A new user has signed up for the <strong>Tasmanian Mental Health Directory</strong>.</p>
+              <div class="notice">
+                <p style="margin: 0;"><strong>User Details:</strong></p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                  <li><strong>Email:</strong> ${data.email || 'N/A'}</li>
+                  <li><strong>User ID:</strong> ${data.userId || 'N/A'}</li>
+                  <li><strong>Signup Date:</strong> ${data.signupDate || new Date().toLocaleString()}</li>
+                </ul>
+              </div>
+              <p style="text-align: center;">
+                <a href="${appUrl}/admin" class="button">View in Admin Panel</a>
+              </p>
+              <p>Best regards,<br>Tasmanian Mental Health Directory System</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated notification from the Tasmanian Mental Health Directory.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    }),
+    admin_listing_submitted: (data) => ({
+      subject: 'New Listing Submitted - Tasmanian Mental Health Directory',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>${baseStyles}</style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0;">New Listing Submitted</h1>
+            </div>
+            <div class="content">
+              <p>Hello Admin,</p>
+              <p>A new listing has been submitted to the <strong>Tasmanian Mental Health Directory</strong> and is awaiting your review.</p>
+              <div class="notice">
+                <p style="margin: 0;"><strong>Listing Details:</strong></p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                  <li><strong>Practice Name:</strong> ${data.practiceName || 'N/A'}</li>
+                  <li><strong>Profession:</strong> ${data.profession || 'N/A'}</li>
+                  <li><strong>Location:</strong> ${data.location || 'N/A'}</li>
+                  <li><strong>Submitted By:</strong> ${data.userEmail || 'N/A'}</li>
+                  <li><strong>Submission Date:</strong> ${data.submissionDate || new Date().toLocaleString()}</li>
+                </ul>
+              </div>
+              <p style="text-align: center;">
+                <a href="${appUrl}/admin" class="button">Review Listing</a>
+              </p>
+              <p>Best regards,<br>Tasmanian Mental Health Directory System</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated notification from the Tasmanian Mental Health Directory.</p>
             </div>
           </div>
         </body>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { sendEmail, getEmailTemplate } from '../lib/email'
+import { sendEmail, getEmailTemplate, getAdminEmails } from '../lib/email'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
 import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
 
@@ -105,6 +105,32 @@ export function GetListed() {
           console.error('Failed to send listing submitted email:', emailErr)
         }
 
+        // Send admin notification
+        try {
+          const adminEmails = await getAdminEmails()
+          if (adminEmails.length > 0) {
+            const adminTemplate = getEmailTemplate('admin_listing_submitted', {
+              practiceName: formData.practice_name,
+              profession: formData.profession,
+              location: `${formData.location}, ${formData.postcode}`,
+              userEmail: formData.email,
+              submissionDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
+            })
+
+            await Promise.all(adminEmails.map(adminEmail => 
+              sendEmail({
+                to: adminEmail,
+                subject: adminTemplate.subject,
+                html: adminTemplate.html
+              })
+            ))
+            console.log('Admin notification sent for new listing')
+          }
+        } catch (err) {
+          console.error('Error sending admin notification:', err)
+          // Don't fail listing submission if admin notification fails
+        }
+
         setSuccess(true)
         setTimeout(() => {
           navigate('/login')
@@ -138,6 +164,32 @@ export function GetListed() {
           })
         } catch (emailErr) {
           console.error('Failed to send listing submitted email:', emailErr)
+        }
+
+        // Send admin notification
+        try {
+          const adminEmails = await getAdminEmails()
+          if (adminEmails.length > 0) {
+            const adminTemplate = getEmailTemplate('admin_listing_submitted', {
+              practiceName: formData.practice_name,
+              profession: formData.profession,
+              location: `${formData.location}, ${formData.postcode}`,
+              userEmail: user.email || formData.email,
+              submissionDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
+            })
+
+            await Promise.all(adminEmails.map(adminEmail => 
+              sendEmail({
+                to: adminEmail,
+                subject: adminTemplate.subject,
+                html: adminTemplate.html
+              })
+            ))
+            console.log('Admin notification sent for new listing')
+          }
+        } catch (err) {
+          console.error('Error sending admin notification:', err)
+          // Don't fail listing submission if admin notification fails
         }
 
         setSuccess(true)

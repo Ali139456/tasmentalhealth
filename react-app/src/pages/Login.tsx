@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { sendEmail, getEmailTemplate } from '../lib/email'
+import { sendEmail, getEmailTemplate, isValidEmail, getAdminEmails } from '../lib/email'
 import { Mail, Lock, AlertCircle, LogIn, ArrowRight, Shield, ArrowLeft, Sparkles, UserPlus, CheckCircle } from 'lucide-react'
 
 export function Login() {
@@ -23,6 +23,11 @@ export function Login() {
 
     try {
       if (isSignUp) {
+        // Validate email format and validity
+        if (!isValidEmail(email)) {
+          throw new Error('Please enter a valid email address. Invalid or fake email addresses are not allowed.')
+        }
+
         // Validate password length before sending to Supabase
         if (password.length < 8) {
           throw new Error('Password must be at least 8 characters long.')
@@ -72,6 +77,31 @@ export function Login() {
             }
           } catch (err) {
             console.error('Error preparing/sending welcome email:', err)
+          }
+
+          // Send admin notification
+          try {
+            const adminEmails = await getAdminEmails()
+            if (adminEmails.length > 0) {
+              const adminTemplate = getEmailTemplate('admin_user_signup', {
+                email: authData.user.email,
+                userId: authData.user.id,
+                signupDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
+              })
+
+              // Send to all admins
+              await Promise.all(adminEmails.map(adminEmail => 
+                sendEmail({
+                  to: adminEmail,
+                  subject: adminTemplate.subject,
+                  html: adminTemplate.html
+                })
+              ))
+              console.log('Admin notification sent for new user signup')
+            }
+          } catch (err) {
+            console.error('Error sending admin notification:', err)
+            // Don't fail signup if admin notification fails
           }
 
           if (authData.user.email_confirmed_at || authData.session) {

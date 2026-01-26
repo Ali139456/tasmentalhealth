@@ -1,8 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { Resend } from "https://esm.sh/resend@2.0.0"
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")
+const FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") || "Tasmanian Mental Health Directory <noreply@tasmentalhealthdirectory.com.au>"
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: {
@@ -99,6 +102,74 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       )
+    }
+
+    // Get user email before deletion
+    const { data: userToDelete, error: getUserError } = await supabase.auth.admin.getUserById(userId)
+    const userEmail = userToDelete?.user?.email
+
+    // Send deletion email to user before deleting (if email exists and Resend is configured)
+    if (userEmail && RESEND_API_KEY) {
+      try {
+        const resend = new Resend(RESEND_API_KEY)
+        const userName = userEmail.split('@')[0]
+        const appUrl = SUPABASE_URL.includes('localhost') 
+          ? 'http://localhost:5173' 
+          : 'https://tasmentalhealthdirectory.com.au'
+
+        const emailHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; }
+              .header { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { padding: 30px 20px; }
+              .warning { background-color: #f59e0b; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
+              .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #e5e5e5; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1 style="margin: 0;">Account Deleted</h1>
+              </div>
+              <div class="content">
+                <p>Hello${userName ? ` ${userName}` : ''},</p>
+                <p>We are writing to inform you that your account with the <strong>Tasmanian Mental Health Directory</strong> has been deleted by an administrator.</p>
+                <div class="warning">
+                  <p style="margin: 0;"><strong>What this means:</strong></p>
+                  <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Your account and all associated data have been permanently removed</li>
+                    <li>All your listings have been deleted</li>
+                    <li>You will no longer be able to access your dashboard</li>
+                  </ul>
+                </div>
+                <p>If you believe this was done in error, please contact us immediately.</p>
+                <p>If you have any questions or concerns, please don't hesitate to reach out to our support team.</p>
+                <p>Best regards,<br>The Tasmanian Mental Health Directory Team</p>
+              </div>
+              <div class="footer">
+                <p>This email was sent to ${userEmail}. If you have questions, please contact our support team.</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `
+
+        await resend.emails.send({
+          from: FROM_EMAIL,
+          to: userEmail,
+          subject: 'Your Account Has Been Deleted - Tasmanian Mental Health Directory',
+          html: emailHtml,
+        })
+        console.log('Deletion email sent to user:', userEmail)
+      } catch (emailError) {
+        console.error('Error sending deletion email:', emailError)
+        // Continue with deletion even if email fails
+      }
     }
 
     // Delete user from auth.users (this will cascade delete from public.users due to foreign key)
