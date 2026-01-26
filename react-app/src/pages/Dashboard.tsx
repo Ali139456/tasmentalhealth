@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
+import { sendEmail, getEmailTemplate } from '../lib/email'
 import toast from 'react-hot-toast'
 
 export function Dashboard() {
@@ -22,6 +23,8 @@ export function Dashboard() {
   const [saving, setSaving] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [passwordLoading, setPasswordLoading] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -112,6 +115,31 @@ export function Dashboard() {
       console.error('Error creating portal session:', error)
       toast.error(error.message || 'Failed to open customer portal. Please try again.')
       setProcessingPortal(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    if (!user?.email) {
+      toast.error('Email address not found')
+      return
+    }
+
+    setPasswordLoading(true)
+    try {
+      // Send password reset email
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+
+      if (resetError) throw resetError
+
+      toast.success('Password reset email sent! Please check your inbox and click the link to change your password.')
+      setShowPasswordModal(false)
+    } catch (error: any) {
+      console.error('Error sending password reset email:', error)
+      toast.error(error.message || 'Failed to send password reset email. Please try again.')
+    } finally {
+      setPasswordLoading(false)
     }
   }
 
@@ -486,7 +514,10 @@ export function Dashboard() {
                   />
                 </div>
                 <div>
-                  <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-semibold">
+                  <button 
+                    onClick={() => setShowPasswordModal(true)}
+                    className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-semibold"
+                  >
                     Change Password
                   </button>
                 </div>
@@ -814,6 +845,54 @@ export function Dashboard() {
                     setEditFormData(null)
                   }}
                   className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-semibold"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary-100 rounded-lg">
+                  <Lock className="w-6 h-6 text-primary-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Change Password</h2>
+              </div>
+            </div>
+            <div className="p-6">
+              <p className="text-gray-600 mb-6">
+                We'll send you a secure link to your email address ({user?.email}) to change your password. 
+                Click the link in the email to set a new password.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleChangePassword}
+                  disabled={passwordLoading}
+                  className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-all font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {passwordLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-5 h-5" />
+                      Send Reset Link
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowPasswordModal(false)}
+                  disabled={passwordLoading}
+                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-semibold disabled:opacity-50"
                 >
                   Cancel
                 </button>
