@@ -34,11 +34,14 @@ export function Login() {
         }
 
         // Sign up flow
+        // Note: If "Confirm email" is enabled in Supabase Dashboard, Supabase will auto-send a verification email.
+        // To avoid duplicates, disable "Confirm email" in Supabase Dashboard → Authentication → Sign In / Providers
+        // and only use our custom verification email via send-verification-email Edge Function.
         const { data: authData, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${window.location.origin}/auth/verify`,
           }
         })
 
