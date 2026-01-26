@@ -244,24 +244,6 @@ export function Admin() {
     setCurrentUsersPage(1)
   }, [activeTab])
 
-  const handleUpdateUserRole = async (userId: string, newRole: 'admin' | 'lister' | 'public') => {
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({ role: newRole })
-        .eq('id', userId)
-
-      if (error) throw error
-      await fetchData()
-      await fetchCounts()
-      setEditingUserId(null)
-      toast.success('User role updated successfully!')
-    } catch (error: any) {
-      console.error('Error updating user role:', error)
-      toast.error(`Failed to update user role: ${error.message}`)
-    }
-  }
-
   const handleStartEditUser = (userItem: User) => {
     setEditingUserId(userItem.id)
     setEditingRole(userItem.role as 'admin' | 'lister' | 'public')
