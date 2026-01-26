@@ -76,12 +76,17 @@ export function ResetPassword() {
             appUrl: window.location.origin
           })
 
-          // Send email asynchronously (non-blocking)
-          sendEmail({
-            to: userEmail,
-            subject: template.subject,
-            html: template.html
-          }).catch(err => {
+          // Send email asynchronously (non-blocking) with timeout
+          Promise.race([
+            sendEmail({
+              to: userEmail,
+              subject: template.subject,
+              html: template.html
+            }),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Email timeout')), 10000)
+            )
+          ]).catch(err => {
             console.error('Failed to send password change confirmation email:', err)
             // Don't fail the password change if email fails
           })
