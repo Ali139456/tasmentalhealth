@@ -74,12 +74,6 @@ export function Events() {
 
       // Send notification to admin
       try {
-        const adminTemplate = getEmailTemplate('event_subscription', {
-          email: 'info@tasmentalhealthdirectory.com.au',
-          userName: 'Admin',
-          appUrl: window.location.origin
-        })
-
         await sendEmail({
           to: 'info@tasmentalhealthdirectory.com.au',
           subject: `New Event Subscription: ${email}`,
