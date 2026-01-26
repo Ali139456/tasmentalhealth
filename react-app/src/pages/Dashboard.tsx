@@ -505,7 +505,7 @@ export function Dashboard() {
                       console.error('Supabase resend error:', resendError)
                       // Fallback: Use our custom Edge Function
                       try {
-                        const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
+                        const { error: functionError } = await supabase.functions.invoke('send-verification-email', {
                           body: { email: user.email || '' }
                         })
                         
