@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
-import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
+import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight, Eye } from 'lucide-react'
 
 export function GetListed() {
   const { user } = useAuth()
@@ -589,6 +589,58 @@ export function GetListed() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </section>
+
+            {/* Public Visibility Settings */}
+            <section className="bg-white/80 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-xl border border-primary-100/50">
+              <div className="flex items-center gap-3 mb-3">
+                <Eye className="w-6 h-6 text-primary-600" />
+                <h2 className="text-2xl font-bold text-gray-900">Public Visibility Settings</h2>
+              </div>
+              <p className="text-sm text-gray-600 mb-6">
+                Choose which contact details you want to be publicly visible on your listing.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={formData.show_name_publicly}
+                    onChange={(e) => setFormData({ ...formData, show_name_publicly: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Show Name Publicly</span>
+                </label>
+
+                <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={formData.show_email_publicly}
+                    onChange={(e) => setFormData({ ...formData, show_email_publicly: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Show Email Publicly</span>
+                </label>
+
+                <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={formData.show_phone_publicly}
+                    onChange={(e) => setFormData({ ...formData, show_phone_publicly: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Show Phone Publicly</span>
+                </label>
+
+                <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={formData.show_website_publicly}
+                    onChange={(e) => setFormData({ ...formData, show_website_publicly: e.target.checked })}
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Show Website Publicly</span>
+                </label>
               </div>
             </section>
 

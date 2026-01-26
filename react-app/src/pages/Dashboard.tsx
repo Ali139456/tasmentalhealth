@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save, Eye } from 'lucide-react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
@@ -743,45 +743,51 @@ export function Dashboard() {
                 </div>
               </div>
 
-              {/* Privacy Settings */}
-              <div className="space-y-3 border-t border-gray-200 pt-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Privacy Settings</label>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-3 cursor-pointer">
+              {/* Public Visibility Settings */}
+              <div className="border-t border-gray-200 pt-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Eye className="w-6 h-6 text-primary-600" />
+                  <label className="text-lg font-bold text-gray-900">Public Visibility Settings</label>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Choose which contact details you want to be publicly visible on your listing.
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
                     <input
                       type="checkbox"
                       checked={editFormData.show_name_publicly}
                       onChange={(e) => setEditFormData({ ...editFormData, show_name_publicly: e.target.checked })}
-                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                      className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
                     />
-                    <span className="text-sm text-gray-700">Show name publicly</span>
+                    <span className="text-sm font-medium text-gray-700">Show Name Publicly</span>
                   </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
+                  <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
                     <input
                       type="checkbox"
                       checked={editFormData.show_email_publicly}
                       onChange={(e) => setEditFormData({ ...editFormData, show_email_publicly: e.target.checked })}
-                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                      className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
                     />
-                    <span className="text-sm text-gray-700">Show email publicly</span>
+                    <span className="text-sm font-medium text-gray-700">Show Email Publicly</span>
                   </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
+                  <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
                     <input
                       type="checkbox"
                       checked={editFormData.show_phone_publicly}
                       onChange={(e) => setEditFormData({ ...editFormData, show_phone_publicly: e.target.checked })}
-                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                      className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
                     />
-                    <span className="text-sm text-gray-700">Show phone publicly</span>
+                    <span className="text-sm font-medium text-gray-700">Show Phone Publicly</span>
                   </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
+                  <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-primary-50 transition-colors">
                     <input
                       type="checkbox"
                       checked={editFormData.show_website_publicly}
                       onChange={(e) => setEditFormData({ ...editFormData, show_website_publicly: e.target.checked })}
-                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                      className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2"
                     />
-                    <span className="text-sm text-gray-700">Show website publicly</span>
+                    <span className="text-sm font-medium text-gray-700">Show Website Publicly</span>
                   </label>
                 </div>
               </div>
