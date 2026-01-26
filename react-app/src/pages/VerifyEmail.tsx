@@ -110,6 +110,14 @@ export function VerifyEmail() {
         if (verificationData?.user) {
           console.log('Email verified successfully:', verificationData.user.email)
           
+          // Prevent duplicate processing
+          if (hasVerified) {
+            setLoading(false)
+            return
+          }
+          
+          setHasVerified(true)
+          
           // Update email_verified in users table
           const { error: updateError } = await supabase
             .from('users')
@@ -121,13 +129,10 @@ export function VerifyEmail() {
             // Don't fail if this update fails - Supabase auth is already verified
           }
 
-          setHasVerified(true)
           setSuccess(true)
           
-          // Only show toast once
-          if (!hasVerified) {
-            toast.success('Email verified successfully!', { id: 'email-verified' })
-          }
+          // Show toast only once with a unique ID to prevent duplicates
+          toast.success('Email verified successfully!', { id: 'email-verified' })
           
           // Refresh user data
           await refreshUser()
