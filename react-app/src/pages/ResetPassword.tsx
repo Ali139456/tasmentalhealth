@@ -17,12 +17,20 @@ export function ResetPassword() {
   const { refreshUser } = useAuth()
 
   useEffect(() => {
-    // Check if we have the access token from the reset link
+    // Check if we have the token from the reset link
+    // Supabase verify endpoint uses 'token', direct links use 'access_token'
+    const token = searchParams.get('token')
     const accessToken = searchParams.get('access_token')
     const type = searchParams.get('type')
     
-    if (!accessToken || type !== 'recovery') {
+    if (!token && !accessToken) {
       setError('Invalid or expired reset link. Please request a new password reset.')
+    }
+    
+    // If we have a token from verify endpoint, we need to exchange it for a session
+    if (token && type === 'recovery' && !accessToken) {
+      // The verify endpoint will redirect here, but we need to handle the token
+      // For now, show the form - we'll handle token exchange in handleSubmit
     }
   }, [searchParams])
 
@@ -44,20 +52,48 @@ export function ResetPassword() {
     setLoading(true)
 
     try {
+      const token = searchParams.get('token')
       const accessToken = searchParams.get('access_token')
       const refreshToken = searchParams.get('refresh_token')
       
-      if (!accessToken || !refreshToken) {
+      let sessionData: any = null
+      
+      // Handle Supabase verify endpoint token format
+      if (token && !accessToken) {
+        // Exchange the token for a session by verifying it
+        const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash: token,
+          type: 'recovery'
+        })
+        
+        if (verifyError) {
+          // If verifyOtp doesn't work, try using the token directly
+          // Supabase verify endpoint should have already verified, so try to get session
+          const { data: session, error: sessionError } = await supabase.auth.getSession()
+          if (sessionError || !session.session) {
+            throw new Error('Invalid or expired reset link. Please request a new password reset.')
+          }
+          sessionData = { user: session.user, session: session.session }
+        } else {
+          sessionData = verifyData
+        }
+      } else if (accessToken && refreshToken) {
+        // Handle direct link format with access_token and refresh_token
+        if (!accessToken || !refreshToken) {
+          throw new Error('Invalid reset link. Please request a new password reset.')
+        }
+
+        // Set the session with the tokens from the reset link
+        const { data: session, error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+
+        if (sessionError) throw sessionError
+        sessionData = session
+      } else {
         throw new Error('Invalid reset link. Please request a new password reset.')
       }
-
-      // Set the session with the tokens from the reset link
-      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      })
-
-      if (sessionError) throw sessionError
 
       // Update password
       const { error: updateError } = await supabase.auth.updateUser({

@@ -91,19 +91,41 @@ serve(async (req) => {
     }
 
     // Extract the token from the generated link and construct our own URL
-    // This ensures we use the production URL, not Supabase's default redirect
+    // Supabase's verify endpoint format: /auth/v1/verify?token=...&type=recovery&redirect_to=...
     try {
       const url = new URL(resetLink)
-      const accessToken = url.searchParams.get('access_token')
-      const refreshToken = url.searchParams.get('refresh_token')
-      const type = url.searchParams.get('type')
       
-      if (accessToken && refreshToken && type === 'recovery') {
-        // Construct our own reset link with production URL
-        resetLink = `${safeRedirectUrl}?access_token=${accessToken}&refresh_token=${refreshToken}&type=${type}`
-        console.log("Constructed custom reset link with production URL")
+      // Check if it's a Supabase verify endpoint
+      if (url.pathname.includes('/auth/v1/verify')) {
+        const token = url.searchParams.get('token')
+        const type = url.searchParams.get('type')
+        const redirectTo = url.searchParams.get('redirect_to')
+        
+        if (token && type === 'recovery') {
+          // Construct a direct link to our reset password page
+          // The verify endpoint will redirect here, and we'll handle the token
+          resetLink = `${safeRedirectUrl}?token=${token}&type=${type}`
+          console.log("Constructed custom reset link from verify endpoint")
+        } else if (redirectTo && !redirectTo.includes('/reset-password')) {
+          // Fix redirect_to if it's missing the path
+          const fixedRedirect = redirectTo.endsWith('/') 
+            ? `${redirectTo}reset-password`
+            : `${redirectTo}/reset-password`
+          url.searchParams.set('redirect_to', fixedRedirect)
+          resetLink = url.toString()
+          console.log("Fixed redirect_to to include /reset-password")
+        }
       } else {
-        console.log("Using original reset link from Supabase")
+        // Try to extract access_token and refresh_token (for direct links)
+        const accessToken = url.searchParams.get('access_token')
+        const refreshToken = url.searchParams.get('refresh_token')
+        const type = url.searchParams.get('type')
+        
+        if (accessToken && refreshToken && type === 'recovery') {
+          // Construct our own reset link with production URL
+          resetLink = `${safeRedirectUrl}?access_token=${accessToken}&refresh_token=${refreshToken}&type=${type}`
+          console.log("Constructed custom reset link with tokens")
+        }
       }
     } catch (urlError) {
       console.error("Error parsing reset link URL:", urlError)
