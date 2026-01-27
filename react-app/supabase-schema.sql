@@ -268,9 +268,9 @@ BEGIN
   -- Only update if email_confirmed_at changed from NULL to a value (actual verification)
   -- Don't sync if it was already set (prevents auto-verification during signup)
   IF OLD.email_confirmed_at IS NULL AND NEW.email_confirmed_at IS NOT NULL THEN
-    UPDATE public.users
+  UPDATE public.users
     SET email_verified = TRUE
-    WHERE id = NEW.id;
+  WHERE id = NEW.id;
   END IF;
   RETURN NEW;
 END;
