@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
@@ -6,12 +6,58 @@ import { sendEmail, getEmailTemplate, getAdminEmails } from '../lib/email'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
 import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
 
+// Country codes for phone numbers
+const COUNTRY_CODES = [
+  { code: '+61', country: 'Australia', flag: '🇦🇺' },
+  { code: '+1', country: 'United States/Canada', flag: '🇺🇸' },
+  { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
+  { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
+  { code: '+27', country: 'South Africa', flag: '🇿🇦' },
+  { code: '+91', country: 'India', flag: '🇮🇳' },
+  { code: '+86', country: 'China', flag: '🇨🇳' },
+  { code: '+81', country: 'Japan', flag: '🇯🇵' },
+  { code: '+82', country: 'South Korea', flag: '🇰🇷' },
+  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+  { code: '+60', country: 'Malaysia', flag: '🇲🇾' },
+  { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
+  { code: '+66', country: 'Thailand', flag: '🇹🇭' },
+  { code: '+84', country: 'Vietnam', flag: '🇻🇳' },
+  { code: '+63', country: 'Philippines', flag: '🇵🇭' },
+]
+
+// Phone number validation
+const validatePhoneNumber = (phone: string, countryCode: string): boolean => {
+  // Remove all non-digit characters
+  const digitsOnly = phone.replace(/\D/g, '')
+  
+  // Remove leading 0 if present (common in Australian numbers)
+  const cleanPhone = digitsOnly.startsWith('0') ? digitsOnly.slice(1) : digitsOnly
+  
+  // Basic validation based on country code
+  switch (countryCode) {
+    case '+61': // Australia
+      // Australian numbers: 9 digits after country code (without leading 0)
+      return cleanPhone.length >= 8 && cleanPhone.length <= 10 && /^[2-9]/.test(cleanPhone)
+    case '+1': // US/Canada
+      return cleanPhone.length === 10 && /^[2-9]\d{2}[2-9]\d{2}\d{4}$/.test(cleanPhone)
+    case '+44': // UK
+      return cleanPhone.length >= 9 && cleanPhone.length <= 10
+    case '+64': // New Zealand
+      return cleanPhone.length >= 8 && cleanPhone.length <= 9
+    default:
+      // Generic validation: 7-15 digits
+      return cleanPhone.length >= 7 && cleanPhone.length <= 15
+  }
+}
+
 export function GetListed() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [phoneCountryCode, setPhoneCountryCode] = useState('+61')
+  const [phoneError, setPhoneError] = useState('')
 
   const [formData, setFormData] = useState({
     practice_name: '',
@@ -38,10 +84,50 @@ export function GetListed() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
+  // Auto-fill email when user changes (but allow editing)
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => {
+        // Only update if email field is empty or matches the previous user email
+        // This allows user to edit while still auto-filling on initial load
+        if (!prev.email || prev.email === user.email) {
+          return { ...prev, email: user.email }
+        }
+        return prev
+      })
+    }
+  }, [user?.email])
+
+  const handlePhoneChange = (value: string) => {
+    // Remove all non-digit characters except spaces, dashes, and parentheses
+    const cleaned = value.replace(/[^\d\s\-()]/g, '')
+    setFormData({ ...formData, phone: cleaned })
+    setPhoneError('')
+    
+    // Validate on blur or when user stops typing
+    if (cleaned.length > 0) {
+      const isValid = validatePhoneNumber(cleaned, phoneCountryCode)
+      if (!isValid && cleaned.replace(/\D/g, '').length >= 4) {
+        setPhoneError('Please enter a valid phone number')
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setPhoneError('')
     setLoading(true)
+
+    // Validate phone number before submission
+    if (formData.phone) {
+      const isValid = validatePhoneNumber(formData.phone, phoneCountryCode)
+      if (!isValid) {
+        setPhoneError('Please enter a valid phone number')
+        setLoading(false)
+        return
+      }
+    }
 
     try {
       if (!user) {
@@ -59,9 +145,12 @@ export function GetListed() {
 
         // Prepare listing data, excluding avatar_url (column doesn't exist in database)
         const { avatar_url, ...listingData } = formData
+        // Format phone number with country code
+        const formattedPhone = formData.phone ? `${phoneCountryCode} ${formData.phone}` : ''
         const insertData = {
           user_id: authData.user?.id,
-          ...listingData
+          ...listingData,
+          phone: formattedPhone
         }
 
         const { error: listingError } = await supabase
@@ -138,9 +227,12 @@ export function GetListed() {
       } else {
         // Prepare listing data, excluding avatar_url (column doesn't exist in database)
         const { avatar_url, ...listingData } = formData
+        // Format phone number with country code
+        const formattedPhone = formData.phone ? `${phoneCountryCode} ${formData.phone}` : ''
         const insertData = {
           user_id: user.id,
-          ...listingData
+          ...listingData,
+          phone: formattedPhone
         }
 
         const { error: listingError } = await supabase
@@ -380,27 +472,73 @@ export function GetListed() {
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        disabled={!!user}
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100 transition-all bg-white"
+                        placeholder="your.email@example.com"
+                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
                       />
                     </div>
+                    {user?.email && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        Pre-filled from your account. You can edit if needed.
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Phone Number *
                     </label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="tel"
-                        required
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="(03) 6234 5678"
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
-                      />
+                    <div className="flex gap-2">
+                      <div className="relative flex-shrink-0">
+                        <select
+                          value={phoneCountryCode}
+                          onChange={(e) => {
+                            setPhoneCountryCode(e.target.value)
+                            setPhoneError('')
+                          }}
+                          className="appearance-none pl-3 pr-8 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white text-sm font-medium"
+                        >
+                          {COUNTRY_CODES.map(({ code, country, flag }) => (
+                            <option key={code} value={code}>
+                              {flag} {code}
+                            </option>
+                          ))}
+                        </select>
+                        <Phone className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+                      </div>
+                      <div className="relative flex-1">
+                        <input
+                          type="tel"
+                          required
+                          value={formData.phone}
+                          onChange={(e) => handlePhoneChange(e.target.value)}
+                          onBlur={() => {
+                            if (formData.phone) {
+                              const isValid = validatePhoneNumber(formData.phone, phoneCountryCode)
+                              if (!isValid) {
+                                setPhoneError('Please enter a valid phone number')
+                              } else {
+                                setPhoneError('')
+                              }
+                            }
+                          }}
+                          placeholder={phoneCountryCode === '+61' ? '(03) 6234 5678' : 'Enter phone number'}
+                          className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all bg-white ${
+                            phoneError ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-primary-500'
+                          }`}
+                        />
+                      </div>
                     </div>
+                    {phoneError && (
+                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {phoneError}
+                      </p>
+                    )}
+                    {phoneCountryCode === '+61' && !phoneError && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        Format: (03) 6234 5678 or 0362345678
+                      </p>
+                    )}
                   </div>
                 </div>
 
