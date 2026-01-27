@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { Mail, Lock, AlertCircle, Shield, ArrowLeft } from 'lucide-react'
 
 export function AdminLogin() {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('info@tasmentalhealthdirectory.com.au')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -132,7 +132,7 @@ export function AdminLogin() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@example.com"
+                  placeholder="info@tasmentalhealthdirectory.com.au"
                   required
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all bg-gray-50 focus:bg-white"
                 />
