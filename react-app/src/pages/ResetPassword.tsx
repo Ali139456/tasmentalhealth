@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { Lock, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react'
-import { sendEmail, getEmailTemplate } from '../lib/email'
+import { sendEmail, getEmailTemplate, isValidPassword } from '../lib/email'
 import toast from 'react-hot-toast'
 
 export function ResetPassword() {
