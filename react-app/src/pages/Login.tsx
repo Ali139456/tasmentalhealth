@@ -445,7 +445,15 @@ export function Login() {
             )}
             {isSignUp && (
               <div className="text-sm text-gray-600">
-                <p className="text-xs">Password must be at least 8 characters long.</p>
+                <p className="text-xs">
+                  Password must be at least 8 characters and include:
+                </p>
+                <ul className="text-xs mt-1 ml-4 list-disc">
+                  <li>One uppercase letter (A-Z)</li>
+                  <li>One lowercase letter (a-z)</li>
+                  <li>One number (0-9)</li>
+                  <li>One special character (!@#$%^&*()_+-=[]{}|;:,.<>/?)</li>
+                </ul>
               </div>
             )}
 
