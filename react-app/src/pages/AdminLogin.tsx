@@ -48,17 +48,49 @@ export function AdminLogin() {
         // Refresh user to get role
         await refreshUser()
         
-        // Check if user is admin
-        const { data: userData } = await supabase
+        // Check if user is admin (use maybeSingle to handle missing users)
+        const { data: userData, error: userError } = await supabase
           .from('users')
           .select('role')
           .eq('id', signInData.user.id)
-          .single()
+          .maybeSingle()
 
-        if (userData?.role !== 'admin') {
-          // Sign out if not admin
+        // If user doesn't exist in users table, create it with admin role
+        if (!userData && !userError) {
+          // User exists in auth.users but not in users table - create it
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: signInData.user.id,
+              email: signInData.user.email || email,
+              role: 'admin',
+              email_verified: signInData.user.email_confirmed_at ? true : false
+            })
+
+          if (insertError) {
+            console.error('Error creating user record:', insertError)
+            throw new Error('Failed to initialize admin account. Please contact support.')
+          }
+
+          // Re-fetch the user data
+          const { data: newUserData } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', signInData.user.id)
+            .maybeSingle()
+
+          if (newUserData?.role !== 'admin') {
+            await supabase.auth.signOut()
+            throw new Error('Access denied. This login is for administrators only.')
+          }
+        } else if (userData?.role !== 'admin') {
+          // User exists but is not admin
           await supabase.auth.signOut()
           throw new Error('Access denied. This login is for administrators only.')
+        } else if (userError) {
+          // Error querying users table
+          console.error('Error checking user role:', userError)
+          throw new Error('Failed to verify admin access. Please try again.')
         }
 
         // Navigate to admin dashboard
