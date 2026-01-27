@@ -422,13 +422,10 @@ export function Dashboard() {
 
     setSaving(true)
     try {
-      // Exclude avatar_url from update (column doesn't exist in database)
-      const { avatar_url, ...updateData } = editFormData
-      
       const { error } = await supabase
         .from('listings')
         .update({
-          ...updateData,
+          ...editFormData,
           updated_at: new Date().toISOString(),
         })
         .eq('id', editingListing.id)

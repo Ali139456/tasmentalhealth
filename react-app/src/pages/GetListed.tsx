@@ -332,13 +332,12 @@ export function GetListed() {
           redirectTo: `${window.location.origin}/reset-password`,
         })
 
-        // Prepare listing data, excluding avatar_url (column doesn't exist in database)
-        const { avatar_url, ...listingData } = formData
+        // Prepare listing data, including avatar_url
         // Format phone number with country code
         const formattedPhone = formData.phone ? `${phoneCountryCode} ${formData.phone}` : ''
         const insertData = {
           user_id: authData.user?.id,
-          ...listingData,
+          ...formData,
           phone: formattedPhone
         }
 
@@ -414,13 +413,12 @@ export function GetListed() {
           navigate('/login')
         }, 3000)
       } else {
-        // Prepare listing data, excluding avatar_url (column doesn't exist in database)
-        const { avatar_url, ...listingData } = formData
+        // Prepare listing data, including avatar_url
         // Format phone number with country code
         const formattedPhone = formData.phone ? `${phoneCountryCode} ${formData.phone}` : ''
         const insertData = {
           user_id: user.id,
-          ...listingData,
+          ...formData,
           phone: formattedPhone
         }
 
