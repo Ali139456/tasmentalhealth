@@ -187,6 +187,7 @@ export function Login() {
           } else {
             setSuccess('Account created! Please check your email to verify your account. A verification email has been sent.')
             setIsSignUp(false)
+            setLoading(false) // Reset loading state so form is usable
             // Reset form and switch to sign in after showing success message
             setTimeout(() => {
               setEmail('')
