@@ -139,32 +139,24 @@ export function Login() {
           })
 
           // Send verification email if not already confirmed
+          // IMPORTANT: Only use our custom Edge Function to prevent duplicate emails
+          // Supabase's built-in email is disabled to avoid duplicates
           if (authData.user && !authData.user.email_confirmed_at) {
-            // Always use our custom Edge Function for reliable email delivery
+            // Only use our custom Edge Function for reliable email delivery
             // This runs asynchronously and doesn't block signup
             const userEmail: string = authData.user.email || email
             ;(async () => {
               try {
                 console.log('Sending verification email to:', userEmail)
-                const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
+                const { error: functionError } = await supabase.functions.invoke('send-verification-email', {
                   body: { email: userEmail }
                 })
                 
                 if (functionError) {
                   console.error('Edge Function error:', functionError)
-                  // Fallback: Try Supabase's built-in resend
-                  const { error: resendError } = await supabase.auth.resend({
-                    type: 'signup',
-                    email: userEmail
-                  })
-                  
-                  if (resendError) {
-                    console.error('Supabase resend also failed:', resendError)
-                  } else {
-                    console.log('Verification email sent via Supabase fallback')
-                  }
+                  // Don't fallback to Supabase resend to avoid duplicates
                 } else {
-                  console.log('Verification email sent successfully via Edge Function:', data)
+                  console.log('Verification email sent successfully via Edge Function')
                 }
               } catch (emailError) {
                 console.error('Error sending verification email:', emailError)
