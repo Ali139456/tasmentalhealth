@@ -29,6 +29,19 @@ export function Home() {
 
   useEffect(() => {
     fetchListings()
+    
+    // Refresh listings when page becomes visible (user switches back to tab)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchListings(true) // Force refresh when tab becomes visible
+      }
+    }
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [])
 
   const filterListings = useCallback(() => {
@@ -130,67 +143,100 @@ export function Home() {
     setCurrentPage(1) // Reset to first page when filters change
   }, [filterListings])
 
-  const fetchListings = async () => {
-    // Show sample data immediately for instant UI
-    setListings(SAMPLE_LISTINGS)
-    setLoading(false)
-
-    // Then fetch from database in background
+  const fetchListings = async (forceRefresh = false) => {
+    setLoading(true)
+    
     try {
-      // Try to get from cache first
-      const cacheKey = 'listings_cache'
-      const cacheTime = 'listings_cache_time'
-      const cached = sessionStorage.getItem(cacheKey)
-      const cacheTimestamp = sessionStorage.getItem(cacheTime)
-      
-      // Use cache if less than 5 minutes old
-      if (cached && cacheTimestamp) {
-        const age = Date.now() - parseInt(cacheTimestamp)
-        if (age < 5 * 60 * 1000) { // 5 minutes
-          try {
-            const cachedListings = JSON.parse(cached)
-            updateListings(cachedListings)
-            return // Use cached data, skip fetch
-          } catch (e) {
-            // Cache corrupted, continue to fetch
+      // Clear cache if force refresh
+      if (forceRefresh) {
+        sessionStorage.removeItem('listings_cache')
+        sessionStorage.removeItem('listings_cache_time')
+      }
+
+      // Try to get from cache first (unless forcing refresh)
+      if (!forceRefresh) {
+        const cacheKey = 'listings_cache'
+        const cacheTime = 'listings_cache_time'
+        const cached = sessionStorage.getItem(cacheKey)
+        const cacheTimestamp = sessionStorage.getItem(cacheTime)
+        
+        // Use cache if less than 2 minutes old (reduced from 5 minutes)
+        if (cached && cacheTimestamp) {
+          const age = Date.now() - parseInt(cacheTimestamp)
+          if (age < 2 * 60 * 1000) { // 2 minutes
+            try {
+              const cachedListings = JSON.parse(cached)
+              if (cachedListings && cachedListings.length > 0) {
+                updateListings(cachedListings)
+                setLoading(false)
+                return // Use cached data, skip fetch
+              }
+            } catch (e) {
+              // Cache corrupted, continue to fetch
+            }
           }
         }
       }
 
-      // Fetch with timeout
-      const queryPromise = supabase
+      // Show sample data immediately for instant UI (only if no cache)
+      if (!forceRefresh) {
+        setListings(SAMPLE_LISTINGS)
+        setLoading(false)
+      }
+
+      // Fetch from database
+      const { data, error } = await supabase
         .from('listings')
         .select('*')
         .eq('status', 'approved')
         .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(100) // Limit results for faster query
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Query timeout')), 3000)
-      )
-
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any
+        .limit(200) // Increased limit
 
       if (error) {
         console.error('Error fetching listings:', error)
-        return // Keep sample data
+        // If we have cached data, keep it. Otherwise show sample data
+        if (!forceRefresh) {
+          return
+        }
+        throw error
       }
 
       // Process and update listings
       const dbListings = data || []
-      updateListings(dbListings)
+      
+      if (dbListings.length === 0) {
+        console.warn('No approved listings found in database')
+        // Still update with empty array to clear sample data
+        updateListings([])
+      } else {
+        updateListings(dbListings)
+      }
       
       // Cache the result
       try {
-        sessionStorage.setItem(cacheKey, JSON.stringify(dbListings))
-        sessionStorage.setItem(cacheTime, Date.now().toString())
+        sessionStorage.setItem('listings_cache', JSON.stringify(dbListings))
+        sessionStorage.setItem('listings_cache_time', Date.now().toString())
       } catch (e) {
         // Cache failed, ignore
       }
     } catch (error) {
       console.error('Error fetching listings:', error)
-      // Keep sample data on error
+      // On error, try to use cache if available
+      const cached = sessionStorage.getItem('listings_cache')
+      if (cached) {
+        try {
+          const cachedListings = JSON.parse(cached)
+          updateListings(cachedListings)
+        } catch (e) {
+          // Cache also failed, show sample data
+          setListings(SAMPLE_LISTINGS)
+        }
+      } else {
+        setListings(SAMPLE_LISTINGS)
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
