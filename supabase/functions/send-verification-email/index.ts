@@ -210,7 +210,7 @@ serve(async (req) => {
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #39B8A6 0%, #2E9385 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
           .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
-          .button { display: inline-block; background: #39B8A6; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: 600; }
+          .button { display: inline-block; background: #39B8A6; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; font-size: 16px; text-align: center; border: none; cursor: pointer; }
           .button:hover { background-color: #2E9385; }
           .footer { text-align: center; margin-top: 20px; color: #6b7280; font-size: 12px; }
         </style>
