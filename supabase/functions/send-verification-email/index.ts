@@ -223,9 +223,9 @@ serve(async (req) => {
           <div class="content">
             <p>Hello,</p>
             <p>Thank you for signing up for the Tasmanian Mental Health Directory! Please verify your email address by clicking the button below:</p>
-            <p style="text-align: center;">
-              <a href="${finalVerificationUrl}" class="button">Confirm Your Email</a>
-            </p>
+            <div style="text-align: center; margin: 25px 0;">
+              <a href="${finalVerificationUrl}" class="button" style="display: inline-block !important; background: #39B8A6 !important; color: white !important; padding: 14px 32px !important; text-decoration: none !important; border-radius: 6px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;">Confirm Your Email</a>
+            </div>
             <p>If the button doesn't work, copy and paste this link into your browser:</p>
             <p style="word-break: break-all; color: #39B8A6;">${finalVerificationUrl}</p>
             <p><strong>This link will expire in 24 hours.</strong></p>
