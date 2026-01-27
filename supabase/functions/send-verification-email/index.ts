@@ -224,7 +224,7 @@ serve(async (req) => {
             <p>Hello,</p>
             <p>Thank you for signing up for the Tasmanian Mental Health Directory! Please verify your email address by clicking the button below:</p>
             <p style="text-align: center;">
-              <a href="${finalVerificationUrl}" class="button">Verify Email Address</a>
+              <a href="${finalVerificationUrl}" class="button">Confirm Your Email</a>
             </p>
             <p>If the button doesn't work, copy and paste this link into your browser:</p>
             <p style="word-break: break-all; color: #39B8A6;">${finalVerificationUrl}</p>
