@@ -150,10 +150,10 @@ serve(async (req) => {
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; }
-          .header { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header { background: linear-gradient(135deg, #39B8A6 0%, #2E9385 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
           .content { padding: 30px 20px; }
-          .button { display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: 600; }
-          .button:hover { background-color: #1e40af; }
+          .button { display: inline-block; padding: 14px 32px; background-color: #39B8A6; color: white !important; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+          .button:hover { background-color: #2E9385; }
           .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #e5e5e5; }
           .notice { background-color: #f59e0b; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
         </style>
@@ -167,11 +167,11 @@ serve(async (req) => {
             <p>Hello,</p>
             <p>You requested to reset your password for your <strong>Tasmanian Mental Health Directory</strong> account.</p>
             <p>Click the button below to create a new password:</p>
-            <p style="text-align: center;">
-              <a href="${resetLink}" class="button">Reset Password</a>
-            </p>
+            <div style="text-align: center; margin: 25px 0;">
+              <a href="${resetLink}" class="button" style="display: inline-block !important; background: #39B8A6 !important; color: white !important; padding: 14px 32px !important; text-decoration: none !important; border-radius: 6px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;">Reset Password</a>
+            </div>
             <p>If the button doesn't work, copy and paste this link into your browser:</p>
-            <p style="word-break: break-all; color: #2563eb; font-size: 12px;">${resetLink}</p>
+            <p style="word-break: break-all; color: #39B8A6; font-size: 12px;">${resetLink}</p>
             <div class="notice">
               <p style="margin: 0;"><strong>⚠️ Security Notice:</strong> This link will expire in 1 hour. If you didn't request this password reset, please ignore this email.</p>
             </div>
