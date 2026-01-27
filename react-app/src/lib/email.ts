@@ -158,13 +158,13 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
   const baseStyles = `
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; }
-    .header { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .header { background: linear-gradient(135deg, #39B8A6 0%, #2E9385 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
     .content { padding: 30px 20px; }
-    .button { display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: 600; }
-    .button:hover { background-color: #1e40af; }
+    .button { display: inline-block; padding: 12px 24px; background-color: #39B8A6; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: 600; }
+    .button:hover { background-color: #2E9385; }
     .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #e5e5e5; }
     .success { background-color: #10b981; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
-    .notice { background-color: #3b82f6; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    .notice { background-color: #39B8A6; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
     .warning { background-color: #f59e0b; color: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
   `
 
@@ -421,7 +421,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
                 <a href="${data.verificationUrl}" class="button">Verify Email</a>
               </p>
               <p>If the button doesn't work, copy and paste this link into your browser:</p>
-              <p style="word-break: break-all; color: #2563eb;">${data.verificationUrl}</p>
+              <p style="word-break: break-all; color: #39B8A6;">${data.verificationUrl}</p>
               <p><strong>This link will expire in 24 hours.</strong></p>
             </div>
             <div class="footer">
@@ -454,7 +454,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
                 <a href="${data.resetUrl}" class="button">Reset Password</a>
               </p>
               <p>If the button doesn't work, copy and paste this link into your browser:</p>
-              <p style="word-break: break-all; color: #2563eb;">${data.resetUrl}</p>
+              <p style="word-break: break-all; color: #39B8A6;">${data.resetUrl}</p>
               <p><strong>This link will expire in 1 hour.</strong></p>
               <p>If you didn't request this password reset, please ignore this email. Your password will remain unchanged.</p>
             </div>

@@ -208,9 +208,10 @@ serve(async (req) => {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .header { background: linear-gradient(135deg, #39B8A6 0%, #2E9385 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
           .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
-          .button { display: inline-block; background: #0ea5e9; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+          .button { display: inline-block; background: #39B8A6; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: 600; }
+          .button:hover { background-color: #2E9385; }
           .footer { text-align: center; margin-top: 20px; color: #6b7280; font-size: 12px; }
         </style>
       </head>
@@ -226,7 +227,7 @@ serve(async (req) => {
               <a href="${finalVerificationUrl}" class="button">Verify Email Address</a>
             </p>
             <p>If the button doesn't work, copy and paste this link into your browser:</p>
-            <p style="word-break: break-all; color: #0ea5e9;">${finalVerificationUrl}</p>
+            <p style="word-break: break-all; color: #39B8A6;">${finalVerificationUrl}</p>
             <p><strong>This link will expire in 24 hours.</strong></p>
             <p>If you didn't create this account, please ignore this email.</p>
           </div>
