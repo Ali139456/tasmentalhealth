@@ -194,7 +194,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
                 <li>Update your profile information</li>
               </ul>
               <p style="text-align: center;">
-                <a href="${appUrl}/dashboard" class="button">Go to Dashboard</a>
+                <a href="${appUrl}/dashboard" class="button" style="color: white !important;">Go to Dashboard</a>
               </p>
               <p>If you have any questions or need assistance, please don't hesitate to contact us.</p>
               <p>Best regards,<br>The Tasmanian Mental Health Directory Team</p>
@@ -230,7 +230,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
               <p>Your email address has been verified and your account is now fully activated.</p>
               <p>You can now access all features of the Tasmanian Mental Health Directory.</p>
               <p style="text-align: center;">
-                <a href="${appUrl}/dashboard" class="button">Go to Dashboard</a>
+                <a href="${appUrl}/dashboard" class="button" style="color: white !important;">Go to Dashboard</a>
               </p>
               <p>Thank you for verifying your email address!</p>
             </div>
@@ -266,7 +266,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
               <p><strong>If you made this change:</strong> You can safely ignore this email.</p>
               <p><strong>If you did NOT make this change:</strong> Please contact us immediately and consider changing your password again.</p>
               <p style="text-align: center;">
-                <a href="${appUrl}/dashboard" class="button">Go to Dashboard</a>
+                <a href="${appUrl}/dashboard" class="button" style="color: white !important;">Go to Dashboard</a>
               </p>
               <p>For your security, if you have any concerns, please contact our support team immediately.</p>
             </div>
@@ -387,7 +387,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
               <p><strong>Review Status:</strong> Pending</p>
               <p>You can check the status of your listing at any time from your dashboard.</p>
               <p style="text-align: center;">
-                <a href="${appUrl}/dashboard" class="button">View Dashboard</a>
+                <a href="${appUrl}/dashboard" class="button" style="color: white !important;">View Dashboard</a>
               </p>
               <p>We appreciate your patience during the review process.</p>
             </div>
@@ -489,7 +489,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
               <p>Great news! Your listing "<strong>${data.listingName}</strong>" has been approved and is now live on the Tasmanian Mental Health Directory.</p>
               <p>You can view your listing and manage it from your dashboard.</p>
               <p style="text-align: center;">
-                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button">Go to Dashboard</a>
+                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button" style="color: white !important;">Go to Dashboard</a>
               </p>
               <p>Thank you for being part of our directory!</p>
             </div>
@@ -525,7 +525,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
               ${data.reason ? `<p><strong>Reason:</strong> ${data.reason}</p>` : ''}
               <p>If you have questions or would like to resubmit, please contact us.</p>
               <p style="text-align: center;">
-                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button">View Dashboard</a>
+                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button" style="color: white !important;">View Dashboard</a>
               </p>
             </div>
             <div class="footer">
@@ -560,7 +560,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
               ${data.notes ? `<p><strong>Required Changes:</strong><br>${data.notes}</p>` : ''}
               <p>Please update your listing and resubmit for review.</p>
               <p style="text-align: center;">
-                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button">Update Listing</a>
+                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button" style="color: white !important;">Update Listing</a>
               </p>
             </div>
             <div class="footer">
@@ -596,7 +596,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
               <p><strong>Next Billing Date:</strong> ${data.nextBillingDate}</p>
               <p>Your listing is now featured and will appear higher in search results.</p>
               <p style="text-align: center;">
-                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button">Manage Subscription</a>
+                <a href="${data.dashboardUrl || `${appUrl}/dashboard`}" class="button" style="color: white !important;">Manage Subscription</a>
               </p>
             </div>
             <div class="footer">
