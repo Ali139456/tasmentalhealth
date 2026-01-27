@@ -521,47 +521,47 @@ export function GetListed() {
       }
       reader.readAsDataURL(file)
 
-      // Upload to Supabase Storage - try multiple bucket names
+      // Upload to Supabase Storage - use listings bucket (same as Dashboard)
       const fileExt = file.name.split('.').pop()
       const fileName = `${user?.id || 'temp'}-${Date.now()}.${fileExt}`
       const filePath = `avatars/${fileName}`
 
-      // Try different bucket names in order
-      const bucketNames = ['listings', 'avatars', 'images', 'public']
+      // Try listings bucket first (standard bucket for this app)
+      let bucketName = 'listings'
       let uploadError = null
-      let bucketName = bucketNames[0]
 
-      for (const bucket of bucketNames) {
-        const { error } = await supabase.storage
-          .from(bucket)
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-          })
+      const { error: listingsError } = await supabase.storage
+        .from('listings')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
 
-        if (!error) {
-          bucketName = bucket
-          uploadError = null
-          break
+      if (listingsError) {
+        // If bucket doesn't exist or has permission issues, try Articles bucket (used by Admin)
+        if (listingsError.message?.includes('not found') || listingsError.message?.includes('Bucket') || listingsError.message?.includes('permission')) {
+          bucketName = 'Articles'
+          const { error: articlesError } = await supabase.storage
+            .from('Articles')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            })
+          uploadError = articlesError
         } else {
-          // If bucket not found, try next bucket
-          if (error.message?.includes('not found') || error.message?.includes('Bucket')) {
-            uploadError = error
-            continue
-          } else {
-            // Other error (permissions, etc.)
-            uploadError = error
-            break
-          }
+          uploadError = listingsError
         }
       }
 
       if (uploadError) {
-        // If all buckets failed, provide helpful error message
+        // Provide helpful error message
         if (uploadError.message?.includes('not found') || uploadError.message?.includes('Bucket')) {
-          throw new Error('Storage bucket not configured. Please contact support or use a different image.')
+          throw new Error('Storage bucket not found. Please ensure the "listings" bucket exists in Supabase Storage and has proper permissions.')
+        } else if (uploadError.message?.includes('permission') || uploadError.message?.includes('policy')) {
+          throw new Error('Permission denied. Please ensure your account has upload permissions for the storage bucket.')
+        } else {
+          throw new Error(`Upload failed: ${uploadError.message || 'Unknown error'}`)
         }
-        throw uploadError
       }
 
       // Get public URL
@@ -570,10 +570,26 @@ export function GetListed() {
         .getPublicUrl(filePath)
 
       setFormData(prev => ({ ...prev, avatar_url: publicUrl }))
+      // Clear any previous errors on success
+      setError('')
     } catch (err: any) {
       console.error('Error uploading avatar:', err)
-      setError(err.message || 'Failed to upload avatar. Please try again or contact support.')
-      setAvatarPreview(null)
+      const errorMessage = err.message || 'Failed to upload avatar'
+      
+      // Don't block form submission - avatar is optional
+      // Just show a warning that avatar won't be included
+      if (errorMessage.includes('not found') || errorMessage.includes('Bucket')) {
+        setError('Avatar upload failed: Storage bucket not configured. You can still submit the form without an avatar, or contact support to set up storage.')
+      } else if (errorMessage.includes('permission') || errorMessage.includes('policy')) {
+        setError('Avatar upload failed: Permission denied. You can still submit the form without an avatar.')
+      } else {
+        setError(`Avatar upload failed: ${errorMessage}. You can still submit the form without an avatar.`)
+      }
+      
+      // Clear avatar URL so form can be submitted without it
+      setFormData(prev => ({ ...prev, avatar_url: '' }))
+      // Keep preview so user can see what they tried to upload
+      // setAvatarPreview(null) // Commented out - keep preview
     } finally {
       setUploadingAvatar(false)
     }
