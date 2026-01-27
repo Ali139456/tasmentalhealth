@@ -91,7 +91,7 @@ export function GetListed() {
         // Only update if email field is empty or matches the previous user email
         // This allows user to edit while still auto-filling on initial load
         if (!prev.email || prev.email === user.email) {
-          return { ...prev, email: user.email }
+          return { ...prev, email: user.email || '' }
         }
         return prev
       })
@@ -497,7 +497,7 @@ export function GetListed() {
                           }}
                           className="appearance-none pl-3 pr-8 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white text-sm font-medium"
                         >
-                          {COUNTRY_CODES.map(({ code, country, flag }) => (
+                          {COUNTRY_CODES.map(({ code, flag }) => (
                             <option key={code} value={code}>
                               {flag} {code}
                             </option>
