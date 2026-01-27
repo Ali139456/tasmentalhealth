@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { sendEmail, getEmailTemplate, isValidEmail, getAdminEmails } from '../lib/email'
+import { sendEmail, getEmailTemplate, isValidEmail, isValidPassword, getAdminEmails } from '../lib/email'
 import { Mail, Lock, AlertCircle, LogIn, ArrowRight, Shield, ArrowLeft, Sparkles, UserPlus, CheckCircle } from 'lucide-react'
 
 export function Login() {
@@ -28,9 +28,10 @@ export function Login() {
           throw new Error('Please enter a valid email address. Invalid or fake email addresses are not allowed.')
         }
 
-        // Validate password length before sending to Supabase
-        if (password.length < 8) {
-          throw new Error('Password must be at least 8 characters long.')
+        // Validate password strength
+        const passwordValidation = isValidPassword(password)
+        if (!passwordValidation.valid) {
+          throw new Error(passwordValidation.error || 'Password does not meet requirements.')
         }
 
         // Sign up flow

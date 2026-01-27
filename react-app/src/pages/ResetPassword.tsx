@@ -79,9 +79,10 @@ export function ResetPassword() {
     e.preventDefault()
     setError('')
     
-    // Validate passwords
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long.')
+    // Validate password strength
+    const passwordValidation = isValidPassword(password)
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.error || 'Password does not meet requirements.')
       return
     }
     
