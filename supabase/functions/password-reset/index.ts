@@ -4,16 +4,21 @@ import { Resend } from 'https://esm.sh/resend@2.0.0'
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")
 const FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") || "Tasmanian Mental Health Directory <noreply@tasmentalhealthdirectory.com.au>"
+const APP_URL = Deno.env.get("APP_URL") || "https://www.tasmentalhealthdirectory.com.au"
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-const APP_URL = Deno.env.get("APP_URL") || "https://www.tasmentalhealthdirectory.com.au"
 
 if (!RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY environment variable is required")
 }
 
 const resend = new Resend(RESEND_API_KEY)
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+})
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,17 +50,11 @@ serve(async (req) => {
       )
     }
 
+    // Use production URL for redirect
+    const safeRedirectUrl = redirectUrl || `${APP_URL}/reset-password`
+    console.log("Using redirect URL:", safeRedirectUrl)
+
     // Generate password reset token using Supabase Admin API
-    // Always use production URL, never localhost
-    const finalRedirectUrl = redirectUrl || `${APP_URL}/reset-password`
-    
-    // Ensure we never use localhost
-    const safeRedirectUrl = finalRedirectUrl.includes('localhost') 
-      ? `${APP_URL}/reset-password`
-      : finalRedirectUrl
-    
-    console.log("Generating reset link with redirect URL:", safeRedirectUrl)
-    
     const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
       type: 'recovery',
       email: email,
@@ -75,12 +74,7 @@ serve(async (req) => {
       )
     }
 
-    // Extract the reset link from the response
-    // The generateLink response structure: { properties: { action_link: string } }
-    let resetLink = resetData.properties?.action_link
-
-    if (!resetLink) {
-      console.error("No reset link in response:", resetData)
+    if (!resetData?.properties?.action_link) {
       return new Response(
         JSON.stringify({ error: "Failed to generate reset link" }),
         {
@@ -90,8 +84,10 @@ serve(async (req) => {
       )
     }
 
-    // Extract the token from the generated link and construct our own URL
-    // Supabase's verify endpoint format: /auth/v1/verify?token=...&type=recovery&redirect_to=...
+    // Extract the reset link from the response
+    let resetLink = resetData.properties.action_link
+
+    // Parse and fix the URL to ensure it points to our reset-password page
     try {
       const url = new URL(resetLink)
       
@@ -102,7 +98,6 @@ serve(async (req) => {
         
         if (token && type === 'recovery') {
           // Instead of using verify endpoint, construct direct link with token
-          // User will click this, and we'll handle token verification on our page
           resetLink = `${safeRedirectUrl}?token=${encodeURIComponent(token)}&type=${type}`
           console.log("Constructed direct reset link from verify endpoint token")
         } else {
@@ -140,7 +135,7 @@ serve(async (req) => {
 
     console.log("Reset link generated successfully:", resetLink.substring(0, 100) + "...")
 
-    // Send password reset email
+    // Send password reset email with theme teal colors
     const emailHtml = `
       <!DOCTYPE html>
       <html>
