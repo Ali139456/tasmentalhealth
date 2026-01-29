@@ -648,7 +648,7 @@ export function GetListed() {
           </Link>
 
           {/* Hero Section */}
-          <div className="text-center mb-12">
+          <div className="hero-section text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
               Join the Tasmanian Mental Health Directory
             </h1>

@@ -303,7 +303,7 @@ export function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Background Image */}
-      <section className="relative text-white overflow-hidden">
+      <section className="hero-section relative text-white overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{

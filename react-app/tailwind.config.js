@@ -22,21 +22,6 @@ export default {
         },
       },
     },
-    fontSize: {
-      xs: ['0.75rem', { lineHeight: '1rem' }],
-      sm: ['0.875rem', { lineHeight: '1.25rem' }],
-      base: ['1rem', { lineHeight: '1.5rem' }],
-      lg: ['1.125rem', { lineHeight: '1.75rem' }],
-      xl: ['1.25rem', { lineHeight: '1.75rem' }],
-      '2xl': ['1.375rem', { lineHeight: '1.75rem' }], // Reduced from 1.5rem
-      '3xl': ['1.625rem', { lineHeight: '2rem' }], // Reduced from 1.875rem
-      '4xl': ['1.875rem', { lineHeight: '2.25rem' }], // Reduced from 2.25rem
-      '5xl': ['2.25rem', { lineHeight: '2.5rem' }], // Reduced from 3rem
-      '6xl': ['2.75rem', { lineHeight: '1' }], // Reduced from 3.75rem
-      '7xl': ['3.25rem', { lineHeight: '1' }], // Reduced from 4.5rem
-      '8xl': ['3.75rem', { lineHeight: '1' }],
-      '9xl': ['4.5rem', { lineHeight: '1' }],
-    },
   },
   plugins: [],
 }

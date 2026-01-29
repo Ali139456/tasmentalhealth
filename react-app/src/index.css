@@ -13,6 +13,21 @@
   }
 }
 
+/* Reduce heading sizes globally, but exclude hero sections */
+/* Hero sections preserve their original sizes using .hero-section class */
+h1, h2, h3, h4, h5, h6 {
+  font-size: 0.85em;
+}
+
+.hero-section h1,
+.hero-section h2,
+.hero-section h3,
+.hero-section h4,
+.hero-section h5,
+.hero-section h6 {
+  font-size: revert;
+}
+
 @layer components {
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;

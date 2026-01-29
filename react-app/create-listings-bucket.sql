@@ -12,7 +12,7 @@
 
 -- Allow authenticated users to upload avatars to listings bucket
 CREATE POLICY "Authenticated users can upload to listings bucket"
-ON storage.objects
+ON storage.objectsåçç
 FOR INSERT
 TO authenticated
 WITH CHECK (bucket_id = 'listings');

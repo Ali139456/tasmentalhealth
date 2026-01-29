@@ -212,7 +212,7 @@ export function ResourceDetail() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-50">
       {/* Enhanced Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white py-20 sm:py-24 md:py-28 overflow-hidden">
+      <section className="hero-section relative bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white py-20 sm:py-24 md:py-28 overflow-hidden">
         {/* Background decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white rounded-full blur-3xl"></div>

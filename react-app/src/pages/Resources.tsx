@@ -140,7 +140,7 @@ export function Resources() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/20 to-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-500 to-primary-600 text-white py-12 sm:py-16">
+      <section className="hero-section bg-gradient-to-r from-primary-500 to-primary-600 text-white py-12 sm:py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <span className="text-primary-100 font-semibold text-sm sm:text-lg mb-2 block">Knowledge Hub</span>
