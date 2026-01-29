@@ -344,7 +344,7 @@ export function Home() {
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
             <div className="pr-0 md:pr-6 md:pr-8 md:pr-10 lg:pr-12 border-r-0 md:border-r border-gray-300 pb-6 md:pb-0">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-900">For People Seeking Support</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">For People Seeking Support</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
                 Navigating mental health care can be overwhelming. We make it easier to find compassionate help. Whether you are looking for psychologists in Hobart, need anxiety counselling in Tasmania, or want to find a social worker in Tasmania, our directory connects you with verified local experts.
               </p>
@@ -372,7 +372,7 @@ export function Home() {
             </div>
 
             <div className="pl-0 md:pl-6 md:pl-8 md:pl-10 lg:pl-12 pt-6 md:pt-0 border-t md:border-t-0 border-gray-300">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-900">For Professionals & Clinics</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">For Professionals & Clinics</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
                 Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. We help you advertise psychology services in Tasmania effectively to patients actively seeking care.
               </p>
@@ -818,7 +818,7 @@ export function Home() {
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                     <Search className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">No matches found</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">No matches found</h3>
                   <p className="text-gray-600 text-base sm:text-lg">
                     We couldn't find any professionals matching your current filters.
                   </p>
@@ -1126,7 +1126,7 @@ export function Home() {
                 <span className="inline-block px-2 sm:px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs sm:text-sm font-semibold mb-2 sm:mb-3">
                   For Professionals & Clinics
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-gray-900">Why Mental Health Professionals Should List in Local Directories</h3>
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-gray-900">Why Mental Health Professionals Should List in Local Directories</h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
                   Are you looking to grow your private practice in Hobart or expand your reach? Joining a dedicated mental health directory for clinicians significantly boosts your local SEO and visibility.
                 </p>
@@ -1171,7 +1171,7 @@ export function Home() {
                     Welcome to Tasmania's premier resource for mental wellbeing. Our mission is to bridge the gap between those seeking help and the dedicated professionals who provide it. Whether you are searching for experienced psychologists in Hobart, compassionate counsellors in Tasmania, or specialised psychiatrists in Launceston, our directory is designed to help you find the right support close to home.
                   </p>
             
-                  <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-900">Comprehensive Support for Every Need</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">Comprehensive Support for Every Need</h3>
             <p>
                     We understand that mental health needs are diverse. That's why we list a wide range of professionals. From sleep therapy in Hobart for those struggling with insomnia, to anxiety counselling in Tasmania for stress management, and trauma-informed care for deeper healing. You can also find a social worker in Tasmania who specialises in complex case management and family support.
                   </p>
@@ -1179,7 +1179,7 @@ export function Home() {
                     Our directory covers all major regions, ensuring access to mental health support in Tasmania whether you are in the city centres of Hobart and Launceston, or in regional hubs like Devonport, Burnie, and Ulverstone.
                   </p>
             
-                  <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-900">For Clinicians: Grow Your Practice</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">For Clinicians: Grow Your Practice</h3>
             <p>
                     If you are a practitioner, visibility is key to helping more people. By choosing to list your mental health practice in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them.
                   </p>

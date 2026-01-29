@@ -218,7 +218,7 @@ export function Events() {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
                   Partner with Us
                 </h3>
                 <p className="text-lg text-gray-600 mb-6 leading-relaxed">

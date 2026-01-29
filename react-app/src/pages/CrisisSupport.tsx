@@ -613,7 +613,7 @@ export function CrisisSupport() {
                           <span className="text-white font-bold text-lg sm:text-xl">{section.num}</span>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{section.title}</h3>
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{section.title}</h3>
                           <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">{section.desc}</p>
                         </div>
                       </div>
@@ -713,7 +713,7 @@ export function CrisisSupport() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-2">In an Emergency?</h3>
+                <h3 className="text-lg sm:text-xl font-bold mb-2">In an Emergency?</h3>
                 <p className="text-sm sm:text-base mb-4 text-white/95 max-w-xl mx-auto">
                   If you or someone else is in immediate danger, do not wait.
                 </p>
@@ -730,7 +730,7 @@ export function CrisisSupport() {
             {/* Helplines Section - Compact */}
             <div className="bg-gradient-to-br from-white via-primary-50/30 to-white rounded-xl p-5 sm:p-6 shadow-lg border border-primary-100">
               <div className="mb-6">
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900">National 24/7 Support Lines</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">National 24/7 Support Lines</h3>
                   <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Free, confidential support available around the clock</p>
               </div>
               
@@ -815,7 +815,7 @@ export function CrisisSupport() {
                 <div className="mt-8 sm:mt-10 bg-white rounded-xl p-6 sm:p-8 border-2 border-primary-200 shadow-lg">
                   <div className="flex items-center gap-3 mb-6">
                     <Phone className="w-6 h-6 text-primary-600" />
-                    <h4 className="text-xl sm:text-2xl font-bold text-gray-900">Mental Health Crisis Lines & Services</h4>
+                    <h4 className="text-lg sm:text-xl font-bold text-gray-900">Mental Health Crisis Lines & Services</h4>
                   </div>
                   <div className="space-y-4 sm:space-y-6">
                     {stateData[selectedState].crisisLines.map((service, idx) => {
@@ -880,7 +880,7 @@ export function CrisisSupport() {
                 <div className="mt-8 sm:mt-10 bg-white rounded-xl p-6 sm:p-8 border-2 border-primary-200 shadow-lg">
                   <div className="flex items-center gap-3 mb-6">
                     <Home className="w-6 h-6 text-primary-600" />
-                    <h4 className="text-xl sm:text-2xl font-bold text-gray-900">Safe Haven Locations</h4>
+                    <h4 className="text-lg sm:text-xl font-bold text-gray-900">Safe Haven Locations</h4>
                   </div>
                   <div className="space-y-4 sm:space-y-6">
                     {stateData[selectedState].safeHavens!.map((haven, idx) => (
@@ -915,7 +915,7 @@ export function CrisisSupport() {
                 <div className="mt-8 sm:mt-10 bg-white rounded-xl p-6 sm:p-8 border-2 border-primary-200 shadow-lg">
                   <div className="flex items-center gap-3 mb-6">
                     <Building2 className="w-6 h-6 text-primary-600" />
-                    <h4 className="text-xl sm:text-2xl font-bold text-gray-900">
+                    <h4 className="text-lg sm:text-xl font-bold text-gray-900">
                       {selectedState === 'TAS' ? 'Tasmania' :
                        selectedState === 'VIC' ? 'Victoria' :
                        selectedState === 'NSW' ? 'New South Wales' :
