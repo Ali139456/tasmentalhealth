@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { sendEmail, getEmailTemplate, getAdminEmails } from '../lib/email'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
 import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight, Star } from 'lucide-react'
+import { useContentSettings } from '../hooks/useContentSettings'
 
 // Complete list of all country codes for phone numbers
 const COUNTRY_CODES = [
@@ -241,6 +242,7 @@ const validatePhoneNumber = (phone: string, countryCode: string): boolean => {
 
 export function GetListed() {
   const { user } = useAuth()
+  const { settings } = useContentSettings()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -650,10 +652,10 @@ export function GetListed() {
           {/* Hero Section */}
           <div className="hero-section text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-              Join the Tasmanian Mental Health Directory
+              {settings['get_listed_title'] || 'Join the Tasmanian Mental Health Directory'}
             </h1>
             <p className="text-xl text-gray-600 mb-2">
-              <strong>List your practice for free</strong> and connect with patients across Tasmania. Free directory listing for qualified mental health professionals.
+              {settings['get_listed_description'] || 'List your practice for free and connect with patients across Tasmania. Free directory listing for qualified mental health professionals.'}
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>
             {!user && (

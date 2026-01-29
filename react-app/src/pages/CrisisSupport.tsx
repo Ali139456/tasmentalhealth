@@ -9,6 +9,7 @@ interface SafetyPlanItem {
 }
 
 export function CrisisSupport() {
+  const { settings } = useContentSettings()
   const [activeTab, setActiveTab] = useState<'safety-plan' | 'find-help'>('safety-plan')
   const [safetyPlan, setSafetyPlan] = useState<Record<string, SafetyPlanItem[]>>({
     warningSigns: [],
@@ -530,12 +531,12 @@ export function CrisisSupport() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
            
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">Support When You Need It</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">{settings['crisis_hero_title'] || 'Support When You Need It'}</h1>
             <p className="text-base sm:text-lg md:text-xl text-white/90 mb-2 px-2">
-              Immediate help, hospital contacts, and personal safety planning.
+              {settings['crisis_hero_description'] || 'Immediate help, hospital contacts, and personal safety planning.'}
             </p>
             <p className="text-sm sm:text-base md:text-lg text-white/80 px-2">
-              A safe, private space to organise your resources.
+              {settings['crisis_hero_subdescription'] || 'A safe, private space to organise your resources.'}
             </p>
           </div>
         </div>
@@ -598,7 +599,7 @@ export function CrisisSupport() {
 
             <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
               <div className="mb-6 sm:mb-8">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-gray-900">My Safety Plan</h2>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-gray-900">{settings['crisis_heading_safety_plan'] || 'My Safety Plan'}</h2>
                   <p className="text-sm sm:text-base md:text-lg text-gray-600">
                     Based on the Stanley-Brown Safety Planning Intervention. This plan belongs to you. It's designed to help you navigate through a crisis until it passes.
                   </p>
@@ -713,7 +714,7 @@ export function CrisisSupport() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold mb-2">In an Emergency?</h3>
+                <h3 className="text-lg sm:text-xl font-bold mb-2">{settings['crisis_heading_emergency'] || 'In an Emergency?'}</h3>
                 <p className="text-sm sm:text-base mb-4 text-white/95 max-w-xl mx-auto">
                   If you or someone else is in immediate danger, do not wait.
                 </p>
@@ -730,7 +731,7 @@ export function CrisisSupport() {
             {/* Helplines Section - Compact */}
             <div className="bg-gradient-to-br from-white via-primary-50/30 to-white rounded-xl p-5 sm:p-6 shadow-lg border border-primary-100">
               <div className="mb-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">National 24/7 Support Lines</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">{settings['crisis_heading_helplines'] || 'National 24/7 Support Lines'}</h3>
                   <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Free, confidential support available around the clock</p>
               </div>
               
@@ -766,7 +767,7 @@ export function CrisisSupport() {
             {/* State & Territory Resources Section */}
             <div className="bg-gradient-to-br from-gray-50 via-white to-primary-50/20 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-gray-200">
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">State & Territory Resources</h3>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">{settings['crisis_heading_state_resources'] || 'State & Territory Resources'}</h3>
                   <p className="text-sm sm:text-base text-gray-600 mt-1">Select your state to see local crisis lines and hospital emergency departments</p>
               </div>
               

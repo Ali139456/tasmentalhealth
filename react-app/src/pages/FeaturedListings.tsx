@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import { CheckCircle2, ArrowRight } from 'lucide-react'
+import { useContentSettings } from '../hooks/useContentSettings'
 
 export function FeaturedListings() {
+  const { settings } = useContentSettings()
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -12,11 +15,10 @@ export function FeaturedListings() {
               For Health Professionals
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Grow Your Tasmanian Practice with Featured Listings
+              {settings['featured_hero_title'] || 'Grow Your Tasmanian Practice with Featured Listings'}
             </h1>
             <p className="text-lg md:text-xl text-primary-100 max-w-2xl mx-auto">
-              Connect with more patients seeking <strong>therapy near me Tasmania</strong>. <strong>List your practice for free</strong> or upgrade to featured. We help{' '}
-              <strong>psychologists Hobart</strong> and <strong>counsellors Launceston</strong> find new clients with <strong>free directory listing</strong>.
+              {settings['featured_hero_description'] || 'Connect with more patients seeking therapy near me Tasmania. List your practice for free or upgrade to featured. We help psychologists Hobart and counsellors Launceston find new clients with free directory listing.'}
             </p>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 
 export function Events() {
+  const { settings } = useContentSettings()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -135,10 +136,10 @@ export function Events() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Community Events
+              {settings['events_hero_title'] || 'Community Events'}
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover workshops, support groups, and mental health seminars happening across Tasmania.
+              {settings['events_hero_description'] || 'Discover workshops, support groups, and mental health seminars happening across Tasmania.'}
             </p>
           </div>
 

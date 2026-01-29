@@ -5,10 +5,12 @@ import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
 import { SAMPLE_LISTINGS } from '../lib/sampleListings'
+import { useContentSettings } from '../hooks/useContentSettings'
 
 const LISTINGS_PER_PAGE = 4
 
 export function Home() {
+  const { settings } = useContentSettings()
   const [listings, setListings] = useState<Listing[]>([])
   const [filteredListings, setFilteredListings] = useState<Listing[]>([])
   const [loading, setLoading] = useState(true)
@@ -314,10 +316,10 @@ export function Home() {
         <div className="container mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-28 xl:py-32 relative z-10 max-w-7xl">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 sm:mb-8 md:mb-10 leading-tight">
-              Tasmania's Mental Health Directory - Connecting You to the Right Support
+              {settings['home_hero_title'] || "Tasmania's Mental Health Directory - Connecting You to the Right Support"}
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 md:mb-10 text-white/90 max-w-3xl mx-auto px-4">
-              Search for trusted mental health professionals across Hobart, Launceston, and beyond - or <strong>list your practice for free</strong> to grow your visibility and connect with patients seeking mental health support in Tasmania.
+              {settings['home_hero_description'] || "Search for trusted mental health professionals across Hobart, Launceston, and beyond - or list your practice for free to grow your visibility and connect with patients seeking mental health support in Tasmania."}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
               <a 
@@ -344,9 +346,9 @@ export function Home() {
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
             <div className="pr-0 md:pr-6 md:pr-8 md:pr-10 lg:pr-12 border-r-0 md:border-r border-gray-300 pb-6 md:pb-0">
-              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">For People Seeking Support</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">{settings['home_heading_people_support'] || 'For People Seeking Support'}</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
-                Navigating mental health care can be overwhelming. We make it easier to find compassionate help. Whether you are looking for psychologists in Hobart, need anxiety counselling in Tasmania, or want to find a social worker in Tasmania, our directory connects you with verified local experts.
+                {settings['home_description_people_support'] || "Navigating mental health care can be overwhelming. We make it easier to find compassionate help. Whether you are looking for psychologists in Hobart, need anxiety counselling in Tasmania, or want to find a social worker in Tasmania, our directory connects you with verified local experts."}
               </p>
               <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                 <li className="flex items-start gap-2 sm:gap-3">
@@ -372,9 +374,9 @@ export function Home() {
             </div>
 
             <div className="pl-0 md:pl-6 md:pl-8 md:pl-10 lg:pl-12 pt-6 md:pt-0 border-t md:border-t-0 border-gray-300">
-              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">For Professionals & Clinics</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">{settings['home_heading_professionals'] || 'For Professionals & Clinics'}</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
-                Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. <strong>List your practice for free</strong> and advertise psychology services in Tasmania effectively to patients actively seeking care.
+                {settings['home_description_professionals'] || "Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. List your practice for free and advertise psychology services in Tasmania effectively to patients actively seeking care."}
               </p>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
@@ -429,9 +431,9 @@ export function Home() {
           </div>
           
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Find Mental Health Support in Tasmania</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">{settings['home_heading_find_support'] || 'Find Mental Health Support in Tasmania'}</h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2">
-              Use the filters below to find psychologists, counsellors, and other specialists in your area.
+              {settings['home_description_find_support'] || 'Use the filters below to find psychologists, counsellors, and other specialists in your area.'}
             </p>
           </div>
           </div>
@@ -1067,9 +1069,9 @@ export function Home() {
       <section className="py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Mental Health Insights & Resources</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">{settings['home_heading_resources'] || 'Mental Health Insights & Resources'}</h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
-              Expert guides on finding support and growing your practice in Tasmania.
+              {settings['home_description_resources'] || 'Expert guides on finding support and growing your practice in Tasmania.'}
             </p>
             <Link 
               to="/events"
@@ -1148,7 +1150,7 @@ export function Home() {
           {/* Header */}
           <div className="text-center mb-12 sm:mb-14 md:mb-16">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-gray-900">
-              Connecting You with Mental Health Professionals Across Tasmania
+              {settings['home_heading_connecting'] || 'Connecting You with Mental Health Professionals Across Tasmania'}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>
           </div>
@@ -1156,20 +1158,20 @@ export function Home() {
           {/* Content */}
           <div className="text-base sm:text-lg text-gray-700 leading-relaxed space-y-6">
             <p>
-                    Welcome to Tasmania's premier resource for mental wellbeing. Our mission is to bridge the gap between those seeking help and the dedicated professionals who provide it. Whether you are searching for experienced psychologists in Hobart, compassionate counsellors in Tasmania, or specialised psychiatrists in Launceston, our directory is designed to help you find the right support close to home.
+                    {settings['home_description_connecting'] || "Welcome to Tasmania's premier resource for mental wellbeing. Our mission is to bridge the gap between those seeking help and the dedicated professionals who provide it. Whether you are searching for experienced psychologists in Hobart, compassionate counsellors in Tasmania, or specialised psychiatrists in Launceston, our directory is designed to help you find the right support close to home."}
                   </p>
             
-                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">Comprehensive Support for Every Need</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">{settings['home_heading_comprehensive'] || 'Comprehensive Support for Every Need'}</h3>
             <p>
-                    We understand that mental health needs are diverse. That's why we list a wide range of professionals. From sleep therapy in Hobart for those struggling with insomnia, to anxiety counselling in Tasmania for stress management, and trauma-informed care for deeper healing. You can also find a social worker in Tasmania who specialises in complex case management and family support.
+                    {settings['home_description_comprehensive'] || "We understand that mental health needs are diverse. That's why we list a wide range of professionals. From sleep therapy in Hobart for those struggling with insomnia, to anxiety counselling in Tasmania for stress management, and trauma-informed care for deeper healing. You can also find a social worker in Tasmania who specialises in complex case management and family support."}
                   </p>
             <p>
                     Our directory covers all major regions, ensuring access to mental health support in Tasmania whether you are in the city centres of Hobart and Launceston, or in regional hubs like Devonport, Burnie, and Ulverstone.
                   </p>
             
-                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">For Clinicians: Grow Your Practice</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">{settings['home_heading_clinicians'] || 'For Clinicians: Grow Your Practice'}</h3>
             <p>
-                    If you are a practitioner, visibility is key to helping more people. By choosing to <strong>list your practice for free</strong> in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them. <strong>Free listing</strong> for all qualified mental health professionals.
+                    {settings['home_description_clinicians'] || "If you are a practitioner, visibility is key to helping more people. By choosing to list your mental health practice in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them. Free listing for all qualified mental health professionals."}
                   </p>
             <p>
                     This is the effective way to grow your private practice in Hobart or expand your client base in regional areas. Learn how to get mental health clients in Tasmania by leveraging our SEO-optimised online directory for mental health professionals. Join us today and make your services accessible to all Tasmanians.
