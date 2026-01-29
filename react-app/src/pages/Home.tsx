@@ -317,7 +317,7 @@ export function Home() {
               Tasmania's Mental Health Directory - Connecting You to the Right Support
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 md:mb-10 text-white/90 max-w-3xl mx-auto px-4">
-              Search for trusted mental health professionals across Hobart, Launceston, and beyond - or list your clinic, private practice, or mental health service to grow your visibility.
+              Search for trusted mental health professionals across Hobart, Launceston, and beyond - or <strong>list your practice for free</strong> to grow your visibility and connect with patients seeking mental health support in Tasmania.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
               <a 
@@ -332,7 +332,7 @@ export function Home() {
                 className="w-full sm:w-auto min-w-[200px] sm:min-w-[220px] px-6 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-xl font-semibold hover:bg-white/20 hover:border-white/40 transition-all transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2 text-sm sm:text-base md:text-lg"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                List Your Practice
+                List Your Practice Free
               </Link>
             </div>
           </div>
@@ -374,7 +374,7 @@ export function Home() {
             <div className="pl-0 md:pl-6 md:pl-8 md:pl-10 lg:pl-12 pt-6 md:pt-0 border-t md:border-t-0 border-gray-300">
               <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">For Professionals & Clinics</h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
-                Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. We help you advertise psychology services in Tasmania effectively to patients actively seeking care.
+                Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. <strong>List your practice for free</strong> and advertise psychology services in Tasmania effectively to patients actively seeking care.
               </p>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
@@ -387,14 +387,14 @@ export function Home() {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Professional SEO: List your mental health practice in Tasmania on a high-authority site designed for clinicians.</span>
+                  <span className="text-gray-700">Professional SEO: <strong>List your practice for free</strong> in Tasmania on a high-authority site designed for clinicians. Free directory listing to boost your local search visibility.</span>
                 </li>
               </ul>
               <Link 
                 to="/get-listed" 
                 className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-colors shadow-md hover:shadow-lg"
               >
-                List Your Practice Now
+                List Your Practice Free
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -1131,10 +1131,10 @@ export function Home() {
                   Are you looking to grow your private practice in Hobart or expand your reach? Joining a dedicated mental health directory for clinicians significantly boosts your local SEO and visibility.
                 </p>
                 <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
-                  Learn how to get mental health clients in Tasmania by ensuring your practice appears when locals search for "psychologists near me" or specific services like sleep therapy in Hobart. List your mental health practice in Tasmania today to connect with those who need you most.
+                  Learn how to get mental health clients in Tasmania by ensuring your practice appears when locals search for "psychologists near me" or specific services like sleep therapy in Hobart. <strong>List your practice for free</strong> in Tasmania today to connect with those who need you most. <strong>Free directory listing</strong> with no hidden fees.
                 </p>
                 <Link to="/get-listed" className="text-emerald-600 font-semibold hover:text-emerald-700 inline-flex items-center gap-2 text-sm sm:text-base">
-                  List Your Practice
+                  List Your Practice Free
                   <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Link>
               </div>
@@ -1181,7 +1181,7 @@ export function Home() {
             
                   <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">For Clinicians: Grow Your Practice</h3>
             <p>
-                    If you are a practitioner, visibility is key to helping more people. By choosing to list your mental health practice in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them.
+                    If you are a practitioner, visibility is key to helping more people. By choosing to <strong>list your practice for free</strong> in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them. <strong>Free listing</strong> for all qualified mental health professionals.
                   </p>
             <p>
                     This is the effective way to grow your private practice in Hobart or expand your client base in regional areas. Learn how to get mental health clients in Tasmania by leveraging our SEO-optimised online directory for mental health professionals. Join us today and make your services accessible to all Tasmanians.

@@ -66,8 +66,8 @@ export const RESOURCES: ResourceContent[] = [
     content: [
       {
         paragraphs: [
-          'Are you looking to grow your private practice in Hobart or expand your reach? Joining a dedicated mental health directory significantly boosts your local SEO.',
-          'In the digital age, how clients find you has changed. Word of mouth is powerful, but Google is often the first place someone turns when they are struggling. Listing your practice in a reputable, local directory is a strategic move for several reasons.'
+          'Are you looking to grow your private practice in Hobart or expand your reach? Joining a dedicated mental health directory significantly boosts your local SEO. <strong>List your practice for free</strong> and start connecting with patients today.',
+          'In the digital age, how clients find you has changed. Word of mouth is powerful, but Google is often the first place someone turns when they are struggling. <strong>Listing your practice for free</strong> in a reputable, local directory is a strategic move for several reasons.'
         ]
       },
       {
@@ -94,8 +94,8 @@ export const RESOURCES: ResourceContent[] = [
       {
         heading: '4. Cost-Effective Marketing',
         paragraphs: [
-          'Compared to Google Ads or print media, directory listings offer a high return on investment (ROI), providing year-round visibility for a fraction of the cost.',
-          'A single directory listing can generate multiple referrals over time, making it one of the most cost-effective ways to market your practice.'
+          'Compared to Google Ads or print media, <strong>free directory listings</strong> offer a high return on investment (ROI), providing year-round visibility at no cost. <strong>List your practice for free</strong> and start generating referrals immediately.',
+          'A single <strong>free listing</strong> can generate multiple referrals over time, making it one of the most cost-effective ways to market your practice. No upfront fees, no hidden costs - just <strong>free listing</strong> for qualified professionals.'
         ]
       }
     ]

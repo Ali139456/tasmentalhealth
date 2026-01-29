@@ -653,7 +653,7 @@ export function GetListed() {
               Join the Tasmanian Mental Health Directory
             </h1>
             <p className="text-xl text-gray-600 mb-2">
-              Register your practice to connect with patients across Tasmania
+              <strong>List your practice for free</strong> and connect with patients across Tasmania. Free directory listing for qualified mental health professionals.
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>
             {!user && (

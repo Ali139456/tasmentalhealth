@@ -15,8 +15,8 @@ export function FeaturedListings() {
               Grow Your Tasmanian Practice with Featured Listings
             </h1>
             <p className="text-lg md:text-xl text-primary-100 max-w-2xl mx-auto">
-              Connect with more patients seeking <strong>therapy near me Tasmania</strong>. We help{' '}
-              <strong>psychologists Hobart</strong> and <strong>counsellors Launceston</strong> find new clients.
+              Connect with more patients seeking <strong>therapy near me Tasmania</strong>. <strong>List your practice for free</strong> or upgrade to featured. We help{' '}
+              <strong>psychologists Hobart</strong> and <strong>counsellors Launceston</strong> find new clients with <strong>free directory listing</strong>.
             </p>
           </div>
         </div>
@@ -64,10 +64,10 @@ export function FeaturedListings() {
             <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               {/* Standard Listing */}
               <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-200">
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Standard Listing</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Standard Listing - Free Forever</h3>
                 <div className="mb-6">
                   <span className="text-4xl font-bold text-gray-900">Free</span>
-                  <span className="text-gray-600 ml-2">Forever</span>
+                  <span className="text-gray-600 ml-2">Forever - No Hidden Fees</span>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-start gap-3">
