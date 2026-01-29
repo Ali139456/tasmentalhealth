@@ -433,6 +433,29 @@ export function Home() {
       {/* Directory Section - Enhanced */}
       <section id="directory" className="py-12 sm:py-16 md:py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
+          {/* Featured Listings Banner */}
+          <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 rounded-2xl p-6 mb-8 shadow-xl border-2 border-yellow-300">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="bg-white rounded-full p-3 shadow-lg">
+                  <Star className="w-8 h-8 text-yellow-600 fill-yellow-600" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-2xl font-bold text-white mb-1">Stand Out with Featured Listings</h3>
+                  <p className="text-yellow-100 text-sm md:text-base">Get top placement, verified badge, enhanced profile, and priority support for just $29/month</p>
+                </div>
+              </div>
+              <Link 
+                to="/featured-listings" 
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-yellow-600 rounded-lg font-bold hover:bg-yellow-50 transition-colors shadow-lg hover:shadow-xl whitespace-nowrap"
+              >
+                <Star className="w-5 h-5" />
+                View Featured Plans
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+          
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Find Mental Health Support in Tasmania</h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2">
