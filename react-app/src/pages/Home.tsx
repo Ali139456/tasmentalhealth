@@ -1159,7 +1159,7 @@ export function Home() {
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-6xl relative z-10">
           {/* Header */}
           <div className="text-center mb-12 sm:mb-14 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-gray-900">
               Connecting You with Mental Health Professionals Across Tasmania
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>
