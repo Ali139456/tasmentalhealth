@@ -598,7 +598,7 @@ export function CrisisSupport() {
 
             <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
               <div className="mb-6 sm:mb-8">
-                  <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900">My Safety Plan</h2>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-gray-900">My Safety Plan</h2>
                   <p className="text-sm sm:text-base md:text-lg text-gray-600">
                     Based on the Stanley-Brown Safety Planning Intervention. This plan belongs to you. It's designed to help you navigate through a crisis until it passes.
                   </p>
@@ -766,7 +766,7 @@ export function CrisisSupport() {
             {/* State & Territory Resources Section */}
             <div className="bg-gradient-to-br from-gray-50 via-white to-primary-50/20 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-gray-200">
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">State & Territory Resources</h3>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">State & Territory Resources</h3>
                   <p className="text-sm sm:text-base text-gray-600 mt-1">Select your state to see local crisis lines and hospital emergency departments</p>
               </div>
               

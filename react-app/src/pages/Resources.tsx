@@ -144,7 +144,7 @@ export function Resources() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <span className="text-primary-100 font-semibold text-sm sm:text-lg mb-2 block">Knowledge Hub</span>
-            <h1 className="text-2xl font-bold mb-3 sm:mb-4 px-2">Mental Health Insights & Resources</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-2">Mental Health Insights & Resources</h1>
             <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 px-2">
               Expert guides to help you navigate the mental health system in Tasmania, whether you are seeking support, supporting a loved one, or running a practice.
             </p>

@@ -134,7 +134,7 @@ export function Events() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Community Events
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
