@@ -1079,8 +1079,8 @@ export function Home() {
       <section className="py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h2 className="text-2xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Mental Health Insights & Resources</h2>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Mental Health Insights & Resources</h2>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
               Expert guides on finding support and growing your practice in Tasmania.
             </p>
             <Link 
