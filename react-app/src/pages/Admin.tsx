@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, User } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2, FileText, X, Plus, Edit } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2, FileText, X, Plus, Edit, FileSpreadsheet } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 import toast from 'react-hot-toast'
@@ -767,6 +767,36 @@ export function Admin() {
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white shadow-sm"
                 />
               </div>
+              <button
+                onClick={() => {
+                  // Generate CSV with all filtered listings
+                  const headers = ['Practice Name', 'Profession', 'Location', 'Email', 'Phone', 'Website', 'Status', 'Featured', 'Created At']
+                  const rows = filteredListings.map(l => [
+                    l.practice_name || '',
+                    l.profession || '',
+                    l.location || '',
+                    l.email || '',
+                    l.phone || '',
+                    l.website || '',
+                    l.status || '',
+                    l.is_featured ? 'Yes' : 'No',
+                    l.created_at ? format(new Date(l.created_at), 'yyyy-MM-dd') : ''
+                  ])
+                  const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n')
+                  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = `listings-export-${format(new Date(), 'yyyy-MM-dd')}.csv`
+                  a.click()
+                  URL.revokeObjectURL(url)
+                  toast.success('Directory list downloaded successfully')
+                }}
+                className="px-4 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap"
+              >
+                <FileSpreadsheet className="w-5 h-5" />
+                Download CSV
+              </button>
             </div>
 
             <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">

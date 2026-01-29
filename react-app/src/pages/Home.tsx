@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Printer, FileSpreadsheet, Video, X } from 'lucide-react'
+import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Video, X } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
@@ -880,41 +880,6 @@ export function Home() {
                     <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
                       Results <span className="text-primary-600">{filteredListings.length} found</span>
                     </h3>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                      <button
-                        onClick={() => window.print()}
-                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm font-semibold text-gray-700 flex items-center justify-center gap-2"
-                      >
-                        <Printer className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Print</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          // Generate CSV
-                          const headers = ['Practice Name', 'Profession', 'Location', 'Email', 'Phone', 'Website']
-                          const rows = filteredListings.map(l => [
-                            l.practice_name,
-                            l.profession,
-                            l.location,
-                            l.show_email_publicly ? l.email : '',
-                            l.show_phone_publicly ? l.phone : '',
-                            l.show_website_publicly ? l.website || '' : ''
-                          ])
-                          const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n')
-                          const blob = new Blob([csv], { type: 'text/csv' })
-                          const url = URL.createObjectURL(blob)
-                          const a = document.createElement('a')
-                          a.href = url
-                          a.download = 'listings.csv'
-                          a.click()
-                          URL.revokeObjectURL(url)
-                        }}
-                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm font-semibold text-gray-700 flex items-center justify-center gap-2"
-                      >
-                        <FileSpreadsheet className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">CSV</span>
-                      </button>
-                    </div>
                   </div>
                   {paginatedListings.map(listing => (
                     <div
