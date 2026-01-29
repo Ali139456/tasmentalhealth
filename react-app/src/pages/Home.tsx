@@ -1102,7 +1102,7 @@ export function Home() {
                 <span className="inline-block px-2 sm:px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs sm:text-sm font-semibold mb-2 sm:mb-3">
                   For People Seeking Support
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-gray-900">How to Choose the Right Mental Health Professional in Tasmania</h3>
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-gray-900">How to Choose the Right Mental Health Professional in Tasmania</h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed">
                   Finding the right match is crucial for effective therapy. Whether you need anxiety counselling in Tasmania or are looking to find a social worker in Tasmania, understanding the difference between psychologists, psychiatrists, and counsellors is the first step.
                 </p>
