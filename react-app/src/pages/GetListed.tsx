@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { sendEmail, getEmailTemplate, getAdminEmails } from '../lib/email'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
-import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight } from 'lucide-react'
+import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight, Star } from 'lucide-react'
 
 // Complete list of all country codes for phone numbers
 const COUNTRY_CODES = [
@@ -672,6 +672,29 @@ export function GetListed() {
               <span className="font-medium">{error}</span>
             </div>
           )}
+
+          {/* Featured Listings Callout */}
+          <div className="bg-gradient-to-r from-yellow-50 via-amber-50 to-yellow-50 border-2 border-yellow-300 rounded-2xl p-6 mb-8 shadow-lg">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="bg-yellow-500 rounded-full p-3">
+                  <Star className="w-6 h-6 text-white fill-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Want More Visibility?</h3>
+                  <p className="text-sm text-gray-700">Upgrade to Featured Listing for top placement, verified badge, and enhanced profile - just $29/month</p>
+                </div>
+              </div>
+              <Link 
+                to="/featured-listings" 
+                className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
+              >
+                <Star className="w-5 h-5" />
+                View Featured Plans
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Contact Information */}
