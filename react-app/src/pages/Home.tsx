@@ -313,7 +313,7 @@ export function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-teal-950/80 to-teal-800/40"></div>
         <div className="container mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 lg:py-28 xl:py-32 relative z-10 max-w-7xl">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-2xl font-bold mb-6 sm:mb-8 md:mb-10 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 sm:mb-8 md:mb-10 leading-tight">
               Tasmania's Mental Health Directory - Connecting You to the Right Support
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 md:mb-10 text-white/90 max-w-3xl mx-auto px-4">
@@ -406,7 +406,7 @@ export function Home() {
       <section id="directory" className="py-12 sm:py-16 md:py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h2 className="text-2xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Find Mental Health Support in Tasmania</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Find Mental Health Support in Tasmania</h2>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto px-2">
               Use the filters below to find psychologists, counsellors, and other specialists in your area.
             </p>
@@ -1079,7 +1079,7 @@ export function Home() {
       <section className="py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Mental Health Insights & Resources</h2>
+            <h2 className="text-2xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">Mental Health Insights & Resources</h2>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
               Expert guides on finding support and growing your practice in Tasmania.
             </p>
