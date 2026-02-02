@@ -252,6 +252,15 @@ export function GetListed() {
   const [success, setSuccess] = useState(false)
   const [phoneCountryCode, setPhoneCountryCode] = useState('+61')
   const [phoneError, setPhoneError] = useState('')
+  
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://tasmentalhealthdirectory.com.au'
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Get Listed - Join the Tasmanian Mental Health Directory',
+    description: 'List your practice for free and connect with patients across Tasmania. Free directory listing for qualified mental health professionals.',
+    url: `${siteUrl}/get-listed`
+  }
 
   const [formData, setFormData] = useState({
     practice_name: '',

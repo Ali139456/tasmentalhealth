@@ -98,14 +98,6 @@ export function SitemapXMLPage() {
     generateSitemap()
   }, [])
 
-  // Return XML content
-  useEffect(() => {
-    if (xml) {
-      // Set content type to XML
-      document.contentType = 'application/xml'
-    }
-  }, [xml])
-
   if (!xml) {
     return <div>Generating sitemap...</div>
   }
