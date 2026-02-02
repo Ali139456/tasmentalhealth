@@ -558,7 +558,7 @@ export function CrisisSupport() {
               A proven tool to help you navigate through difficult moments
             </p>
             <p className="text-base sm:text-lg md:text-xl text-white/85 mb-6 sm:mb-8 px-2 max-w-2xl mx-auto">
-              Based on the evidence-based Stanley-Brown Safety Planning Intervention. Build your personalized plan with coping strategies, support contacts, and resources, all in one secure place.
+              Based on the evidence-based Stanley Brown Safety Planning Intervention. Build your personalized plan with coping strategies, support contacts, and resources, all in one secure place.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
