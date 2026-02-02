@@ -243,6 +243,7 @@ const validatePhoneNumber = (phone: string, countryCode: string): boolean => {
 }
 
 export function GetListed() {
+  const { settings } = useContentSettings()
   const { user } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -394,7 +395,7 @@ export function GetListed() {
 
       while (!userExists && retries < maxRetries) {
         // Check if user exists in public.users
-        const { data: existingUser, error: checkError } = await supabase
+        const { data: existingUser } = await supabase
           .from('users')
           .select('id')
           .eq('id', userId)

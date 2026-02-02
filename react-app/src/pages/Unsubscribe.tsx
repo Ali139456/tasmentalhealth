@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate, Link } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 
 export function Unsubscribe() {
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'not_found'>('loading')
   const [message, setMessage] = useState('')
   const email = searchParams.get('email')

@@ -1,4 +1,4 @@
-import { Calendar, Mail, Bell, User, MessageCircle, MapPin, Clock, ExternalLink, Sparkles, Users, DollarSign, Tag as TagIcon, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Calendar, Mail, Bell, MessageCircle, MapPin, Clock, ExternalLink, Sparkles, Users, DollarSign, Tag as TagIcon, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { sendEmail, getEmailTemplate } from '../lib/email'
@@ -378,7 +378,7 @@ export function Events() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 {filteredEvents
                   .slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage)
-                  .map((event, index) => (
+                  .map((event) => (
                 <div 
                   key={event.id} 
                   className={`group relative bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border ${

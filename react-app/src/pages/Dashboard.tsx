@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save, Lock, CheckCircle2 } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save, Lock } from 'lucide-react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
-import { createCheckoutSession, createPortalSession } from '../lib/stripe'
+import { createPortalSession } from '../lib/stripe'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
 import toast from 'react-hot-toast'
 
@@ -14,7 +14,7 @@ export function Dashboard() {
   const [listings, setListings] = useState<Listing[]>([])
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [loading, setLoading] = useState(true)
-  const [processingListingId, setProcessingListingId] = useState<string | null>(null)
+  const [processingListingId, _setProcessingListingId] = useState<string | null>(null)
   const [processingPortal, setProcessingPortal] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const [editingListing, setEditingListing] = useState<Listing | null>(null)
@@ -315,28 +315,9 @@ export function Dashboard() {
     }
   }
 
-  const [selectedTier, setSelectedTier] = useState<'basic' | 'professional'>('professional')
-  const [showTierModal, setShowTierModal] = useState(false)
-  const [tierModalListingId, setTierModalListingId] = useState<string | null>(null)
-
-  const handleUpgradeToFeatured = async (listingId: string, tier?: 'basic' | 'professional') => {
-    try {
-      setProcessingListingId(listingId)
-      const selectedTierValue = tier || selectedTier
-      const { url } = await createCheckoutSession(listingId, selectedTierValue)
-      
-      if (url) {
-        // Redirect to Stripe Checkout
-        window.location.href = url
-      } else {
-        throw new Error('No checkout URL received')
-      }
-    } catch (error: any) {
-      console.error('Error creating checkout session:', error)
-      toast.error(error.message || 'Failed to start checkout. Please try again.')
-      setProcessingListingId(null)
-    }
-  }
+  const [_selectedTier, _setSelectedTier] = useState<'basic' | 'professional'>('professional')
+  const [_showTierModal, setShowTierModal] = useState(false)
+  const [_tierModalListingId, setTierModalListingId] = useState<string | null>(null)
 
   const handleTierSelection = (listingId: string) => {
     setTierModalListingId(listingId)

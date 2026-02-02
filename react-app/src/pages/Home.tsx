@@ -6,7 +6,7 @@ import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
 import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 import { useContentSettings } from '../hooks/useContentSettings'
-import { trackPageView, trackSearch, trackFilter, trackListingClick, trackLinkClick, trackTimeOnPage } from '../lib/analytics'
+import { trackPageView, trackSearch, trackListingClick, trackLinkClick, trackTimeOnPage } from '../lib/analytics'
 import { sanitizeHTMLWithSafeTags } from '../lib/sanitize'
 
 const LISTINGS_PER_PAGE = 4

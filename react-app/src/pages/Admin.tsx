@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, User } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2, FileText, X, Plus, Edit, FileSpreadsheet, Palette, Type, Globe, BarChart3, TrendingUp, Users, Filter, MousePointer, ExternalLink, Calendar, MapPin, Tag, User as UserIcon, Star, Key, Shield, RefreshCw, Save } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Search, Mail, Phone, ChevronLeft, ChevronRight, Trash2, Loader2, FileText, X, Plus, Edit, FileSpreadsheet, Globe, BarChart3, TrendingUp, Filter, MousePointer, ExternalLink, Calendar, MapPin, Tag, User as UserIcon, Star, Key, Shield, RefreshCw, Save } from 'lucide-react'
 import { format } from 'date-fns'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 import toast from 'react-hot-toast'
@@ -70,7 +70,7 @@ export function Admin() {
   const [listingFormData, setListingFormData] = useState<any>(null)
   const [savingListing, setSavingListing] = useState(false)
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false)
-  const [passwordResetUserId, setPasswordResetUserId] = useState<string | null>(null)
+  const [, setPasswordResetUserId] = useState<string | null>(null)
   const [passwordResetEmail, setPasswordResetEmail] = useState('')
   const [resettingPassword, setResettingPassword] = useState(false)
   const [eventFormData, setEventFormData] = useState({
@@ -274,7 +274,7 @@ export function Admin() {
       setAnalyticsLoading(true)
       
       // Check if table exists first
-      const { data: pagesData, error: pagesError } = await supabase
+      const { error: pagesError } = await supabase
         .from('analytics_events')
         .select('page_path')
         .eq('event_type', 'page_view')
@@ -620,7 +620,7 @@ export function Admin() {
     }
   }
 
-  const handleResendVerification = async (userId: string, userEmail: string) => {
+  const handleResendVerification = async (_userId: string, userEmail: string) => {
     try {
       // Use Supabase Admin API via Edge Function
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -3719,7 +3719,7 @@ function ContentManagementSection() {
               </h3>
               
               <div className="space-y-4">
-                {settings.map(setting => (
+                {(settings as any[]).map((setting: any) => (
                   <div key={setting.id} className="border-l-4 border-primary-500 pl-4 py-2">
                     <label className="block text-sm font-semibold text-gray-700 mb-1">
                       {setting.label}

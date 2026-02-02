@@ -57,15 +57,17 @@ export async function trackEvent(
     }
 
     // Insert event into database (non-blocking)
-    supabase
+    const promise = supabase
       .from('analytics_events')
       .insert([event])
+    
+    Promise.resolve(promise)
       .then(({ error }) => {
         if (error) {
           console.error('Analytics tracking error:', error)
         }
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error('Analytics tracking error:', error)
       })
   } catch (error) {
