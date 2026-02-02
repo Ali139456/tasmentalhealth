@@ -32,6 +32,8 @@ export interface Listing {
   profession: string
   practice_type: 'individual' | 'group_practice' | 'non_profit'
   ahpra_number?: string
+  accredited_member_number?: string
+  verification_document_url?: string
   specialties: string[]
   location: string
   postcode: string

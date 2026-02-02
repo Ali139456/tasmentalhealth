@@ -261,6 +261,8 @@ export function GetListed() {
     profession_other: '', // For "Other" profession option
     practice_type: 'individual' as 'individual' | 'group_practice' | 'non_profit',
     ahpra_number: '',
+    accredited_member_number: '',
+    verification_document_url: '',
     specialties: [] as string[],
     location: '',
     postcode: '',
@@ -277,6 +279,8 @@ export function GetListed() {
   })
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [verificationDocumentPreview, setVerificationDocumentPreview] = useState<string | null>(null)
+  const [uploadingVerification, setUploadingVerification] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false)
 
@@ -343,6 +347,8 @@ export function GetListed() {
       profession: sanitizeInput(formData.profession),
       profession_other: sanitizeInput(formData.profession_other),
       ahpra_number: sanitizeInput(formData.ahpra_number),
+      accredited_member_number: sanitizeInput(formData.accredited_member_number),
+      verification_document_url: formData.verification_document_url,
       location: sanitizeInput(formData.location),
       postcode: sanitizeInput(formData.postcode),
       street_address: sanitizeInput(formData.street_address),
@@ -644,6 +650,122 @@ export function GetListed() {
       // setAvatarPreview(null) // Commented out - keep preview
     } finally {
       setUploadingAvatar(false)
+    }
+  }
+
+  const handleVerificationDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      return
+    }
+
+    // SECURITY: Validate file type (PDF, images, or common document formats)
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ]
+    const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx']
+    const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
+
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExt)) {
+      setError('Please upload a PDF, image, or document file (PDF, JPG, PNG, DOC, DOCX)')
+      return
+    }
+
+    // SECURITY: Validate file size (max 10MB for documents)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('File size must be less than 10MB')
+      return
+    }
+
+    // SECURITY: Validate minimum file size (prevent empty or corrupted files)
+    if (file.size < 100) {
+      setError('File appears to be corrupted or empty')
+      return
+    }
+
+    setUploadingVerification(true)
+    setError('')
+
+    try {
+      // Create preview for images
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setVerificationDocumentPreview(reader.result as string)
+        }
+        reader.readAsDataURL(file)
+      } else {
+        setVerificationDocumentPreview(null)
+      }
+
+      // Upload to Supabase Storage
+      const fileName = `${user?.id || 'temp'}-verification-${Date.now()}${fileExt}`
+      const filePath = `verification-documents/${fileName}`
+
+      // Try listings bucket first
+      let bucketName = 'listings'
+      let uploadError = null
+
+      const { error: listingsError } = await supabase.storage
+        .from('listings')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (listingsError) {
+        // If bucket doesn't exist or has permission issues, try Articles bucket
+        if (listingsError.message?.includes('not found') || listingsError.message?.includes('Bucket') || listingsError.message?.includes('permission')) {
+          bucketName = 'Articles'
+          const { error: articlesError } = await supabase.storage
+            .from('Articles')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            })
+          uploadError = articlesError
+        } else {
+          uploadError = listingsError
+        }
+      }
+
+      if (uploadError) {
+        if (uploadError.message?.includes('not found') || uploadError.message?.includes('Bucket')) {
+          throw new Error('Storage bucket not found. Please ensure the "listings" bucket exists in Supabase Storage and has proper permissions.')
+        } else if (uploadError.message?.includes('permission') || uploadError.message?.includes('policy')) {
+          throw new Error('Permission denied. Please ensure your account has upload permissions for the storage bucket.')
+        } else {
+          throw new Error(`Upload failed: ${uploadError.message || 'Unknown error'}`)
+        }
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(filePath)
+
+      setFormData(prev => ({ ...prev, verification_document_url: publicUrl }))
+      setError('')
+    } catch (err: any) {
+      console.error('Error uploading verification document:', err)
+      const errorMessage = err.message || 'Failed to upload verification document'
+      
+      if (errorMessage.includes('not found') || errorMessage.includes('Bucket')) {
+        setError('Verification document upload failed: Storage bucket not configured. You can still submit the form without a document, or contact support to set up storage.')
+      } else if (errorMessage.includes('permission') || errorMessage.includes('policy')) {
+        setError('Verification document upload failed: Permission denied. You can still submit the form without a document.')
+      } else {
+        setError(`Verification document upload failed: ${errorMessage}. You can still submit the form without a document.`)
+      }
+      
+      setFormData(prev => ({ ...prev, verification_document_url: '' }))
+    } finally {
+      setUploadingVerification(false)
     }
   }
 
@@ -996,6 +1118,63 @@ export function GetListed() {
                     placeholder="e.g. PSY0001234567"
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Accredited Member Number
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.accredited_member_number}
+                    onChange={(e) => setFormData({ ...formData, accredited_member_number: e.target.value })}
+                    placeholder="e.g. Social work registration number, AASW membership number, etc."
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    For self-regulating bodies (e.g., social work, counselling associations)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Verification Document
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      onChange={handleVerificationDocumentUpload}
+                      disabled={uploadingVerification}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    />
+                    {uploadingVerification && (
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-500"></div>
+                      </div>
+                    )}
+                  </div>
+                  {verificationDocumentPreview && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-600 mb-2">Document preview:</p>
+                      <img 
+                        src={verificationDocumentPreview} 
+                        alt="Verification document preview" 
+                        className="max-w-xs border-2 border-gray-200 rounded-lg"
+                      />
+                    </div>
+                  )}
+                  {formData.verification_document_url && !verificationDocumentPreview && (
+                    <div className="mt-3">
+                      <p className="text-sm text-green-600 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        Document uploaded successfully
+                      </p>
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Upload a copy of your registration certificate, membership card, or other verification document (PDF, JPG, PNG, DOC, DOCX, max 10MB)
+                  </p>
                 </div>
               </div>
             </section>
