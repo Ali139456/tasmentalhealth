@@ -8,6 +8,7 @@ import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 import { useContentSettings } from '../hooks/useContentSettings'
 import { trackPageView, trackSearch, trackListingClick, trackLinkClick, trackTimeOnPage } from '../lib/analytics'
 import { sanitizeHTMLWithSafeTags } from '../lib/sanitize'
+import { SEO } from '../components/SEO'
 
 const LISTINGS_PER_PAGE = 4
 
@@ -327,8 +328,41 @@ export function Home() {
     }
   }
 
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://tasmentalhealthdirectory.com.au'
+  const metaTitle = settings['home_meta_title'] || 'Tasmanian Mental Health Directory | Find Support or List Your Practice'
+  const metaDescription = settings['home_meta_description'] || 'Tasmanian Mental Health Directory - Find trusted mental health professionals across Hobart, Launceston, and beyond.'
+  const metaKeywords = settings['home_meta_keywords'] || 'mental health Tasmania, psychologists Hobart, counsellors Launceston, therapy near me Tasmania, mental health professionals, mental health directory'
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Tasmanian Mental Health Directory',
+    url: siteUrl,
+    description: metaDescription,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${siteUrl}/search?q={search_term_string}`
+      },
+      'query-input': 'required name=search_term_string'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Tasmanian Mental Health Directory',
+      url: siteUrl
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO
+        title={metaTitle}
+        description={metaDescription}
+        keywords={metaKeywords}
+        image="/images/hero-mountain.jpg"
+        structuredData={structuredData}
+      />
       {/* Hero Section with Background Image */}
       <section className="hero-section relative text-white overflow-hidden">
         <div 

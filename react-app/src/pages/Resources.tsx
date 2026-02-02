@@ -4,6 +4,7 @@ import { Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { RESOURCES } from '../lib/resourceContent'
 import { useContentSettings } from '../hooks/useContentSettings'
+import { SEO } from '../components/SEO'
 
 const RESOURCES_PER_PAGE = 6
 
@@ -139,8 +140,34 @@ export function Resources() {
     }
   }
 
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://tasmentalhealthdirectory.com.au'
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Mental Health Insights & Resources',
+    description: 'Expert guides to help you navigate the mental health system in Tasmania',
+    url: `${siteUrl}/resources`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: allResources.slice(0, 10).map((resource, index) => ({
+        '@type': 'Article',
+        position: index + 1,
+        name: resource.title,
+        description: resource.excerpt,
+        url: `${siteUrl}/resources/${resource.slug}`
+      }))
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/20 to-gray-50">
+      <SEO
+        title="Mental Health Resources & Guides | Tasmanian Mental Health Directory"
+        description="Expert guides to help you navigate the mental health system in Tasmania, whether you are seeking support, supporting a loved one, or running a practice."
+        keywords="mental health resources Tasmania, therapy guides, mental health information, mental health education, support guides"
+        image="/images/resource-ocean.jpg"
+        structuredData={structuredData}
+      />
       {/* Hero Section */}
       <section className="hero-section relative text-white py-12 sm:py-16 overflow-hidden">
         <div 

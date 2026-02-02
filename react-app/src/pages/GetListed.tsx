@@ -8,6 +8,7 @@ import { sanitizeInput } from '../lib/sanitize'
 import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight, Star } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useContentSettings } from '../hooks/useContentSettings'
+import { SEO } from '../components/SEO'
 
 // Complete list of all country codes for phone numbers
 const COUNTRY_CODES = [
@@ -797,6 +798,13 @@ export function GetListed() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <SEO
+        title="Get Listed - Join the Directory | Tasmanian Mental Health Directory"
+        description="List your practice for free and connect with patients across Tasmania. Free directory listing for qualified mental health professionals. Grow your visibility and reach more clients."
+        keywords="list practice free, mental health directory listing, join directory Tasmania, list your practice, mental health professionals directory"
+        image="/images/hero-mountain.jpg"
+        structuredData={structuredData}
+      />
       {/* Background with gradient and decorative elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100/30"></div>
       

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { usePageTracking } from '../hooks/usePageTracking'
 import { trackLinkClick } from '../lib/analytics'
+import { SEO } from '../components/SEO'
 
 export function ListingDetail() {
   const { id } = useParams<{ id: string }>()
@@ -71,8 +72,37 @@ export function ListingDetail() {
     )
   }
 
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://tasmentalhealthdirectory.com.au'
+  const structuredData = listing ? {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalBusiness',
+    name: listing.practice_name,
+    description: listing.bio || `${listing.profession} in ${listing.location}`,
+    url: `${siteUrl}/listing/${listing.id}`,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: listing.location,
+      addressRegion: 'Tasmania',
+      postalCode: listing.postcode,
+      streetAddress: listing.street_address
+    },
+    telephone: listing.phone,
+    email: listing.email,
+    image: listing.avatar_url,
+    priceRange: listing.is_featured ? '$$' : '$'
+  } : undefined
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {listing && (
+        <SEO
+          title={`${listing.practice_name} - ${listing.profession} in ${listing.location} | Tasmanian Mental Health Directory`}
+          description={listing.bio || `${listing.profession} in ${listing.location}. ${listing.specialties?.join(', ')}`}
+          keywords={`${listing.profession}, ${listing.location}, mental health, ${listing.specialties?.join(', ')}`}
+          image={listing.avatar_url || '/images/hero-mountain.jpg'}
+          structuredData={structuredData}
+        />
+      )}
       {/* Hero Header */}
       <section className="hero-section relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-10">

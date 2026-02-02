@@ -5,6 +5,7 @@ import { RESOURCES, type ResourceContent } from '../lib/resourceContent'
 import { supabase } from '../lib/supabase'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { SEO } from '../components/SEO'
 
 interface DatabaseArticle {
   id: string
@@ -209,8 +210,44 @@ export function ResourceDetail() {
     )
   }
 
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://tasmentalhealthdirectory.com.au'
+  const structuredData = article ? {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    image: article.image_url || `${siteUrl}/images/resource-ocean.jpg`,
+    datePublished: article.created_at,
+    dateModified: article.updated_at || article.created_at,
+    author: {
+      '@type': 'Organization',
+      name: 'Tasmanian Mental Health Directory'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Tasmanian Mental Health Directory',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/images/logo.webp`
+      }
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/resources/${article.slug}`
+    }
+  } : undefined
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-50">
+      {article && (
+        <SEO
+          title={`${article.title} | Tasmanian Mental Health Directory`}
+          description={article.excerpt}
+          keywords={article.tags?.join(', ') || 'mental health, Tasmania, resources'}
+          image={article.image_url || '/images/resource-ocean.jpg'}
+          structuredData={structuredData}
+        />
+      )}
       {/* Enhanced Hero Section */}
       <section className="hero-section relative bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white py-20 sm:py-24 md:py-28 overflow-hidden">
         {/* Background decorative elements */}

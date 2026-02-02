@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /login
+Disallow: /admin-login
+Disallow: /reset-password
+Disallow: /auth/verify
+
+# Sitemap
+Sitemap: https://tasmentalhealthdirectory.com.au/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

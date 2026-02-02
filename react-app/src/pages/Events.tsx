@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { sendEmail, getEmailTemplate } from '../lib/email'
 import { format } from 'date-fns'
 import { useContentSettings } from '../hooks/useContentSettings'
+import { SEO } from '../components/SEO'
 
 export function Events() {
   const { settings } = useContentSettings()
@@ -212,8 +213,24 @@ export function Events() {
     return 'from-primary-500 to-primary-600'
   }
 
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://tasmentalhealthdirectory.com.au'
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: 'Community Mental Health Events',
+    description: 'Discover workshops, support groups, and mental health seminars happening across Tasmania',
+    url: `${siteUrl}/events`
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-primary-100/40">
+      <SEO
+        title="Mental Health Events & Workshops | Tasmanian Mental Health Directory"
+        description="Discover workshops, support groups, and mental health seminars happening across Tasmania. Stay updated on upcoming mental health events."
+        keywords="mental health events Tasmania, workshops, support groups, seminars, mental health training, community events"
+        image="/images/hero-mountain.jpg"
+        structuredData={structuredData}
+      />
       {/* Hero Section with Background Image */}
       <section className="hero-section relative text-white py-12 sm:py-16 md:py-20 overflow-hidden">
         <div 

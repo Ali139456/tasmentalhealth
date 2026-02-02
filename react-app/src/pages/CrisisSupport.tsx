@@ -3,6 +3,7 @@ import { Phone, AlertTriangle, Heart, Shield, Users, Home, FileText, Download, P
 import { HELPLINES } from '../lib/constants'
 import { jsPDF } from 'jspdf'
 import { useContentSettings } from '../hooks/useContentSettings'
+import { SEO } from '../components/SEO'
 
 interface SafetyPlanItem {
   id: string
@@ -12,6 +13,30 @@ interface SafetyPlanItem {
 export function CrisisSupport() {
   const { settings } = useContentSettings()
   const [activeTab, setActiveTab] = useState<'safety-plan' | 'find-help'>('safety-plan')
+  
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://tasmentalhealthdirectory.com.au'
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Crisis Support & Safety Planning',
+    description: '24/7 crisis support resources and safety planning tools for mental health emergencies in Tasmania',
+    url: `${siteUrl}/crisis-support`,
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: HELPLINES.map((helpline, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Organization',
+          name: helpline.name,
+          telephone: helpline.tel,
+          url: helpline.website,
+          description: helpline.description
+        }
+      }))
+    }
+  }
+  
   const [safetyPlan, setSafetyPlan] = useState<Record<string, SafetyPlanItem[]>>({
     warningSigns: [],
     copingStrategies: [],
@@ -527,6 +552,13 @@ export function CrisisSupport() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-50">
+      <SEO
+        title="Crisis Support & Safety Planning | Tasmanian Mental Health Directory"
+        description="24/7 crisis support resources and safety planning tools for mental health emergencies in Tasmania. Build your personalised safety plan with coping strategies and support contacts."
+        keywords="crisis support Tasmania, mental health emergency, suicide prevention, safety plan, 24/7 helpline, mental health crisis"
+        image="/images/hero-mountain.jpg"
+        structuredData={structuredData}
+      />
       {/* Hero Section - Enhanced */}
       <section className="hero-section relative text-white py-16 sm:py-20 md:py-24 overflow-hidden">
         <div 
