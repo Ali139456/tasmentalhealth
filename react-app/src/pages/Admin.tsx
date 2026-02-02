@@ -2058,6 +2058,7 @@ export function Admin() {
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Image</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Title</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Category</th>
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
@@ -2069,13 +2070,29 @@ export function Admin() {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {articles.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                        <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                           No articles yet. Create your first article above.
                         </td>
                       </tr>
                     ) : (
                       articles.map((article) => (
                         <tr key={article.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            {article.image_url ? (
+                              <img 
+                                src={article.image_url} 
+                                alt={article.title}
+                                className="w-16 h-16 object-cover rounded-lg border-2 border-gray-200"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/images/resource-ocean.jpg'
+                                }}
+                              />
+                            ) : (
+                              <div className="w-16 h-16 bg-gray-100 rounded-lg border-2 border-gray-200 flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-gray-400" />
+                              </div>
+                            )}
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">{article.title}</div>
                             <div className="text-xs text-gray-500">/{article.slug}</div>
