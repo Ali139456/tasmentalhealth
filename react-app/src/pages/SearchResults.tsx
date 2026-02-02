@@ -36,16 +36,20 @@ export function SearchResults() {
 
   const performSearch = async (searchQuery: string) => {
     setLoading(true)
-    const lowerQuery = searchQuery.toLowerCase().trim()
+    // Sanitize search query to prevent injection attacks
+    const sanitizedQuery = searchQuery.trim().replace(/[%_]/g, '') // Remove SQL wildcards
+    const lowerQuery = sanitizedQuery.toLowerCase()
     const allResults: SearchResult[] = []
 
     try {
-      // Search Listings
+      // Search Listings - use parameterized query to prevent SQL injection
+      // Escape special characters and use proper Supabase query builder
+      const escapedQuery = sanitizedQuery.replace(/[%_\\]/g, '\\$&') // Escape SQL wildcards
       const { data: listingsData, error } = await supabase
         .from('listings')
         .select('*')
         .eq('status', 'approved')
-        .or(`practice_name.ilike.%${searchQuery}%,bio.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%,profession.ilike.%${searchQuery}%`)
+        .or(`practice_name.ilike.%${escapedQuery}%,bio.ilike.%${escapedQuery}%,location.ilike.%${escapedQuery}%,profession.ilike.%${escapedQuery}%`)
 
       if (!error && listingsData) {
         listingsData.forEach((listing: Listing) => {

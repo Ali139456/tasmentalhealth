@@ -113,6 +113,7 @@ serve(async (req) => {
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.user_id
   const listingId = session.metadata?.listing_id
+  const tier = session.metadata?.tier || 'professional' // Default to professional if not specified
   const customerId = session.customer as string
   const subscriptionId = session.subscription as string
 
@@ -138,6 +139,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       listing_id: listingId,
       stripe_subscription_id: subscriptionId,
       stripe_customer_id: customerId,
+      subscription_tier: tier,
       status: subscription.status === 'active' ? 'active' : 'past_due',
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),

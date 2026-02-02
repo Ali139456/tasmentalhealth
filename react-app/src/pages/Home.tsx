@@ -6,6 +6,8 @@ import type { Listing } from '../types'
 import { LOCATIONS, SPECIALTIES, PROFESSIONS } from '../lib/constants'
 import { SAMPLE_LISTINGS } from '../lib/sampleListings'
 import { useContentSettings } from '../hooks/useContentSettings'
+import { trackPageView, trackSearch, trackFilter, trackListingClick, trackLinkClick, trackTimeOnPage } from '../lib/analytics'
+import { sanitizeHTMLWithSafeTags } from '../lib/sanitize'
 
 const LISTINGS_PER_PAGE = 4
 
@@ -30,19 +32,38 @@ export function Home() {
   })
 
   useEffect(() => {
+    // Track page view
+    trackPageView('/')
+    
+    // Track time on page when user leaves
+    const pageLoadTime = Date.now()
+    const handleBeforeUnload = () => {
+      const duration = (Date.now() - pageLoadTime) / 1000 // Convert to seconds
+      trackTimeOnPage('/', duration)
+    }
+    
     fetchListings()
     
     // Refresh listings when page becomes visible (user switches back to tab)
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         fetchListings(true) // Force refresh when tab becomes visible
+      } else {
+        // Track time when tab becomes hidden
+        const duration = (Date.now() - pageLoadTime) / 1000
+        trackTimeOnPage('/', duration)
       }
     }
     
+    window.addEventListener('beforeunload', handleBeforeUnload)
     document.addEventListener('visibilitychange', handleVisibilityChange)
     
     return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      // Track time on page when component unmounts
+      const duration = (Date.now() - pageLoadTime) / 1000
+      trackTimeOnPage('/', duration)
     }
   }, [])
 
@@ -54,9 +75,13 @@ export function Home() {
 
     let filtered = [...listings]
 
-    // Keywords filter
+    // Keywords filter - sanitize input to prevent XSS
     if (filters.keywords && filters.keywords.trim()) {
-      const keywords = filters.keywords.toLowerCase().trim()
+      // Sanitize keywords: remove potentially dangerous characters
+      const sanitizedKeywords = filters.keywords.trim().replace(/[<>\"']/g, '')
+      const keywords = sanitizedKeywords.toLowerCase()
+      // Track search query (already sanitized)
+      trackSearch(keywords, '/')
       filtered = filtered.filter(listing =>
         (listing.practice_name?.toLowerCase().includes(keywords) ?? false) ||
         (listing.profession?.toLowerCase().includes(keywords) ?? false) ||
@@ -309,7 +334,9 @@ export function Home() {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: 'url(/images/hero-mountain.jpg)'
+            backgroundImage: (settings['home_hero_background'] && settings['home_hero_background'].trim()) 
+              ? `url(${settings['home_hero_background'].trim()})` 
+              : 'url(/images/hero-mountain.jpg)'
           }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-r from-teal-950/80 to-teal-800/40"></div>
@@ -319,7 +346,11 @@ export function Home() {
               {settings['home_hero_title'] || "Tasmania's Mental Health Directory - Connecting You to the Right Support"}
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 md:mb-10 text-white/90 max-w-3xl mx-auto px-4">
-              {settings['home_hero_description'] || "Search for trusted mental health professionals across Hobart, Launceston, and beyond - or list your practice for free to grow your visibility and connect with patients seeking mental health support in Tasmania."}
+              {settings['home_hero_description'] ? (
+                <span dangerouslySetInnerHTML={{ __html: sanitizeHTMLWithSafeTags(settings['home_hero_description']) }} />
+              ) : (
+                <>Search for trusted mental health professionals across Hobart, Launceston, and beyond - or <strong>list your practice for free</strong> to grow your visibility and connect with patients seeking mental health support in Tasmania.</>
+              )}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
               <a 
@@ -346,9 +377,11 @@ export function Home() {
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
             <div className="pr-0 md:pr-6 md:pr-8 md:pr-10 lg:pr-12 border-r-0 md:border-r border-gray-300 pb-6 md:pb-0">
-              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">{settings['home_heading_people_support'] || 'For People Seeking Support'}</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">
+                {settings['home_heading_people_support'] || 'For People Seeking Support'}
+              </h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
-                {settings['home_description_people_support'] || "Navigating mental health care can be overwhelming. We make it easier to find compassionate help. Whether you are looking for psychologists in Hobart, need anxiety counselling in Tasmania, or want to find a social worker in Tasmania, our directory connects you with verified local experts."}
+                {settings['home_description_people_support'] || 'Navigating mental health care can be overwhelming. We make it easier to find compassionate help. Whether you are looking for psychologists in Hobart, need anxiety counselling in Tasmania, or want to find a social worker in Tasmania, our directory connects you with verified local experts.'}
               </p>
               <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                 <li className="flex items-start gap-2 sm:gap-3">
@@ -374,9 +407,15 @@ export function Home() {
             </div>
 
             <div className="pl-0 md:pl-6 md:pl-8 md:pl-10 lg:pl-12 pt-6 md:pt-0 border-t md:border-t-0 border-gray-300">
-              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">{settings['home_heading_professionals'] || 'For Professionals & Clinics'}</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-900">
+                {settings['home_heading_professionals'] || 'For Professionals & Clinics'}
+              </h2>
               <p className="text-gray-700 mb-4 sm:mb-6 text-base sm:text-lg leading-relaxed">
-                {settings['home_description_professionals'] || "Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. List your practice for free and advertise psychology services in Tasmania effectively to patients actively seeking care."}
+                {settings['home_description_professionals'] ? (
+                  <span dangerouslySetInnerHTML={{ __html: sanitizeHTMLWithSafeTags(settings['home_description_professionals']) }} />
+                ) : (
+                  <>Are you ready to grow your private practice in Hobart or statewide? Join Tasmania's dedicated online directory for mental health professionals. <strong>List your practice for free</strong> and advertise psychology services in Tasmania effectively to patients actively seeking care.</>
+                )}
               </p>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
@@ -405,7 +444,20 @@ export function Home() {
       </section>
 
       {/* Directory Section - Enhanced */}
-      <section id="directory" className="py-12 sm:py-16 md:py-20 bg-gray-50">
+      <section 
+        id="directory" 
+        className="py-12 sm:py-16 md:py-20 bg-gray-50 relative"
+        style={(settings['home_directory_background'] && settings['home_directory_background'].trim()) ? {
+          backgroundImage: `url(${settings['home_directory_background'].trim()})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        } : {}}
+      >
+        {(settings['home_directory_background'] && settings['home_directory_background'].trim()) && (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm"></div>
+        )}
+        <div className="relative z-10">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
           {/* Featured Listings Banner */}
           <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 rounded-2xl p-6 mb-8 shadow-xl border-2 border-yellow-300">
@@ -431,7 +483,9 @@ export function Home() {
           </div>
           
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">{settings['home_heading_find_support'] || 'Find Mental Health Support in Tasmania'}</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">
+              {settings['home_heading_find_support'] || 'Find Mental Health Support in Tasmania'}
+            </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2">
               {settings['home_description_find_support'] || 'Use the filters below to find psychologists, counsellors, and other specialists in your area.'}
             </p>
@@ -907,6 +961,7 @@ export function Home() {
                               <>
                                 <Link
                                   to={`/listing/${listing.id}`}
+                                  onClick={() => trackListingClick(listing.id, listing.practice_name, '/')}
                                   className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap shadow-md hover:shadow-lg min-w-[120px] sm:min-w-[140px]"
                                 >
                                   View Profile
@@ -914,6 +969,7 @@ export function Home() {
                                 {listing.show_phone_publicly && listing.phone && (
                                   <a
                                     href={`tel:${listing.phone}`}
+                                    onClick={() => trackLinkClick(`tel:${listing.phone}`, 'Call Now', '/')}
                                     className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white border-2 border-gray-300 text-gray-900 rounded-xl hover:bg-gray-50 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap min-w-[120px] sm:min-w-[140px]"
                                   >
                                     Call Now
@@ -925,6 +981,7 @@ export function Home() {
                                 {listing.email && (
                                   <a
                                     href={`mailto:${listing.email}`}
+                                    onClick={() => trackLinkClick(`mailto:${listing.email}`, listing.email || 'Email', '/')}
                                     className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base break-all sm:whitespace-nowrap min-w-[120px] sm:min-w-[140px]"
                                   >
                                     {listing.email}
@@ -933,6 +990,7 @@ export function Home() {
                                 {listing.phone && (
                                   <a
                                     href={`tel:${listing.phone}`}
+                                    onClick={() => trackLinkClick(`tel:${listing.phone}`, listing.phone || 'Phone', '/')}
                                     className="px-4 sm:px-5 py-2.5 sm:py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors text-center font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap shadow-md hover:shadow-lg min-w-[120px] sm:min-w-[140px]"
                                   >
                                     {listing.phone}
@@ -1063,13 +1121,51 @@ export function Home() {
             </div>
           </div>
         </div>
+        </div>
+      </section>
+
+      {/* Safety Plan Banner - Above Resources Section */}
+      <section className="py-6 sm:py-8 md:py-10 bg-gradient-to-r from-emerald-500 via-primary-500 to-emerald-600">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-5xl">
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-8 shadow-lg border-2 border-white/50">
+            <div className="text-center">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+                Create Your Personal Safety Plan
+              </h2>
+              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed max-w-2xl mx-auto">
+                A proven, evidence-based tool to help you navigate through difficult moments. Build your personalized plan with coping strategies, support contacts, and crisis resources—all in one secure place.
+              </p>
+              <Link 
+                to="/crisis-support" 
+                className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-all transform hover:scale-105 shadow-md hover:shadow-lg text-sm sm:text-base"
+              >
+                Start Building Your Plan
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Resources Preview Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
+      <section 
+        className="py-12 sm:py-16 md:py-20 bg-white relative"
+        style={(settings['home_resources_background'] && settings['home_resources_background'].trim()) ? {
+          backgroundImage: `url(${settings['home_resources_background'].trim()})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        } : {}}
+      >
+        {(settings['home_resources_background'] && settings['home_resources_background'].trim()) && (
+          <div className="absolute inset-0 bg-white/85 backdrop-blur-sm"></div>
+        )}
+        <div className="relative z-10">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">{settings['home_heading_resources'] || 'Mental Health Insights & Resources'}</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900 px-2">
+              {settings['home_heading_resources'] || 'Mental Health Insights & Resources'}
+            </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
               {settings['home_description_resources'] || 'Expert guides on finding support and growing your practice in Tasmania.'}
             </p>
@@ -1131,12 +1227,26 @@ export function Home() {
             </article>
           </div>
         </div>
+        </div>
       </section>
+
 
       {/* About Section - Enhanced */}
       <section className="relative py-16 sm:py-20 md:py-24 lg:py-28 overflow-hidden">
         {/* Background with gradient and pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100/50"></div>
+        {(settings['home_about_background'] && settings['home_about_background'].trim()) ? (
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${settings['home_about_background'].trim()})`
+            }}
+          ></div>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100/50"></div>
+        )}
+        {(settings['home_about_background'] && settings['home_about_background'].trim()) && (
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
+        )}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-96 h-96 bg-primary-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-400 rounded-full blur-3xl"></div>
@@ -1161,7 +1271,9 @@ export function Home() {
                     {settings['home_description_connecting'] || "Welcome to Tasmania's premier resource for mental wellbeing. Our mission is to bridge the gap between those seeking help and the dedicated professionals who provide it. Whether you are searching for experienced psychologists in Hobart, compassionate counsellors in Tasmania, or specialised psychiatrists in Launceston, our directory is designed to help you find the right support close to home."}
                   </p>
             
-                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">{settings['home_heading_comprehensive'] || 'Comprehensive Support for Every Need'}</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">
+                    {settings['home_heading_comprehensive'] || 'Comprehensive Support for Every Need'}
+                  </h3>
             <p>
                     {settings['home_description_comprehensive'] || "We understand that mental health needs are diverse. That's why we list a wide range of professionals. From sleep therapy in Hobart for those struggling with insomnia, to anxiety counselling in Tasmania for stress management, and trauma-informed care for deeper healing. You can also find a social worker in Tasmania who specialises in complex case management and family support."}
                   </p>
@@ -1169,9 +1281,15 @@ export function Home() {
                     Our directory covers all major regions, ensuring access to mental health support in Tasmania whether you are in the city centres of Hobart and Launceston, or in regional hubs like Devonport, Burnie, and Ulverstone.
                   </p>
             
-                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">{settings['home_heading_clinicians'] || 'For Clinicians: Grow Your Practice'}</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">
+                    {settings['home_heading_clinicians'] || 'For Clinicians: Grow Your Practice'}
+                  </h3>
             <p>
-                    {settings['home_description_clinicians'] || "If you are a practitioner, visibility is key to helping more people. By choosing to list your mental health practice in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them. Free listing for all qualified mental health professionals."}
+                    {settings['home_description_clinicians'] ? (
+                      <span dangerouslySetInnerHTML={{ __html: sanitizeHTMLWithSafeTags(settings['home_description_clinicians']) }} />
+                    ) : (
+                      <>If you are a practitioner, visibility is key to helping more people. By choosing to <strong>list your practice for free</strong> in Tasmania on our platform, you join a trusted community of providers. We help you advertise psychology services in Tasmania directly to the people who are actively searching for them. <strong>Free listing</strong> for all qualified mental health professionals.</>
+                    )}
                   </p>
             <p>
                     This is the effective way to grow your private practice in Hobart or expand your client base in regional areas. Learn how to get mental health clients in Tasmania by leveraging our SEO-optimised online directory for mental health professionals. Join us today and make your services accessible to all Tasmanians.

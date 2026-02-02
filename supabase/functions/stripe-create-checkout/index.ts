@@ -59,7 +59,7 @@ serve(async (req) => {
       )
     }
 
-    const { listingId } = await req.json()
+    const { listingId, tier = 'professional' } = await req.json()
 
     if (!listingId) {
       return new Response(
@@ -70,6 +70,22 @@ serve(async (req) => {
         }
       )
     }
+
+    // Define pricing tiers
+    const pricingTiers: Record<string, { amount: number; name: string; description: string }> = {
+      basic: {
+        amount: 1500, // $15.00 AUD
+        name: "Basic Featured Listing",
+        description: "Monthly basic featured listing subscription"
+      },
+      professional: {
+        amount: 2900, // $29.00 AUD
+        name: "Professional Featured Listing",
+        description: "Monthly professional featured listing subscription"
+      }
+    }
+
+    const selectedTier = pricingTiers[tier] || pricingTiers.professional
 
     // Verify the listing belongs to the user
     const { data: listing, error: listingError } = await supabase
@@ -125,13 +141,13 @@ serve(async (req) => {
           price_data: {
             currency: "aud",
             product_data: {
-              name: "Featured Listing - " + listing.practice_name,
-              description: "Monthly featured listing subscription",
+              name: selectedTier.name + " - " + listing.practice_name,
+              description: selectedTier.description,
             },
             recurring: {
               interval: "month",
             },
-            unit_amount: 2900, // $29.00 AUD
+            unit_amount: selectedTier.amount,
           },
           quantity: 1,
         },
@@ -141,6 +157,7 @@ serve(async (req) => {
       metadata: {
         listing_id: listingId,
         user_id: user.id,
+        tier: tier,
       },
     })
 

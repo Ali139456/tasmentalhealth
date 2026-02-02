@@ -60,13 +60,20 @@ export function TermsOfService() {
     },
     { 
       number: '9', 
-      icon: FileText, 
-      title: 'Governing Law', 
+      icon: Lock, 
+      title: 'Information Sharing and Confidentiality', 
       color: 'from-teal-500 to-teal-600',
-      content: 'These Terms of Service shall be governed by and construed in accordance with the laws of Tasmania, Australia. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Tasmania.'
+      content: 'We respect your privacy and confidentiality. Information provided to the directory will not be shared with third parties without your explicit consent, except in specific legal or safety situations as required by law (such as mandatory reporting obligations, court orders, or situations where there is an immediate risk to safety). All information is handled in accordance with the Australian Privacy Principles and relevant privacy legislation.'
     },
     { 
       number: '10', 
+      icon: FileText, 
+      title: 'Governing Law', 
+      color: 'from-indigo-500 to-indigo-600',
+      content: 'These Terms of Service shall be governed by and construed in accordance with the laws of Tasmania, Australia. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Tasmania.'
+    },
+    { 
+      number: '11', 
       icon: Mail, 
       title: 'Contact Information', 
       color: 'from-cyan-500 to-cyan-600',
@@ -192,6 +199,9 @@ export function TermsOfService() {
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-primary-100 text-center">
             <p className="text-gray-700 text-lg">
               <strong className="text-primary-600">Last Updated:</strong> January 2026
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              By using this directory, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.
             </p>
           </div>
         </div>

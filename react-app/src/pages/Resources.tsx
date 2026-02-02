@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { RESOURCES } from '../lib/resourceContent'
+import { useContentSettings } from '../hooks/useContentSettings'
 
 const RESOURCES_PER_PAGE = 6
 
@@ -141,13 +142,26 @@ export function Resources() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/20 to-gray-50">
       {/* Hero Section */}
-      <section className="hero-section bg-gradient-to-r from-primary-500 to-primary-600 text-white py-12 sm:py-16">
-        <div className="container mx-auto px-4">
+      <section className="hero-section relative text-white py-12 sm:py-16 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: (settings['resources_hero_background'] && settings['resources_hero_background'].trim())
+              ? `url(${settings['resources_hero_background'].trim()})`
+              : 'linear-gradient(to right, #39B8A6, #2E9385)'
+          }}
+        ></div>
+        {(settings['resources_hero_background'] && settings['resources_hero_background'].trim()) ? (
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-950/80 to-teal-800/40"></div>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/90 to-primary-600/90"></div>
+        )}
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <span className="text-primary-100 font-semibold text-sm sm:text-lg mb-2 block">Knowledge Hub</span>
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-2">{settings['resources_hero_title'] || 'Mental Health Insights & Resources'}</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-2">Mental Health Insights & Resources</h1>
             <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 px-2">
-              {settings['resources_hero_description'] || 'Expert guides to help you navigate the mental health system in Tasmania, whether you are seeking support, supporting a loved one, or running a practice.'}
+              Expert guides to help you navigate the mental health system in Tasmania, whether you are seeking support, supporting a loved one, or running a practice.
             </p>
             <div className="max-w-2xl mx-auto relative px-2">
               <Search className="absolute left-4 sm:left-5 top-1/2 transform -translate-y-1/2 text-primary-600 w-6 h-6 sm:w-7 sm:h-7 z-10" />

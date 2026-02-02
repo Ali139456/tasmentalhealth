@@ -762,12 +762,92 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
             </div>
             <div class="footer">
               <p>This email was sent to ${data.email || 'you'}. If you didn't subscribe, please ignore this email.</p>
+              <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e5e5;">
+                <a href="${appUrl}/unsubscribe?email=${encodeURIComponent(data.email || '')}" style="color: #39B8A6; text-decoration: underline;">Unsubscribe from event notifications</a>
+              </p>
             </div>
           </div>
         </body>
         </html>
       `
-    })
+    }),
+    event_notification: (data) => {
+      const eventStatus = data.eventStatus || 'new'
+      const statusText = eventStatus === 'new' ? 'New Event' : eventStatus === 'ended' ? 'Event Ended' : 'Event Update'
+      const statusColor = eventStatus === 'new' ? '#10b981' : eventStatus === 'ended' ? '#ef4444' : '#39B8A6'
+      
+      return {
+        subject: `${statusText}: ${data.eventTitle}`,
+        html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>${baseStyles}</style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1 style="margin: 0;">${statusText}</h1>
+              </div>
+              <div class="content">
+                <p>Hello${data.userName ? ` ${data.userName}` : ''},</p>
+                ${eventStatus === 'new' 
+                  ? `<p>We're excited to announce a new event that might interest you!</p>`
+                  : eventStatus === 'ended'
+                  ? `<p>An event you were subscribed to has ended.</p>`
+                  : `<p>An event you're subscribed to has been updated.</p>`
+                }
+                
+                <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${statusColor};">
+                  <h2 style="margin-top: 0; color: #333;">${data.eventTitle}</h2>
+                  ${data.eventDescription ? `<p style="color: #666; margin-bottom: 15px;">${data.eventDescription}</p>` : ''}
+                  
+                  <div style="margin: 15px 0;">
+                    <strong>📅 Date & Time:</strong><br>
+                    ${data.eventDate} at ${data.eventTime}
+                    ${data.eventEndDate ? `<br>Ends: ${data.eventEndDate} at ${data.eventEndTime}` : ''}
+                  </div>
+                  
+                  <div style="margin: 15px 0;">
+                    <strong>📍 Location:</strong><br>
+                    ${data.location}
+                    ${data.locationAddress ? `<br>${data.locationAddress}` : ''}
+                  </div>
+                  
+                  ${data.cost ? `<div style="margin: 15px 0;"><strong>💰 Cost:</strong> ${data.cost}</div>` : ''}
+                  
+                  ${data.organizerName ? `<div style="margin: 15px 0;"><strong>👤 Organizer:</strong> ${data.organizerName}</div>` : ''}
+                </div>
+                
+                ${data.registrationUrl 
+                  ? `<p style="text-align: center;">
+                      <a href="${data.registrationUrl}" class="button" style="color: white !important; background-color: #39B8A6 !important; padding: 14px 32px !important; text-decoration: none !important; border-radius: 6px !important; font-weight: 600 !important; display: inline-block !important;">Register Now</a>
+                    </p>`
+                  : ''
+                }
+                
+                <p style="text-align: center;">
+                  <a href="${data.eventsUrl || `${appUrl}/events`}" class="button" style="color: white !important;">View All Events</a>
+                </p>
+                
+                <p>Thank you for being part of our community!</p>
+                <p>Best regards,<br>The Tasmanian Mental Health Directory Team</p>
+              </div>
+              <div class="footer">
+                <p>This email was sent to ${data.email || 'you'} because you subscribed to event notifications.</p>
+                <p><a href="${appUrl}/events" style="color: #39B8A6;">Manage your subscriptions</a></p>
+                <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e5e5;">
+                  <a href="${appUrl}/unsubscribe?email=${encodeURIComponent(data.email || '')}" style="color: #39B8A6; text-decoration: underline;">Unsubscribe from event notifications</a>
+                </p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `
+      }
+    }
   }
 
   const template = templates[type]

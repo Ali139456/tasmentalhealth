@@ -7,11 +7,16 @@ import {
   MapPin, Phone, Mail, Globe, Star, ArrowLeft, 
   CheckCircle2, Building2, Video
 } from 'lucide-react'
+import { usePageTracking } from '../hooks/usePageTracking'
+import { trackLinkClick } from '../lib/analytics'
 
 export function ListingDetail() {
   const { id } = useParams<{ id: string }>()
   const [listing, setListing] = useState<Listing | null>(null)
   const [loading, setLoading] = useState(true)
+  
+  // Track page views and time on page
+  usePageTracking()
 
   useEffect(() => {
     if (id) {
@@ -258,6 +263,7 @@ export function ListingDetail() {
                           href={listing.website} 
                           target="_blank" 
                           rel="noopener noreferrer"
+                          onClick={() => trackLinkClick(listing.website || '', listing.website || 'Website', `/listing/${id}`)}
                           className="text-white/90 hover:text-white transition-colors break-all"
                         >
                           {listing.website}

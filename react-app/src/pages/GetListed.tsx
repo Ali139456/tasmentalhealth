@@ -4,7 +4,9 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { sendEmail, getEmailTemplate, getAdminEmails } from '../lib/email'
 import { LOCATIONS, PROFESSIONS, SPECIALTIES, PRACTICE_TYPES } from '../lib/constants'
+import { sanitizeInput } from '../lib/sanitize'
 import { AlertCircle, CheckCircle, ArrowLeft, Phone, Mail, Globe, Sparkles, ArrowRight, Star } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { useContentSettings } from '../hooks/useContentSettings'
 
 // Complete list of all country codes for phone numbers
@@ -242,7 +244,6 @@ const validatePhoneNumber = (phone: string, countryCode: string): boolean => {
 
 export function GetListed() {
   const { user } = useAuth()
-  const { settings } = useContentSettings()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -256,6 +257,7 @@ export function GetListed() {
     phone: '',
     website: '',
     profession: '',
+    profession_other: '', // For "Other" profession option
     practice_type: 'individual' as 'individual' | 'group_practice' | 'non_profit',
     ahpra_number: '',
     specialties: [] as string[],
@@ -274,6 +276,8 @@ export function GetListed() {
   })
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false)
 
   // Auto-fill email when user changes (but allow editing)
   useEffect(() => {
@@ -310,9 +314,43 @@ export function GetListed() {
     setPhoneError('')
     setLoading(true)
 
+    // CRITICAL: User must be logged in first before submitting listing
+    if (!user) {
+      toast.error('Please create your user account first. Redirecting to sign up...')
+      setLoading(false)
+      // Redirect to login page after a short delay to show the toast
+      setTimeout(() => {
+        navigate('/login?redirect=/get-listed')
+      }, 1500)
+      return
+    }
+
+    // Validate that user has agreed to terms and privacy policy
+    if (!agreedToTerms || !agreedToPrivacy) {
+      setError('Please agree to our Terms and Conditions and Privacy Policy to continue.')
+      setLoading(false)
+      return
+    }
+
+    // SECURITY: Sanitize all text inputs before submission
+    const sanitizedFormData = {
+      ...formData,
+      practice_name: sanitizeInput(formData.practice_name),
+      email: formData.email.trim().toLowerCase(), // Email is validated separately
+      phone: formData.phone.trim(),
+      website: formData.website.trim(),
+      profession: sanitizeInput(formData.profession),
+      profession_other: sanitizeInput(formData.profession_other),
+      ahpra_number: sanitizeInput(formData.ahpra_number),
+      location: sanitizeInput(formData.location),
+      postcode: sanitizeInput(formData.postcode),
+      street_address: sanitizeInput(formData.street_address),
+      bio: sanitizeInput(formData.bio)
+    }
+
     // Validate phone number before submission
-    if (formData.phone) {
-      const isValid = validatePhoneNumber(formData.phone, phoneCountryCode)
+    if (sanitizedFormData.phone) {
+      const isValid = validatePhoneNumber(sanitizedFormData.phone, phoneCountryCode)
       if (!isValid) {
         setPhoneError('Please enter a valid phone number')
         setLoading(false)
@@ -320,117 +358,115 @@ export function GetListed() {
       }
     }
 
+    // Validate address fields - only required if NOT telehealth only
+    if (!sanitizedFormData.is_statewide_telehealth) {
+      if (!sanitizedFormData.location || !sanitizedFormData.postcode) {
+        setError('Location and postcode are required unless you provide Statewide Telehealth services only')
+        setLoading(false)
+        return
+      }
+    }
+
+    // Validate profession - if "Other" is selected, require profession_other
+    if (sanitizedFormData.profession === 'Other' && !sanitizedFormData.profession_other.trim()) {
+      setError('Please specify your profession')
+      setLoading(false)
+      return
+    }
+
     try {
-      if (!user) {
-        const tempPassword = Math.random().toString(36).slice(-12) + 'A1!'
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: formData.email,
-          password: tempPassword,
-        })
-
-        if (authError) throw authError
-
-        await supabase.auth.resetPasswordForEmail(formData.email, {
-          redirectTo: `${window.location.origin}/reset-password`,
-        })
-
-        // Prepare listing data, including avatar_url
-        // Format phone number with country code
-        const formattedPhone = formData.phone ? `${phoneCountryCode} ${formData.phone}` : ''
-        const insertData = {
-          user_id: authData.user?.id,
-          ...formData,
-          phone: formattedPhone
-        }
-
-        const { error: listingError } = await supabase
-          .from('listings')
-          .insert(insertData)
-
-        if (listingError) throw listingError
-
-        // Send lister account creation email
-        try {
-          const listerTemplate = getEmailTemplate('lister_account_created', {
-            email: formData.email,
-            userName: formData.email.split('@')[0],
-            listingName: formData.practice_name,
-            temporaryPassword: tempPassword,
-            appUrl: window.location.origin
-          })
-          await sendEmail({
-            to: formData.email,
-            subject: listerTemplate.subject,
-            html: listerTemplate.html
-          })
-        } catch (emailErr) {
-          console.error('Failed to send lister account email:', emailErr)
-        }
-
-        // Send listing submitted email
-        try {
-          const listingTemplate = getEmailTemplate('listing_submitted', {
-            email: formData.email,
-            userName: formData.email.split('@')[0],
-            listingName: formData.practice_name,
-            appUrl: window.location.origin
-          })
-          await sendEmail({
-            to: formData.email,
-            subject: listingTemplate.subject,
-            html: listingTemplate.html
-          })
-        } catch (emailErr) {
-          console.error('Failed to send listing submitted email:', emailErr)
-        }
-
-        // Send admin notification
-        try {
-          const adminEmails = await getAdminEmails()
-          if (adminEmails.length > 0) {
-            const adminTemplate = getEmailTemplate('admin_listing_submitted', {
-              practiceName: formData.practice_name,
-              profession: formData.profession,
-              location: `${formData.location}, ${formData.postcode}`,
-              userEmail: formData.email,
-              submissionDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
-            })
-
-            await Promise.all(adminEmails.map(adminEmail => 
-              sendEmail({
-                to: adminEmail,
-                subject: adminTemplate.subject,
-                html: adminTemplate.html
-              })
-            ))
-            console.log('Admin notification sent for new listing')
-          }
-        } catch (err) {
-          console.error('Error sending admin notification:', err)
-          // Don't fail listing submission if admin notification fails
-        }
-
-        setSuccess(true)
+      // User must be logged in at this point (checked above)
+      if (!user?.id) {
+        toast.error('Please create your user account first. Redirecting to sign up...')
+        setLoading(false)
         setTimeout(() => {
-          navigate('/login')
-        }, 3000)
-      } else {
-        // Prepare listing data, including avatar_url
-        // Format phone number with country code
-        const formattedPhone = formData.phone ? `${phoneCountryCode} ${formData.phone}` : ''
-        const insertData = {
-          user_id: user.id,
-          ...formData,
-          phone: formattedPhone
+          navigate('/login?redirect=/get-listed')
+        }, 1500)
+        return
+      }
+
+      // CRITICAL: Ensure user exists in public.users table before inserting listing
+      // The database trigger should create this, but we'll ensure it exists to prevent RLS errors
+      const userId = user.id
+      let userExists = false
+      let retries = 0
+      const maxRetries = 5
+
+      while (!userExists && retries < maxRetries) {
+        // Check if user exists in public.users
+        const { data: existingUser, error: checkError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', userId)
+          .maybeSingle()
+
+        if (existingUser) {
+          userExists = true
+          break
         }
 
-        const { error: listingError } = await supabase
-          .from('listings')
-          .insert(insertData)
+        // If user doesn't exist, try to create it
+        const { error: createUserError } = await supabase
+          .from('users')
+          .insert({
+            id: userId,
+            email: user.email || sanitizedFormData.email,
+            role: 'lister',
+            email_verified: false
+          })
 
-        if (listingError) throw listingError
+        if (!createUserError) {
+          userExists = true
+          break
+        }
 
-        // Send listing submitted email for existing users
+        // If insert failed due to conflict (user was created by trigger), check again
+        if (createUserError.code === '23505') { // Unique violation - user exists now
+          userExists = true
+          break
+        }
+
+        // Wait a bit before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 200 * Math.pow(2, retries)))
+        retries++
+      }
+
+      if (!userExists) {
+        toast.error('Please create your user account first.')
+        setError('Failed to create user record. Please try again or contact support.')
+        setLoading(false)
+        return
+      }
+
+      // Prepare listing data, including avatar_url
+      // Format phone number with country code
+      const formattedPhone = sanitizedFormData.phone ? `${phoneCountryCode} ${sanitizedFormData.phone}` : ''
+      // Use profession_other if "Other" is selected, otherwise use profession
+      const finalProfession = sanitizedFormData.profession === 'Other' ? sanitizedFormData.profession_other : sanitizedFormData.profession
+      const { profession_other, ...dataWithoutOther } = sanitizedFormData
+      const insertData = {
+        user_id: userId,
+        ...dataWithoutOther,
+        profession: finalProfession,
+        phone: formattedPhone
+      }
+
+      const { error: listingError } = await supabase
+        .from('listings')
+        .insert(insertData)
+
+      if (listingError) {
+        // If RLS error, provide helpful message
+        if (listingError.code === '42501' || listingError.message?.includes('row-level security')) {
+          toast.error('Please create your user account first.')
+          setError('Permission denied. Please ensure your account is properly set up. If this error persists, please contact support.')
+          setLoading(false)
+          return
+        }
+        throw listingError
+      }
+
+      // Send listing submitted email
         try {
           const listingTemplate = getEmailTemplate('listing_submitted', {
             email: user.email || formData.email,
@@ -447,37 +483,37 @@ export function GetListed() {
           console.error('Failed to send listing submitted email:', emailErr)
         }
 
-        // Send admin notification
-        try {
-          const adminEmails = await getAdminEmails()
-          if (adminEmails.length > 0) {
-            const adminTemplate = getEmailTemplate('admin_listing_submitted', {
-              practiceName: formData.practice_name,
-              profession: formData.profession,
-              location: `${formData.location}, ${formData.postcode}`,
-              userEmail: user.email || formData.email,
-              submissionDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
+      // Send admin notification
+      try {
+        const adminEmails = await getAdminEmails()
+        if (adminEmails.length > 0) {
+          const adminTemplate = getEmailTemplate('admin_listing_submitted', {
+            practiceName: formData.practice_name,
+            profession: formData.profession,
+            location: `${formData.location}, ${formData.postcode}`,
+            userEmail: user.email || formData.email,
+            submissionDate: new Date().toLocaleString('en-AU', { timeZone: 'Australia/Hobart' })
+          })
+
+          await Promise.all(adminEmails.map(adminEmail => 
+            sendEmail({
+              to: adminEmail,
+              subject: adminTemplate.subject,
+              html: adminTemplate.html
             })
-
-            await Promise.all(adminEmails.map(adminEmail => 
-              sendEmail({
-                to: adminEmail,
-                subject: adminTemplate.subject,
-                html: adminTemplate.html
-              })
-            ))
-            console.log('Admin notification sent for new listing')
-          }
-        } catch (err) {
-          console.error('Error sending admin notification:', err)
-          // Don't fail listing submission if admin notification fails
+          ))
+          console.log('Admin notification sent for new listing')
         }
-
-        setSuccess(true)
-        setTimeout(() => {
-          navigate('/dashboard')
-        }, 2000)
+      } catch (err) {
+        console.error('Error sending admin notification:', err)
+        // Don't fail listing submission if admin notification fails
       }
+
+      setSuccess(true)
+      toast.success('Your listing has been submitted successfully!')
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 2000)
     } catch (err: any) {
       setError(err.message || 'Failed to submit listing')
     } finally {
@@ -498,15 +534,30 @@ export function GetListed() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file')
+    // SECURITY: Validate file type - only allow specific image MIME types
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please upload a valid image file (JPEG, PNG, GIF, or WebP)')
       return
     }
 
-    // Validate file size (max 5MB)
+    // SECURITY: Validate file extension matches MIME type
+    const fileExt = file.name.split('.').pop()?.toLowerCase()
+    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+    if (!fileExt || !validExtensions.includes(fileExt)) {
+      setError('Invalid file extension. Please upload a valid image file.')
+      return
+    }
+
+    // SECURITY: Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError('Image size must be less than 5MB')
+      return
+    }
+
+    // SECURITY: Validate minimum file size (prevent empty or corrupted files)
+    if (file.size < 100) {
+      setError('File appears to be corrupted or empty')
       return
     }
 
@@ -650,22 +701,35 @@ export function GetListed() {
           </Link>
 
           {/* Hero Section */}
-          <div className="hero-section text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-              {settings['get_listed_title'] || 'Join the Tasmanian Mental Health Directory'}
-            </h1>
-            <p className="text-xl text-gray-600 mb-2">
-              {settings['get_listed_description'] || 'List your practice for free and connect with patients across Tasmania. Free directory listing for qualified mental health professionals.'}
-            </p>
-            <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>
-            {!user && (
-              <p className="mt-6 text-sm text-gray-500">
-                Already have an account?{' '}
-                <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold transition-colors">
-                  Log in here
-                </Link>
-              </p>
+          <div className="hero-section relative text-center mb-12 py-12 sm:py-16 overflow-hidden rounded-2xl">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: (settings['get_listed_hero_background'] && settings['get_listed_hero_background'].trim())
+                  ? `url(${settings['get_listed_hero_background'].trim()})`
+                  : 'linear-gradient(to bottom right, #ecfdf5, #ffffff, #d1fae5)'
+              }}
+            ></div>
+            {(settings['get_listed_hero_background'] && settings['get_listed_hero_background'].trim()) && (
+              <div className="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
             )}
+            <div className="relative z-10">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+                Join the Tasmanian Mental Health Directory
+              </h1>
+              <p className="text-xl text-gray-600 mb-2">
+                <strong>List your practice for free</strong> and connect with patients across Tasmania. Free directory listing for qualified mental health professionals.
+              </p>
+              <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-primary-400 mx-auto rounded-full"></div>
+              {!user && (
+                <p className="mt-6 text-sm text-gray-500">
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold transition-colors">
+                    Log in here
+                  </Link>
+                </p>
+              )}
+            </div>
           </div>
 
           {error && (
@@ -878,7 +942,7 @@ export function GetListed() {
                     <select
                       required
                       value={formData.profession}
-                      onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, profession: e.target.value, profession_other: e.target.value === 'Other' ? formData.profession_other : '' })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
                     >
                       <option value="">Select profession...</option>
@@ -886,6 +950,21 @@ export function GetListed() {
                         <option key={prof} value={prof}>{prof}</option>
                       ))}
                     </select>
+                    {formData.profession === 'Other' && (
+                      <div className="mt-3">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Please specify your profession *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.profession_other}
+                          onChange={(e) => setFormData({ ...formData, profession_other: e.target.value })}
+                          placeholder="Enter your profession"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -980,54 +1059,66 @@ export function GetListed() {
                     onChange={(e) => setFormData({ ...formData, is_statewide_telehealth: e.target.checked })}
                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
-                  <span className="text-sm font-medium text-gray-700">I provide Statewide services via Telehealth</span>
+                  <span className="text-sm font-medium text-gray-700">I provide Statewide services via Telehealth only</span>
                 </label>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Street Address (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.street_address}
-                    onChange={(e) => setFormData({ ...formData, street_address: e.target.value })}
-                    placeholder="Level 1, 123 Example St"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
-                  />
-                </div>
+                {!formData.is_statewide_telehealth && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Street Address (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.street_address}
+                        onChange={(e) => setFormData({ ...formData, street_address: e.target.value })}
+                        placeholder="Level 1, 123 Example St"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
+                      />
+                    </div>
 
-                <div className="grid md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Location (City/Suburb) *
-                    </label>
-                    <select
-                      required
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
-                    >
-                      <option value="">Select location...</option>
-                      {LOCATIONS.filter(loc => loc !== 'All Locations').map(loc => (
-                        <option key={loc} value={loc}>{loc}</option>
-                      ))}
-                    </select>
-                  </div>
+                    <div className="grid md:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Location (City/Suburb) *
+                        </label>
+                        <select
+                          required={!formData.is_statewide_telehealth}
+                          value={formData.location}
+                          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
+                        >
+                          <option value="">Select location...</option>
+                          {LOCATIONS.filter(loc => loc !== 'All Locations').map(loc => (
+                            <option key={loc} value={loc}>{loc}</option>
+                          ))}
+                        </select>
+                      </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Postcode *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.postcode}
-                      onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
-                      placeholder="7000"
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
-                    />
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Postcode *
+                        </label>
+                        <input
+                          type="text"
+                          required={!formData.is_statewide_telehealth}
+                          value={formData.postcode}
+                          onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
+                          placeholder="7000"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {formData.is_statewide_telehealth && (
+                  <div className="bg-primary-50 border-2 border-primary-200 rounded-xl p-4">
+                    <p className="text-sm text-gray-700">
+                      <strong>Note:</strong> Since you provide Statewide Telehealth services only, address fields are not required.
+                    </p>
                   </div>
-                </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -1088,15 +1179,48 @@ export function GetListed() {
               </div>
             </section>
 
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6">
-              <p className="text-sm text-gray-500 text-center sm:text-left">
-                By submitting, you agree to our Terms of Service.
+            <div className="space-y-4 pt-6">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border-2 border-gray-200 hover:border-primary-200 transition-colors">
+                  <input
+                    type="checkbox"
+                    id="agree-terms-listing"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="mt-1 w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2 cursor-pointer flex-shrink-0"
+                  />
+                  <label htmlFor="agree-terms-listing" className="text-sm text-gray-700 cursor-pointer flex-1">
+                    I agree to the{' '}
+                    <Link to="/terms-of-service" target="_blank" className="text-primary-600 hover:text-primary-700 underline font-semibold">
+                      Terms and Conditions
+                    </Link>
+                  </label>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border-2 border-gray-200 hover:border-primary-200 transition-colors">
+                  <input
+                    type="checkbox"
+                    id="agree-privacy-listing"
+                    checked={agreedToPrivacy}
+                    onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                    className="mt-1 w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2 cursor-pointer flex-shrink-0"
+                  />
+                  <label htmlFor="agree-privacy-listing" className="text-sm text-gray-700 cursor-pointer flex-1">
+                    I agree to the{' '}
+                    <Link to="/privacy-policy" target="_blank" className="text-primary-600 hover:text-primary-700 underline font-semibold">
+                      Privacy Policy
+                    </Link>
+                  </label>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 text-center">
+                By proceeding, you agree to our Terms and Conditions and Privacy Policy.
               </p>
-              <button
-                type="submit"
-                disabled={loading}
-                className="group px-8 py-4 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2"
-              >
+              <div className="flex flex-col sm:flex-row justify-end items-center gap-4">
+                <button
+                  type="submit"
+                  disabled={loading || !agreedToTerms || !agreedToPrivacy}
+                  className="group px-8 py-4 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2"
+                >
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -1110,6 +1234,7 @@ export function GetListed() {
                   </>
                 )}
               </button>
+              </div>
             </div>
           </form>
         </div>

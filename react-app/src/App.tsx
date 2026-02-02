@@ -24,6 +24,7 @@ import { FeaturedListings } from './pages/FeaturedListings'
 import { ListingDetail } from './pages/ListingDetail'
 import { ResetPassword } from './pages/ResetPassword'
 import { VerifyEmail } from './pages/VerifyEmail'
+import { Unsubscribe } from './pages/Unsubscribe'
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode; requireAdmin?: boolean }) {
   const { user, role, loading } = useAuth()
@@ -102,6 +103,7 @@ function AppRoutes() {
       <Route path="/admin-login" element={<AdminLogin />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/auth/verify" element={<VerifyEmail />} />
+      <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/get-listed" element={<Layout><GetListed /></Layout>} />
       <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
       <Route path="/terms-of-service" element={<Layout><TermsOfService /></Layout>} />

@@ -1,10 +1,7 @@
 import { Link } from 'react-router-dom'
 import { CheckCircle2, ArrowRight } from 'lucide-react'
-import { useContentSettings } from '../hooks/useContentSettings'
 
 export function FeaturedListings() {
-  const { settings } = useContentSettings()
-  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -15,10 +12,11 @@ export function FeaturedListings() {
               For Health Professionals
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              {settings['featured_hero_title'] || 'Grow Your Tasmanian Practice with Featured Listings'}
+              Grow Your Tasmanian Practice with Featured Listings
             </h1>
             <p className="text-lg md:text-xl text-primary-100 max-w-2xl mx-auto">
-              {settings['featured_hero_description'] || 'Connect with more patients seeking therapy near me Tasmania. List your practice for free or upgrade to featured. We help psychologists Hobart and counsellors Launceston find new clients with free directory listing.'}
+              Connect with more patients seeking <strong>therapy near me Tasmania</strong>. <strong>List your practice for free</strong> or upgrade to featured. We help{' '}
+              <strong>psychologists Hobart</strong> and <strong>counsellors Launceston</strong> find new clients with <strong>free directory listing</strong>.
             </p>
           </div>
         </div>
@@ -63,13 +61,13 @@ export function FeaturedListings() {
       <section className="py-12 md:py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+            <div className="grid md:grid-cols-3 gap-6 md:gap-8">
               {/* Standard Listing */}
               <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-200">
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Standard Listing - Free Forever</h3>
+                <h3 className="text-2xl font-bold mb-4 text-gray-900">Standard Listing</h3>
                 <div className="mb-6">
                   <span className="text-4xl font-bold text-gray-900">Free</span>
-                  <span className="text-gray-600 ml-2">Forever - No Hidden Fees</span>
+                  <span className="text-gray-600 ml-2">Forever</span>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-start gap-3">
@@ -78,7 +76,7 @@ export function FeaturedListings() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">Searchable by Location (e.g. Hobart)</span>
+                    <span className="text-gray-700">Searchable by Location</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
@@ -97,14 +95,11 @@ export function FeaturedListings() {
                 </Link>
               </div>
 
-              {/* Featured Listing */}
-              <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-xl p-8 border-2 border-primary-400 relative">
-                <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
-                  Most Popular
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-white">Professional Featured</h3>
+              {/* Basic Featured Listing */}
+              <div className="bg-gradient-to-br from-primary-400 to-primary-500 rounded-2xl shadow-xl p-8 border-2 border-primary-300">
+                <h3 className="text-2xl font-bold mb-4 text-white">Basic Featured</h3>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-white">$29</span>
+                  <span className="text-4xl font-bold text-white">$15</span>
                   <span className="text-primary-100 ml-2">per month</span>
                 </div>
                 <ul className="space-y-4 mb-8">
@@ -114,7 +109,44 @@ export function FeaturedListings() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
-                    <span className="text-white">Top Placement in Search Results</span>
+                    <span className="text-white">Top Placement in Search</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                    <span className="text-white">Featured Badge</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                    <span className="text-white">Enhanced Profile Visibility</span>
+                  </li>
+                </ul>
+                <Link
+                  to="/get-listed"
+                  className="block w-full text-center px-6 py-3 bg-white text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  Choose Basic Plan
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <div className="mt-4 flex items-center justify-center text-primary-100 text-sm">
+                  <span>Secure payment via Stripe</span>
+                </div>
+              </div>
+
+              {/* Professional Featured Listing */}
+              <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-xl p-8 border-2 border-primary-400">
+                <h3 className="text-2xl font-bold mb-4 text-white">Professional Featured</h3>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-white">$29</span>
+                  <span className="text-primary-100 ml-2">per month</span>
+                </div>
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                    <span className="text-white">Everything in Basic</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                    <span className="text-white">Priority Placement (Top of Results)</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
@@ -130,7 +162,7 @@ export function FeaturedListings() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
-                    <span className="text-white">Direct Website Link</span>
+                    <span className="text-white">Priority Support</span>
                   </li>
                 </ul>
                 <Link

@@ -98,8 +98,9 @@ serve(async (req) => {
     )
   } catch (error: any) {
     console.error("Function error:", error)
+    // SECURITY: Don't expose stack traces in production
     return new Response(
-      JSON.stringify({ error: error.message || "Internal server error", stack: error.stack }),
+      JSON.stringify({ error: error.message || "Internal server error" }),
       {
         status: 500,
         headers: {

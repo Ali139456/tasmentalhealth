@@ -22,9 +22,9 @@ export function useContentSettings() {
         settingsMap[setting.setting_key] = setting.value
       })
       setSettings(settingsMap)
+      setLoading(false)
     } catch (error) {
       console.error('Error fetching content settings:', error)
-    } finally {
       setLoading(false)
     }
   }, [])
@@ -45,16 +45,16 @@ export function useContentSettings() {
         },
         (payload) => {
           console.log('Content settings changed:', payload)
-          // Refetch settings when any change occurs
+          // Refetch settings immediately when any change occurs
           fetchSettings()
         }
       )
       .subscribe()
 
-    // Also poll every 3 seconds as a backup (in case real-time doesn't work)
+    // Also poll every 2 seconds as a backup (in case real-time doesn't work)
     const pollInterval = setInterval(() => {
       fetchSettings()
-    }, 3000)
+    }, 2000)
 
     return () => {
       // Cleanup

@@ -59,6 +59,7 @@ export interface Subscription {
   listing_id: string
   stripe_subscription_id: string
   stripe_customer_id: string
+  subscription_tier?: 'basic' | 'professional'
   status: 'active' | 'cancelled' | 'past_due' | 'expired'
   current_period_start: string
   current_period_end: string

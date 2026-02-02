@@ -23,9 +23,9 @@ export function PrivacyPolicy() {
     },
     { 
       icon: Database, 
-      title: 'Data Sharing', 
+      title: 'Data Sharing and Confidentiality', 
       color: 'from-purple-500 to-purple-600',
-      content: 'The directory information may be shared with the Tasmanian Department of Health and their authorised systems operators, for the purposes of transferring clinical information about patients, specifically for discharge summaries and referrals, and to update existing Tasmanian public and private hospital directories and clinical systems.'
+      content: 'We respect your privacy and confidentiality. Information provided to the directory will not be shared with third parties without your explicit consent, except in specific legal or safety situations as required by law (such as mandatory reporting obligations, court orders, or situations where there is an immediate risk to safety). All information is handled in accordance with the Australian Privacy Principles and relevant privacy legislation.'
     },
     { 
       icon: Users, 

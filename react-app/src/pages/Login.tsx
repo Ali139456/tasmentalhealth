@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { sendEmail, getEmailTemplate, isValidEmail, isValidPassword, getAdminEmails } from '../lib/email'
@@ -12,8 +12,14 @@ export function Login() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { refreshUser } = useAuth()
+  
+  // Get redirect URL from query params
+  const redirectTo = searchParams.get('redirect') || '/dashboard'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,6 +29,11 @@ export function Login() {
 
     try {
       if (isSignUp) {
+        // Validate that user has agreed to terms and privacy policy
+        if (!agreedToTerms || !agreedToPrivacy) {
+          throw new Error('Please agree to our Terms and Conditions and Privacy Policy to continue.')
+        }
+
         // Validate email format and validity
         if (!isValidEmail(email)) {
           throw new Error('Please enter a valid email address. Invalid or fake email addresses are not allowed.')
@@ -149,7 +160,7 @@ export function Login() {
           if (authData.user.email_confirmed_at || authData.session) {
             setSuccess('Account created successfully! Signing you in...')
             setTimeout(() => {
-              navigate('/dashboard')
+              navigate(redirectTo)
               refreshUser().catch(() => {})
             }, 500)
           } else {
@@ -213,7 +224,7 @@ export function Login() {
           setEmail('')
           setPassword('')
           
-          navigate('/dashboard')
+          navigate(redirectTo)
           setTimeout(() => refreshUser().catch(() => {}), 100)
         } else {
           throw new Error('Sign in failed. Please try again.')
@@ -433,10 +444,48 @@ export function Login() {
               </div>
             )}
 
+            {isSignUp && (
+              <div className="pt-2 pb-4 space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <input
+                    type="checkbox"
+                    id="agree-terms"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="agree-terms" className="text-xs text-gray-700 cursor-pointer flex-1">
+                    I agree to the{' '}
+                    <Link to="/terms-of-service" target="_blank" className="text-primary-600 hover:text-primary-700 underline font-semibold">
+                      Terms and Conditions
+                    </Link>
+                  </label>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <input
+                    type="checkbox"
+                    id="agree-privacy"
+                    checked={agreedToPrivacy}
+                    onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="agree-privacy" className="text-xs text-gray-700 cursor-pointer flex-1">
+                    I agree to the{' '}
+                    <Link to="/privacy-policy" target="_blank" className="text-primary-600 hover:text-primary-700 underline font-semibold">
+                      Privacy Policy
+                    </Link>
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 text-center">
+                  By proceeding, you agree to our Terms and Conditions and Privacy Policy.
+                </p>
+              </div>
+            )}
+
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || (isSignUp && (!agreedToTerms || !agreedToPrivacy))}
                 className="group relative w-full flex justify-center items-center gap-2 py-4 px-6 border border-transparent text-base font-semibold rounded-xl text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] shadow-xl hover:shadow-2xl"
               >
                 {loading ? (
@@ -463,7 +512,6 @@ export function Login() {
                 )}
               </button>
             </div>
-
             {!isSignUp && (
               <div className="text-center pt-4 border-t border-gray-200">
                 <p className="text-sm text-gray-600">
@@ -476,6 +524,8 @@ export function Login() {
                       setPassword('')
                       setError('')
                       setSuccess('')
+                      setAgreedToTerms(false)
+                      setAgreedToPrivacy(false)
                     }}
                     className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
                   >
@@ -489,7 +539,7 @@ export function Login() {
               </div>
             )}
             {isSignUp && (
-              <div className="text-center pt-4 border-t border-gray-200">
+              <div className="text-center pt-2">
                 <p className="text-sm text-gray-600">
                   Already have an account?{' '}
                   <button
@@ -500,6 +550,8 @@ export function Login() {
                       setPassword('')
                       setError('')
                       setSuccess('')
+                      setAgreedToTerms(false)
+                      setAgreedToPrivacy(false)
                     }}
                     className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
                   >

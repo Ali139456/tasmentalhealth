@@ -86,10 +86,30 @@ serve(async (req) => {
     }
 
     console.log('User verified:', user.email)
-    const { email } = await req.json()
+    const { email, redirectTo } = await req.json()
     console.log('Request email:', email, 'User email:', user.email)
     
-    if (!email || email !== user.email) {
+    // Check if user is admin
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    
+    const isAdmin = userData?.role === 'admin'
+    
+    // Allow email mismatch if user is admin (for account recovery)
+    if (!email) {
+      return new Response(
+        JSON.stringify({ error: 'Email is required' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+    
+    if (!isAdmin && email !== user.email) {
       console.error('Email mismatch:', { requestEmail: email, userEmail: user.email })
       return new Response(
         JSON.stringify({ error: 'Email mismatch' }),
@@ -105,11 +125,13 @@ serve(async (req) => {
     // This creates a one-time link that verifies the email when clicked
     console.log('Generating verification link for existing user:', email)
     
+    const redirectUrl = redirectTo || `${APP_URL}/dashboard`
+    
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email: email,
       options: {
-        redirectTo: `${APP_URL}/dashboard`,
+        redirectTo: redirectUrl,
       }
     })
 

@@ -28,11 +28,65 @@ serve(async (req) => {
   }
 
   try {
+    // SECURITY: Require authentication for this sensitive operation
+    const authHeader = req.headers.get("Authorization")
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: Authentication required" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      )
+    }
+
+    // Verify the user is authenticated and is an admin
+    const token = authHeader.replace("Bearer ", "")
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: Invalid or expired token" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      )
+    }
+
+    // Verify the user is an admin
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single()
+
+    if (userError || !userData || userData.role !== 'admin') {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: Admin access required" }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      )
+    }
+
     const { email, password } = await req.json()
 
     if (!email || !password) {
       return new Response(
         JSON.stringify({ error: "Email and password are required" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      )
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return new Response(
+        JSON.stringify({ error: "Password must be at least 8 characters long" }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -90,8 +144,9 @@ serve(async (req) => {
     )
   } catch (error: any) {
     console.error("Function error:", error)
+    // SECURITY: Don't expose stack traces in production
     return new Response(
-      JSON.stringify({ error: error.message || "Internal server error", stack: error.stack }),
+      JSON.stringify({ error: error.message || "Internal server error" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

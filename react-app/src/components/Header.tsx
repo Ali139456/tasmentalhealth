@@ -2,15 +2,25 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Search, Menu, X, User, LogOut, Stethoscope, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { useContentSettings } from '../hooks/useContentSettings'
 
 export function Header() {
   const { user, role, signOut } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const { settings } = useContentSettings()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchFocused, setSearchFocused] = useState(false)
   const [searchExpanded, setSearchExpanded] = useState(false)
+
+  // Get button colors from settings, with fallbacks
+  const adminButtonBg = settings['button_color_admin'] || '#DC2626'
+  const adminButtonHover = settings['button_color_admin_hover'] || '#B91C1C'
+  const adminButtonText = settings['button_color_admin_text'] || '#FFFFFF'
+  const primaryButtonBg = settings['button_color_primary'] || '#39B8A6'
+  const primaryButtonHover = settings['button_color_primary_hover'] || '#2E9385'
+  const primaryButtonText = settings['button_color_primary_text'] || '#FFFFFF'
 
   const isActive = (path: string) => location.pathname === path
 
@@ -120,7 +130,17 @@ export function Header() {
                 {role === 'admin' && (
                   <Link
                     to="/admin"
-                    className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-all shadow-md hover:shadow-lg whitespace-nowrap"
+                    className="px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg whitespace-nowrap"
+                    style={{
+                      backgroundColor: adminButtonBg,
+                      color: adminButtonText,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = adminButtonHover
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = adminButtonBg
+                    }}
                   >
                     Admin
                   </Link>
@@ -128,7 +148,17 @@ export function Header() {
                 {role === 'lister' && (
                   <Link
                     to="/dashboard"
-                    className="px-4 py-2 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                    className="px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                    style={{
+                      backgroundColor: primaryButtonBg,
+                      color: primaryButtonText,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = primaryButtonHover
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = primaryButtonBg
+                    }}
                   >
                     <User className="w-4 h-4" />
                     Dashboard
@@ -301,7 +331,11 @@ export function Header() {
                   <Link
                     to="/admin"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-3 bg-red-600 text-white rounded-xl text-base font-semibold"
+                    className="block px-4 py-3 rounded-xl text-base font-semibold"
+                    style={{
+                      backgroundColor: adminButtonBg,
+                      color: adminButtonText,
+                    }}
                   >
                     Admin
                   </Link>
@@ -310,7 +344,11 @@ export function Header() {
                   <Link
                     to="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-3 bg-primary-500 text-white rounded-xl text-base font-semibold"
+                    className="block px-4 py-3 rounded-xl text-base font-semibold"
+                    style={{
+                      backgroundColor: primaryButtonBg,
+                      color: primaryButtonText,
+                    }}
                   >
                     Dashboard
                   </Link>
@@ -335,7 +373,11 @@ export function Header() {
                 <Link
                   to="/get-listed"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white rounded-xl text-base font-semibold"
+                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-semibold"
+                  style={{
+                    backgroundColor: primaryButtonBg,
+                    color: primaryButtonText,
+                  }}
                 >
                   <Plus className="w-5 h-5" />
                   Get Listed

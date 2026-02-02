@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Phone, AlertTriangle, Heart, Shield, Users, Home, FileText, Download, Printer, Plus, X, Star, Globe, MapPin, Building2 } from 'lucide-react'
 import { HELPLINES } from '../lib/constants'
 import { jsPDF } from 'jspdf'
+import { useContentSettings } from '../hooks/useContentSettings'
 
 interface SafetyPlanItem {
   id: string
@@ -526,18 +527,60 @@ export function CrisisSupport() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-50">
-      {/* Hero Section */}
-      <section className="hero-section bg-gradient-to-r from-primary-500 to-primary-600 text-white py-12 sm:py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-           
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">{settings['crisis_hero_title'] || 'Support When You Need It'}</h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/90 mb-2 px-2">
-              {settings['crisis_hero_description'] || 'Immediate help, hospital contacts, and personal safety planning.'}
+      {/* Hero Section - Enhanced */}
+      <section className="hero-section relative text-white py-16 sm:py-20 md:py-24 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: (settings['crisis_hero_background'] && settings['crisis_hero_background'].trim())
+              ? `url(${settings['crisis_hero_background'].trim()})`
+              : 'linear-gradient(to bottom right, #39B8A6, #2E9385, #1e6b5e)'
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-950/80 to-teal-800/40"></div>
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6 border border-white/30">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm sm:text-base font-semibold">Your Personal Safety Resource</span>
+            </div>
+            
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 px-2 leading-tight">
+              Create Your Personal Safety Plan
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-white/95 mb-3 px-2 font-medium">
+              A proven tool to help you navigate through difficult moments
             </p>
-            <p className="text-sm sm:text-base md:text-lg text-white/80 px-2">
-              {settings['crisis_hero_subdescription'] || 'A safe, private space to organise your resources.'}
+            <p className="text-base sm:text-lg md:text-xl text-white/85 mb-6 sm:mb-8 px-2 max-w-2xl mx-auto">
+              Based on the evidence-based Stanley-Brown Safety Planning Intervention. Build your personalized plan with coping strategies, support contacts, and resources—all in one secure place.
             </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button
+                onClick={() => {
+                  setActiveTab('safety-plan')
+                  document.getElementById('safety-plan-content')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="px-8 py-4 bg-white text-primary-600 rounded-xl font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl text-base sm:text-lg flex items-center justify-center gap-2"
+              >
+                <FileText className="w-5 h-5" />
+                Start Building Your Plan
+              </button>
+              <a
+                href="#find-help"
+                onClick={() => setActiveTab('find-help')}
+                className="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-xl font-bold hover:bg-white/20 hover:border-white/40 transition-all transform hover:scale-105 shadow-xl text-base sm:text-lg flex items-center justify-center gap-2"
+              >
+                <Phone className="w-5 h-5" />
+                Find Immediate Help
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -577,7 +620,22 @@ export function CrisisSupport() {
 
         {/* Safety Plan Tab - Enhanced */}
         {activeTab === 'safety-plan' && (
-          <div className="max-w-4xl mx-auto">
+          <div id="safety-plan-content" className="max-w-4xl mx-auto">
+            {/* Info Banner */}
+            <div className="bg-gradient-to-r from-primary-50 to-emerald-50 rounded-2xl p-6 mb-8 border-2 border-primary-200 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="bg-primary-500 rounded-full p-3 flex-shrink-0">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Why Create a Safety Plan?</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    A safety plan is a personalized, written list of coping strategies and sources of support that you can use when you're experiencing thoughts of suicide or a mental health crisis. Research shows that having a safety plan can significantly reduce suicidal thoughts and behaviors. This tool helps you identify warning signs, develop coping strategies, and know who to contact for help.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Hidden print/PDF content */}
             <div ref={printRef} className="hidden">
               {sections.map(section => {
@@ -599,7 +657,7 @@ export function CrisisSupport() {
 
             <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 lg:p-12 mb-6 sm:mb-8">
               <div className="mb-6 sm:mb-8">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-gray-900">{settings['crisis_heading_safety_plan'] || 'My Safety Plan'}</h2>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-gray-900">My Safety Plan</h2>
                   <p className="text-sm sm:text-base md:text-lg text-gray-600">
                     Based on the Stanley-Brown Safety Planning Intervention. This plan belongs to you. It's designed to help you navigate through a crisis until it passes.
                   </p>
@@ -714,7 +772,7 @@ export function CrisisSupport() {
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
                   <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold mb-2">{settings['crisis_heading_emergency'] || 'In an Emergency?'}</h3>
+                <h3 className="text-lg sm:text-xl font-bold mb-2">In an Emergency?</h3>
                 <p className="text-sm sm:text-base mb-4 text-white/95 max-w-xl mx-auto">
                   If you or someone else is in immediate danger, do not wait.
                 </p>
@@ -731,7 +789,7 @@ export function CrisisSupport() {
             {/* Helplines Section - Compact */}
             <div className="bg-gradient-to-br from-white via-primary-50/30 to-white rounded-xl p-5 sm:p-6 shadow-lg border border-primary-100">
               <div className="mb-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">{settings['crisis_heading_helplines'] || 'National 24/7 Support Lines'}</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">National 24/7 Support Lines</h3>
                   <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Free, confidential support available around the clock</p>
               </div>
               
@@ -767,7 +825,7 @@ export function CrisisSupport() {
             {/* State & Territory Resources Section */}
             <div className="bg-gradient-to-br from-gray-50 via-white to-primary-50/20 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border border-gray-200">
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">{settings['crisis_heading_state_resources'] || 'State & Territory Resources'}</h3>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">State & Territory Resources</h3>
                   <p className="text-sm sm:text-base text-gray-600 mt-1">Select your state to see local crisis lines and hospital emergency departments</p>
               </div>
               

@@ -15,7 +15,7 @@ export const getStripe = () => {
   return stripePromise
 }
 
-export async function createCheckoutSession(listingId: string) {
+export async function createCheckoutSession(listingId: string, tier: 'basic' | 'professional' = 'professional') {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
@@ -32,7 +32,7 @@ export async function createCheckoutSession(listingId: string) {
         'Authorization': `Bearer ${session.access_token}`,
         'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
       },
-      body: JSON.stringify({ listingId }),
+      body: JSON.stringify({ listingId, tier }),
     })
     
     if (!response.ok) {

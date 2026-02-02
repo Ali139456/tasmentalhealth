@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Listing, Subscription } from '../types'
-import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save, Lock } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, AlertCircle, Star, Loader2, Edit, X, Save, Lock, CheckCircle2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router-dom'
 import { createCheckoutSession, createPortalSession } from '../lib/stripe'
@@ -315,10 +315,15 @@ export function Dashboard() {
     }
   }
 
-  const handleUpgradeToFeatured = async (listingId: string) => {
+  const [selectedTier, setSelectedTier] = useState<'basic' | 'professional'>('professional')
+  const [showTierModal, setShowTierModal] = useState(false)
+  const [tierModalListingId, setTierModalListingId] = useState<string | null>(null)
+
+  const handleUpgradeToFeatured = async (listingId: string, tier?: 'basic' | 'professional') => {
     try {
       setProcessingListingId(listingId)
-      const { url } = await createCheckoutSession(listingId)
+      const selectedTierValue = tier || selectedTier
+      const { url } = await createCheckoutSession(listingId, selectedTierValue)
       
       if (url) {
         // Redirect to Stripe Checkout
@@ -331,6 +336,11 @@ export function Dashboard() {
       toast.error(error.message || 'Failed to start checkout. Please try again.')
       setProcessingListingId(null)
     }
+  }
+
+  const handleTierSelection = (listingId: string) => {
+    setTierModalListingId(listingId)
+    setShowTierModal(true)
   }
 
   const handleManageSubscription = async () => {
@@ -464,15 +474,30 @@ export function Dashboard() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file')
+    // SECURITY: Validate file type - only allow specific image MIME types
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file (JPEG, PNG, GIF, or WebP)')
       return
     }
 
-    // Validate file size (max 5MB)
+    // SECURITY: Validate file extension matches MIME type
+    const fileExt = file.name.split('.').pop()?.toLowerCase()
+    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+    if (!fileExt || !validExtensions.includes(fileExt)) {
+      toast.error('Invalid file extension. Please upload a valid image file.')
+      return
+    }
+
+    // SECURITY: Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error('Image size must be less than 5MB')
+      return
+    }
+
+    // SECURITY: Validate minimum file size (prevent empty or corrupted files)
+    if (file.size < 100) {
+      toast.error('File appears to be corrupted or empty')
       return
     }
 
@@ -486,10 +511,11 @@ export function Dashboard() {
       }
       reader.readAsDataURL(file)
 
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${user?.id || 'temp'}-${Date.now()}.${fileExt}`
-      const filePath = `avatars/${fileName}`
+      // SECURITY: Upload to Supabase Storage - sanitize filename
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+      // Sanitize filename: remove any path separators and special characters
+      const sanitizedFileName = `${user?.id || 'temp'}-${Date.now()}.${fileExt}`.replace(/[^a-zA-Z0-9._-]/g, '')
+      const filePath = `avatars/${sanitizedFileName}`
 
       const { error: uploadError } = await supabase.storage
         .from('listings')
@@ -619,6 +645,10 @@ export function Dashboard() {
                 <div>
                   <h3 className="text-xl font-bold">Featured Listing Active</h3>
                   <p className="text-yellow-100">
+                    {subscription.subscription_tier === 'basic' ? 'Basic Plan' : 'Professional Plan'} - 
+                    ${subscription.subscription_tier === 'basic' ? '15' : '29'}/month
+                  </p>
+                  <p className="text-yellow-100">
                     Next billing: {format(new Date(subscription.current_period_end), 'MMM dd, yyyy')}
                   </p>
                 </div>
@@ -644,41 +674,41 @@ export function Dashboard() {
           {/* Upgrade to Featured CTA - Show if no active subscription */}
           {!subscription && listings.length > 0 && listings.some(l => l.status === 'approved' && !l.is_featured) && (
             <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-2xl p-6 mb-8 shadow-xl border-2 border-yellow-300">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <h3 className="text-xl font-bold mb-2">Upgrade to Featured Listing</h3>
-                <p className="text-yellow-100">
-                  Get top placement, verified badge, and enhanced profile for just $29/month
-                </p>
-              </div>
-              <div className="flex gap-2">
-                {listings
-                  .filter(l => l.status === 'approved' && !l.is_featured)
-                  .slice(0, 1)
-                  .map(listing => (
-                    <button
-                      key={listing.id}
-                      onClick={() => handleUpgradeToFeatured(listing.id)}
-                      disabled={processingListingId === listing.id}
-                      className="px-6 py-3 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-yellow-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {processingListingId === listing.id ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Star className="w-5 h-5" />
-                          Upgrade Now - $29/month
-                        </>
-                      )}
-                    </button>
-                  ))}
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Upgrade to Featured Listing</h3>
+                  <p className="text-yellow-100">
+                    Choose Basic ($15/month) or Professional ($29/month) - Get top placement, verified badge, and enhanced profile
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {listings
+                    .filter(l => l.status === 'approved' && !l.is_featured)
+                    .slice(0, 1)
+                    .map(listing => (
+                      <button
+                        key={listing.id}
+                        onClick={() => handleTierSelection(listing.id)}
+                        disabled={processingListingId === listing.id}
+                        className="px-6 py-3 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-yellow-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {processingListingId === listing.id ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Star className="w-5 h-5" />
+                            Choose Plan
+                          </>
+                        )}
+                      </button>
+                    ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
           {/* Listings */}
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
@@ -757,7 +787,7 @@ export function Dashboard() {
                       </button>
                       {listing.status === 'approved' && !listing.is_featured && (
                         <button 
-                          onClick={() => handleUpgradeToFeatured(listing.id)}
+                          onClick={() => handleTierSelection(listing.id)}
                           disabled={processingListingId === listing.id}
                           className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                         >
@@ -769,7 +799,7 @@ export function Dashboard() {
                           ) : (
                             <>
                               <Star className="w-4 h-4 mr-2" />
-                              Upgrade to Featured - $29/month
+                              Upgrade to Featured
                             </>
                           )}
                         </button>
