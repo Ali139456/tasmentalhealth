@@ -349,7 +349,7 @@ export function Home() {
               {settings['home_hero_description'] ? (
                 <span dangerouslySetInnerHTML={{ __html: sanitizeHTMLWithSafeTags(settings['home_hero_description']) }} />
               ) : (
-                <>Search for trusted mental health professionals across Hobart, Launceston, and beyond - or <strong>list your practice for free</strong> to grow your visibility and connect with patients seeking mental health support in Tasmania.</>
+                <>Search for trusted mental health professionals across Hobart, Launceston, and beyond, or <strong>list your practice for free</strong> to grow your visibility and connect with patients seeking mental health support in Tasmania.</>
               )}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
