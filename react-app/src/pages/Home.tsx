@@ -1133,7 +1133,7 @@ export function Home() {
                 Create Your Personal Safety Plan
               </h2>
               <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed max-w-2xl mx-auto">
-                A proven, evidence-based tool to help you navigate through difficult moments. Build your personalized plan with coping strategies, support contacts, and crisis resources—all in one secure place.
+                A proven, evidence-based tool to help you navigate through difficult moments. Build your personalized plan with coping strategies, support contacts, and crisis resources, all in one secure place.
               </p>
               <Link 
                 to="/crisis-support" 
