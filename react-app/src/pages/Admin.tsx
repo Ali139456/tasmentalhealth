@@ -2753,41 +2753,41 @@ export function Admin() {
                           />
                         </div>
 
-                        {/* Organizer Name */}
+                        {/* Organiser Name */}
                         <div>
                           <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <UserIcon className="w-4 h-4 text-primary-500" />
-                            Organizer Name
+                            Organiser Name
                           </label>
                           <input
                             type="text"
                             value={eventFormData.organizer_name}
                             onChange={(e) => setEventFormData({ ...eventFormData, organizer_name: e.target.value })}
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-gray-50 focus:bg-white"
-                            placeholder="Organizer or organization name"
+                            placeholder="Organiser or organisation name"
                           />
                         </div>
 
-                        {/* Organizer Email */}
+                        {/* Organiser Email */}
                         <div>
                           <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <Mail className="w-4 h-4 text-primary-500" />
-                            Organizer Email
+                            Organiser Email
                           </label>
                           <input
                             type="email"
                             value={eventFormData.organizer_email}
                             onChange={(e) => setEventFormData({ ...eventFormData, organizer_email: e.target.value })}
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-gray-50 focus:bg-white"
-                            placeholder="organizer@example.com"
+                            placeholder="organiser@example.com"
                           />
                         </div>
 
-                        {/* Organizer Phone */}
+                        {/* Organiser Phone */}
                         <div>
                           <label className="block text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <Phone className="w-4 h-4 text-primary-500" />
-                            Organizer Phone
+                            Organiser Phone
                           </label>
                           <input
                             type="tel"

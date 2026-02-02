@@ -818,7 +818,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
                   
                   ${data.cost ? `<div style="margin: 15px 0;"><strong>💰 Cost:</strong> ${data.cost}</div>` : ''}
                   
-                  ${data.organizerName ? `<div style="margin: 15px 0;"><strong>👤 Organizer:</strong> ${data.organizerName}</div>` : ''}
+                  ${data.organizerName ? `<div style="margin: 15px 0;"><strong>👤 Organiser:</strong> ${data.organizerName}</div>` : ''}
                 </div>
                 
                 ${data.registrationUrl 

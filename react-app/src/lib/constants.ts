@@ -186,7 +186,7 @@ export const SPECIALTIES = [
   'Schema Therapy',
   'Psychodynamic Therapy',
   'Gestalt Therapy',
-  'Person-Centered Therapy',
+  'Person-Centred Therapy',
   'Solution-Focused Therapy',
   'Narrative Therapy',
   'Interpersonal Therapy',

@@ -517,7 +517,7 @@ export function Events() {
                         </div>
                       )}
 
-                      {/* Organizer */}
+                      {/* Organiser */}
                       {event.organizer_name && (
                         <div className={`flex items-start gap-2.5 p-3 rounded-lg border ${
                           activeTab === 'ended' 

@@ -558,7 +558,7 @@ export function CrisisSupport() {
               A proven tool to help you navigate through difficult moments
             </p>
             <p className="text-base sm:text-lg md:text-xl text-white/85 mb-6 sm:mb-8 px-2 max-w-2xl mx-auto">
-              Based on the evidence based Stanley Brown Safety Planning Intervention. Build your personalized plan with coping strategies, support contacts, and resources, all in one secure place.
+              Based on the evidence based Stanley Brown Safety Planning Intervention. Build your personalised plan with coping strategies, support contacts, and resources, all in one secure place.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -630,7 +630,7 @@ export function CrisisSupport() {
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Why Create a Safety Plan?</h3>
                   <p className="text-gray-700 leading-relaxed">
-                    A safety plan is a personalized, written list of coping strategies and sources of support that you can use when you're experiencing thoughts of suicide or a mental health crisis. Research shows that having a safety plan can significantly reduce suicidal thoughts and behaviors. This tool helps you identify warning signs, develop coping strategies, and know who to contact for help.
+                    A safety plan is a personalised, written list of coping strategies and sources of support that you can use when you're experiencing thoughts of suicide or a mental health crisis. Research shows that having a safety plan can significantly reduce suicidal thoughts and behaviours. This tool helps you identify warning signs, develop coping strategies, and know who to contact for help.
                   </p>
                 </div>
               </div>
