@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Video, X } from 'lucide-react'
+import { Search, MapPin, Filter, Star, CheckCircle2, ArrowRight, ChevronLeft, ChevronRight, Plus, Video, X, Shield } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Listing } from '../types'
@@ -1125,22 +1125,26 @@ export function Home() {
       </section>
 
       {/* Safety Plan Banner - Above Resources Section */}
-      <section className="py-6 sm:py-8 md:py-10 bg-gradient-to-r from-emerald-500 via-primary-500 to-emerald-600">
+      <section className="py-6 sm:py-8 md:py-10">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-5xl">
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-8 shadow-lg border-2 border-white/50">
-            <div className="text-center">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
-                Create Your Personal Safety Plan
-              </h2>
-              <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed max-w-2xl mx-auto">
-                A proven, evidence-based tool to help you navigate through difficult moments. Build your personalised plan with coping strategies, support contacts, and crisis resources, all in one secure place.
-              </p>
+          <div className="bg-gradient-to-r from-emerald-500 via-primary-500 to-emerald-600 rounded-2xl p-6 shadow-xl border-2 border-emerald-400">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="bg-white rounded-full p-3 shadow-lg">
+                  <Shield className="w-8 h-8 text-emerald-600 fill-emerald-600" />
+                </div>
+                <div className="text-left">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Create Your Personal Safety Plan</h2>
+                  <p className="text-emerald-50 text-sm md:text-base">A proven, evidence-based tool to help you navigate through difficult moments. Build your personalised plan with coping strategies, support contacts, and crisis resources, all in one secure place.</p>
+                </div>
+              </div>
               <Link 
                 to="/crisis-support" 
-                className="inline-flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-all transform hover:scale-105 shadow-md hover:shadow-lg text-sm sm:text-base"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-emerald-600 rounded-lg font-bold hover:bg-emerald-50 transition-colors shadow-lg hover:shadow-xl whitespace-nowrap"
               >
+                <Shield className="w-5 h-5" />
                 Start Building Your Plan
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </div>
