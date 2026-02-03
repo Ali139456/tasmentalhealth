@@ -774,7 +774,7 @@ export function getEmailTemplate(type: string, data: Record<string, any>): { sub
     event_notification: (data) => {
       const eventStatus = data.eventStatus || 'new'
       const statusText = eventStatus === 'new' ? 'New Event' : eventStatus === 'ended' ? 'Event Ended' : 'Event Update'
-      const statusColor = eventStatus === 'new' ? '#10b981' : eventStatus === 'ended' ? '#ef4444' : '#39B8A6'
+      const statusColor = eventStatus === 'new' ? '#10b981' : eventStatus === 'ended' ? '#E2725B' : '#39B8A6'
       
       return {
         subject: `${statusText}: ${data.eventTitle}`,
