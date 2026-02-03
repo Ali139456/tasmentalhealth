@@ -166,7 +166,7 @@ export function Header() {
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="px-4 py-2 text-gray-700 rounded-xl text-sm font-semibold hover:text-red-600 hover:bg-red-50 transition-all flex items-center gap-2"
+                  className="px-4 py-2 text-gray-700 rounded-xl text-sm font-semibold hover:text-orange-600 hover:bg-orange-50 transition-all flex items-center gap-2"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out
@@ -355,7 +355,7 @@ export function Header() {
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="block w-full text-left px-4 py-3 text-gray-700 rounded-xl text-base font-semibold hover:bg-red-50 hover:text-red-600"
+                  className="block w-full text-left px-4 py-3 text-gray-700 rounded-xl text-base font-semibold hover:bg-orange-50 hover:text-orange-600"
                 >
                   Sign Out
                 </button>

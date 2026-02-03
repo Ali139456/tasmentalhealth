@@ -873,17 +873,17 @@ export function GetListed() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-xl mb-8 flex items-start gap-3 shadow-lg">
+            <div className="bg-orange-50 border-l-4 border-orange-500 text-orange-700 px-6 py-4 rounded-xl mb-8 flex items-start gap-3 shadow-lg">
               <AlertCircle className="w-6 h-6 mt-0.5 flex-shrink-0" />
               <span className="font-medium">{error}</span>
             </div>
           )}
 
           {/* Featured Listings Callout */}
-          <div className="bg-gradient-to-r from-yellow-50 via-amber-50 to-yellow-50 border-2 border-yellow-300 rounded-2xl p-6 mb-8 shadow-lg">
+          <div className="bg-orange-50 border-2 border-orange-300 rounded-2xl p-6 mb-8 shadow-lg">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <div className="flex items-center gap-3 flex-1">
-                <div className="bg-yellow-500 rounded-full p-3">
+                <div className="bg-orange-600 rounded-full p-3">
                   <Star className="w-6 h-6 text-white fill-white" />
                 </div>
                 <div>
@@ -893,7 +893,7 @@ export function GetListed() {
               </div>
               <Link 
                 to="/featured-listings" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
               >
                 <Star className="w-5 h-5" />
                 View Featured Plans
@@ -984,13 +984,13 @@ export function GetListed() {
                           }}
                           placeholder={phoneCountryCode === '+61' ? '(03) 6234 5678' : 'Enter phone number'}
                           className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all bg-white ${
-                            phoneError ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-primary-500'
+                            phoneError ? 'border-orange-300 focus:border-orange-500' : 'border-gray-200 focus:border-primary-500'
                           }`}
                         />
                       </div>
                     </div>
                     {phoneError && (
-                      <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                      <p className="mt-1 text-xs text-orange-600 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
                         {phoneError}
                       </p>
@@ -1348,7 +1348,7 @@ export function GetListed() {
                             setAvatarPreview(null)
                             setFormData(prev => ({ ...prev, avatar_url: '' }))
                           }}
-                          className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          className="absolute top-1 right-1 p-1 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors"
                         >
                           <span className="text-xs">×</span>
                         </button>

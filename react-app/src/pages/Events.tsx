@@ -360,8 +360,8 @@ export function Events() {
 
             {/* Error Message */}
             {error && (
-              <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-                <p className="text-red-800 font-semibold text-center">{error}</p>
+              <div className="mt-4 p-4 bg-orange-50 border-2 border-orange-200 rounded-xl">
+                <p className="text-orange-800 font-semibold text-center">{error}</p>
               </div>
             )}
           </div>

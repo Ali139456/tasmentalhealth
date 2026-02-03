@@ -723,7 +723,7 @@ export function CrisisSupport() {
                             />
                             <button
                               onClick={() => removeItem(section.key, item.id)}
-                              className="p-1.5 sm:p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                              className="p-1.5 sm:p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors flex-shrink-0"
                             >
                               <X className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
@@ -793,7 +793,7 @@ export function CrisisSupport() {
         {activeTab === 'find-help' && (
           <div className="max-w-6xl mx-auto space-y-8 sm:space-y-10">
             {/* Emergency Banner - Compact */}
-            <div className="relative bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white rounded-xl p-5 sm:p-6 text-center shadow-xl overflow-hidden">
+            <div className="relative bg-orange-600 text-white rounded-xl p-5 sm:p-6 text-center shadow-xl overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-2xl"></div>
@@ -810,7 +810,7 @@ export function CrisisSupport() {
                 </p>
                 <a
                   href="tel:000"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-red-600 rounded-lg font-bold text-base hover:bg-gray-50 transition-all transform hover:scale-105 shadow-lg"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-orange-600 rounded-lg font-bold text-base hover:bg-gray-50 transition-all transform hover:scale-105 shadow-lg"
                 >
                   <Phone className="w-5 h-5" />
                   Call 000 Now
@@ -1033,7 +1033,7 @@ export function CrisisSupport() {
                         <div className="flex gap-2">
                           <a
                             href={`tel:${hospital.phone.replace(/\s/g, '')}`}
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs font-semibold shadow-md"
+                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-semibold shadow-md"
                           >
                             <Phone className="w-3 h-3" />
                             Call
@@ -1081,7 +1081,7 @@ export function CrisisSupport() {
                       </a>
                       <a
                         href="tel:000"
-                        className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all font-semibold shadow-md"
+                        className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all font-semibold shadow-md"
                       >
                         Emergency: 000
                       </a>

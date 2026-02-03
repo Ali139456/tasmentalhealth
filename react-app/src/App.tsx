@@ -60,9 +60,9 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
   if (!requireAdmin && !emailVerified && role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-8 max-w-md text-center">
-          <h2 className="text-2xl font-bold text-yellow-800 mb-4">Email Verification Required</h2>
-          <p className="text-yellow-700 mb-6">
+        <div className="bg-orange-50 border-2 border-orange-400 rounded-xl p-8 max-w-md text-center">
+          <h2 className="text-2xl font-bold text-orange-800 mb-4">Email Verification Required</h2>
+          <p className="text-orange-700 mb-6">
             Please verify your email address before accessing your account. Check your inbox for a verification email.
           </p>
           <button
@@ -70,7 +70,7 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
               await supabase.auth.signOut()
               window.location.href = '/login'
             }}
-            className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+            className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
           >
             Back to Login
           </button>

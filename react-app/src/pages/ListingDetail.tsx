@@ -149,8 +149,8 @@ export function ListingDetail() {
                 <div className="flex flex-wrap items-center gap-3 mb-3">
                   <h1 className="text-4xl md:text-5xl font-bold">{listing.practice_name}</h1>
                   {listing.is_featured && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-yellow-400 text-yellow-900 rounded-full text-sm font-bold">
-                      <Star className="w-4 h-4 fill-yellow-900" />
+                    <div className="flex items-center gap-2 px-3 py-1 bg-orange-600 text-orange-50 rounded-full text-sm font-bold">
+                      <Star className="w-4 h-4 fill-orange-50" />
                       Featured Partner
                     </div>
                   )}

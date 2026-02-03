@@ -525,8 +525,8 @@ export function Dashboard() {
   const getStatusBadge = (status: string) => {
     const badges = {
       approved: { icon: CheckCircle, color: 'text-green-600 bg-green-50', label: 'Approved' },
-      pending: { icon: Clock, color: 'text-yellow-600 bg-yellow-50', label: 'Pending' },
-      rejected: { icon: XCircle, color: 'text-red-600 bg-red-50', label: 'Rejected' },
+      pending: { icon: Clock, color: 'text-orange-600 bg-orange-50', label: 'Pending' },
+      rejected: { icon: XCircle, color: 'text-orange-600 bg-orange-50', label: 'Rejected' },
       needs_changes: { icon: AlertCircle, color: 'text-blue-600 bg-blue-50', label: 'Needs Changes' }
     }
 
@@ -566,12 +566,12 @@ export function Dashboard() {
         <div className="container mx-auto max-w-6xl">
           {/* Email Verification Warning */}
           {user && emailVerified === false && (
-            <div className="mb-6 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 flex items-center justify-between">
+            <div className="mb-6 bg-orange-50 border-2 border-orange-400 rounded-xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-yellow-600" />
-                <div>
-                  <p className="font-semibold text-yellow-800">Email Verification Required</p>
-                  <p className="text-sm text-yellow-700">Please verify your email address to access all features.</p>
+                <AlertCircle className="w-6 h-6 text-orange-600" />
+              <div>
+                  <p className="font-semibold text-orange-800">Email Verification Required</p>
+                  <p className="text-sm text-orange-700">Please verify your email address to access all features.</p>
                 </div>
               </div>
               <button
@@ -605,7 +605,7 @@ export function Dashboard() {
                     toast.error(error.message || 'Failed to send verification email. Please try again.')
                   }
                 }}
-                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-semibold"
+                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-semibold"
               >
                 Resend Email
               </button>
@@ -619,17 +619,17 @@ export function Dashboard() {
 
           {/* Subscription Status */}
           {subscription && (
-            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-2xl p-6 mb-8 shadow-xl border-2 border-yellow-300">
+            <div className="bg-orange-600 text-white rounded-2xl p-6 mb-8 shadow-xl border-2 border-orange-500">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Star className="w-8 h-8 mr-3" />
                 <div>
                   <h3 className="text-xl font-bold">Featured Listing Active</h3>
-                  <p className="text-yellow-100">
+                  <p className="text-orange-50">
                     {subscription.subscription_tier === 'basic' ? 'Basic Plan' : 'Professional Plan'} - 
                     ${subscription.subscription_tier === 'basic' ? '15' : '29'}/month
                   </p>
-                  <p className="text-yellow-100">
+                  <p className="text-orange-50">
                     Next billing: {format(new Date(subscription.current_period_end), 'MMM dd, yyyy')}
                   </p>
                 </div>
@@ -654,11 +654,11 @@ export function Dashboard() {
 
           {/* Upgrade to Featured CTA - Show if no active subscription */}
           {!subscription && listings.length > 0 && listings.some(l => l.status === 'approved' && !l.is_featured) && (
-            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-2xl p-6 mb-8 shadow-xl border-2 border-yellow-300">
+            <div className="bg-orange-600 text-white rounded-2xl p-6 mb-8 shadow-xl border-2 border-orange-500">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
                   <h3 className="text-xl font-bold mb-2">Upgrade to Featured Listing</h3>
-                  <p className="text-yellow-100">
+                  <p className="text-orange-50">
                     Choose Basic ($15/month) or Professional ($29/month) - Get top placement, verified badge, and enhanced profile
                   </p>
                 </div>
@@ -671,7 +671,7 @@ export function Dashboard() {
                         key={listing.id}
                         onClick={() => handleTierSelection(listing.id)}
                         disabled={processingListingId === listing.id}
-                        className="px-6 py-3 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-yellow-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-6 py-3 bg-white text-orange-600 rounded-lg font-semibold hover:bg-orange-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
                         {processingListingId === listing.id ? (
                           <>
@@ -732,7 +732,7 @@ export function Dashboard() {
                           <h3 className="text-xl font-semibold">{listing.practice_name}</h3>
                           {getStatusBadge(listing.status)}
                           {listing.is_featured && (
-                            <span className="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">
+                            <span className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-semibold">
                               <Star className="w-3 h-3 mr-1" />
                               Featured
                             </span>
@@ -743,8 +743,8 @@ export function Dashboard() {
                           <p className="text-gray-700 text-sm mb-3 line-clamp-2">{listing.bio}</p>
                         )}
                         {listing.rejection_reason && (
-                          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
-                            <p className="text-sm text-red-800">
+                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                            <p className="text-sm text-orange-800">
                               <strong>Rejection Reason:</strong> {listing.rejection_reason}
                             </p>
                           </div>
@@ -770,7 +770,7 @@ export function Dashboard() {
                         <button 
                           onClick={() => handleTierSelection(listing.id)}
                           disabled={processingListingId === listing.id}
-                          className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                          className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                         >
                           {processingListingId === listing.id ? (
                             <>
@@ -920,7 +920,7 @@ export function Dashboard() {
                         Email verified
                       </p>
                     ) : (
-                      <p className="text-xs text-yellow-600 mt-1 flex items-center gap-1">
+                      <p className="text-xs text-orange-600 mt-1 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
                         Email verification pending
                       </p>
@@ -1154,7 +1154,7 @@ export function Dashboard() {
                           setAvatarPreview(null)
                           setEditFormData((prev: any) => ({ ...prev, avatar_url: '' }))
                         }}
-                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                        className="absolute top-1 right-1 p-1 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors"
                       >
                         <span className="text-xs">×</span>
                       </button>
