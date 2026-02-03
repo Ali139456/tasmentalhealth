@@ -22,7 +22,6 @@ import { TermsOfService } from './pages/TermsOfService'
 import { Sitemap } from './pages/Sitemap'
 import { FeaturedListings } from './pages/FeaturedListings'
 import { ListingDetail } from './pages/ListingDetail'
-import { CustomPage } from './pages/CustomPage'
 import { ResetPassword } from './pages/ResetPassword'
 import { VerifyEmail } from './pages/VerifyEmail'
 import { Unsubscribe } from './pages/Unsubscribe'
@@ -111,7 +110,6 @@ function AppRoutes() {
       <Route path="/sitemap" element={<Layout><Sitemap /></Layout>} />
       <Route path="/featured-listings" element={<Layout><FeaturedListings /></Layout>} />
       <Route path="/listing/:id" element={<Layout><ListingDetail /></Layout>} />
-      <Route path="/page/:slug" element={<Layout><CustomPage /></Layout>} />
       <Route
         path="/dashboard"
         element={

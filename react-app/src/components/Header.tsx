@@ -109,7 +109,7 @@ export function Header() {
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
                 }`}
               >
-                {settings['header_nav_resources'] || 'Resources'}
+                Resources
               </Link>
               <Link
                 to="/events"
@@ -119,7 +119,7 @@ export function Header() {
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
                 }`}
               >
-                {settings['header_nav_events'] || 'Events'}
+                Events
               </Link>
             </div>
 
@@ -212,7 +212,7 @@ export function Header() {
                       <Search className={`absolute left-4 text-gray-400 transition-colors duration-300 ${searchFocused ? 'text-primary-500' : ''} w-5 h-5`} />
                       <input
                         type="text"
-                        placeholder={settings['header_search_placeholder'] || 'Search entire site...'}
+                        placeholder="Search entire site..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleSearchKeyDown}
@@ -270,7 +270,7 @@ export function Header() {
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder={settings['header_search_placeholder'] || 'Search entire site...'}
+                  placeholder="Search entire site..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
@@ -314,7 +314,7 @@ export function Header() {
                 isActive('/resources') ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:bg-primary-50/50'
               }`}
             >
-              {settings['header_nav_resources'] || 'Resources'}
+              Resources
             </Link>
             <Link
               to="/events"
@@ -323,7 +323,7 @@ export function Header() {
                 isActive('/events') ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:bg-primary-50/50'
               }`}
             >
-              {settings['header_nav_events'] || 'Events'}
+              Events
             </Link>
             {user ? (
               <>
