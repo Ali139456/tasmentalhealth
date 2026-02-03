@@ -281,7 +281,7 @@ export function ResetPassword() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3">
+                <div className="bg-orange-50 border-l-4 border-orange-500 text-orange-700 px-4 py-3 rounded-lg flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span className="text-sm font-medium">{error}</span>
                 </div>

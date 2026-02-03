@@ -1445,12 +1445,12 @@ export function Admin() {
                             onClick={() => handleToggleFeatured(listing.id, !listing.is_featured)}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors ${
                               listing.is_featured
-                                ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                                ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                             title={listing.is_featured ? 'Remove from Featured' : 'Set as Featured'}
                           >
-                            <Star className={`w-4 h-4 ${listing.is_featured ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+                            <Star className={`w-4 h-4 ${listing.is_featured ? 'fill-orange-600 text-orange-600' : ''}`} />
                             {listing.is_featured ? 'Featured' : 'Not Featured'}
                           </button>
                         </td>
@@ -1532,7 +1532,7 @@ export function Admin() {
                             onClick={() => setCurrentListingsPage(page)}
                             className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                               currentListingsPage === page
-                                ? 'bg-red-600 text-white'
+                                ? 'bg-orange-600 text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
                             }`}
                           >
@@ -1646,7 +1646,7 @@ export function Admin() {
                                 Verified
                               </span>
                             ) : (
-                              <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">
+                              <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-orange-100 text-orange-800">
                                 Pending
                               </span>
                             )
@@ -1714,7 +1714,7 @@ export function Admin() {
                                 <button
                                   onClick={() => handleDeleteUser(userItem.id, userItem.email)}
                                   disabled={deletingUserId === userItem.id || userItem.id === user?.id}
-                                  className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                  className="px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                                   title={userItem.id === user?.id ? "Cannot delete your own account" : "Delete user"}
                                 >
                                   {deletingUserId === userItem.id ? (
@@ -1761,7 +1761,7 @@ export function Admin() {
                             onClick={() => setCurrentUsersPage(page)}
                             className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                               currentUsersPage === page
-                                ? 'bg-red-600 text-white'
+                                ? 'bg-orange-600 text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
                             }`}
                           >
@@ -2108,7 +2108,7 @@ export function Admin() {
                                 Published
                               </span>
                             ) : (
-                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">
+                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-700">
                                 Draft
                               </span>
                             )}
@@ -2182,8 +2182,8 @@ export function Admin() {
                 analyticsData.topListings.length === 0 && 
                 analyticsData.topLinks.length === 0 && 
                 analyticsData.avgTimeOnPage.length === 0 ? (
-              <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-8 text-center">
-                <BarChart3 className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
+              <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-8 text-center">
+                <BarChart3 className="w-12 h-12 text-orange-600 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-gray-900 mb-2">No Analytics Data Yet</h3>
                 <p className="text-gray-600 mb-4">
                   The analytics table needs to be created in your Supabase database.
@@ -2493,7 +2493,7 @@ export function Admin() {
                                   }
                                 }
                               }}
-                              className="text-red-600 hover:text-red-900"
+                              className="text-orange-600 hover:text-orange-900"
                             >
                               <Trash2 className="w-4 h-4 inline" />
                             </button>
@@ -3109,7 +3109,7 @@ export function Admin() {
                               onClick={() => setCurrentMailingListPage(page)}
                               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                                 currentMailingListPage === page
-                                  ? 'bg-red-600 text-white'
+                                  ? 'bg-orange-600 text-white'
                                   : 'text-gray-700 hover:bg-gray-100'
                               }`}
                             >
@@ -3798,7 +3798,7 @@ function ContentManagementSection() {
                           value={editedValues[setting.setting_key] || setting.value}
                           onChange={(e) => handleValueChange(setting.setting_key, e.target.value)}
                           placeholder="Or enter image URL directly"
-                          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                         />
                         <p className="text-xs text-gray-500">Max size: 5MB. Recommended: 1920x1080px or larger for backgrounds</p>
                       </div>

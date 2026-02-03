@@ -637,7 +637,7 @@ export function Dashboard() {
               <button 
                 onClick={handleManageSubscription}
                 disabled={processingPortal}
-                className="px-4 py-2 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-yellow-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-2 bg-white text-orange-600 rounded-lg font-semibold hover:bg-orange-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {processingPortal ? (
                   <>
