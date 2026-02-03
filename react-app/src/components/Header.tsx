@@ -14,9 +14,12 @@ export function Header() {
   const [searchFocused, setSearchFocused] = useState(false)
   const [searchExpanded, setSearchExpanded] = useState(false)
 
-  // Get button colors from settings, with fallbacks
-  const adminButtonBg = settings['button_color_admin'] || '#E2725B'
-  const adminButtonHover = settings['button_color_admin_hover'] || '#D85A3F'
+  // Get button colors from settings, with fallbacks - force terracotta for admin button
+  const adminButtonBgSetting = settings['button_color_admin'] || '#E2725B'
+  const adminButtonHoverSetting = settings['button_color_admin_hover'] || '#D85A3F'
+  // Force terracotta colors regardless of settings to ensure consistency
+  const adminButtonBg = adminButtonBgSetting === '#DC2626' || adminButtonBgSetting === '#B91C1C' || adminButtonBgSetting === '#EF4444' || adminButtonBgSetting === '#ef4444' ? '#E2725B' : adminButtonBgSetting
+  const adminButtonHover = adminButtonHoverSetting === '#DC2626' || adminButtonHoverSetting === '#B91C1C' || adminButtonHoverSetting === '#EF4444' || adminButtonHoverSetting === '#ef4444' ? '#D85A3F' : adminButtonHoverSetting
   const adminButtonText = settings['button_color_admin_text'] || '#FFFFFF'
   const primaryButtonBg = settings['button_color_primary'] || '#39B8A6'
   const primaryButtonHover = settings['button_color_primary_hover'] || '#2E9385'
