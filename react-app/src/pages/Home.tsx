@@ -494,20 +494,20 @@ export function Home() {
         <div className="relative z-10">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 max-w-7xl">
           {/* Featured Listings Banner */}
-          <div className="bg-orange-600 rounded-2xl p-6 mb-8 shadow-xl border-2 border-orange-500">
+          <div className="bg-terracotta rounded-2xl p-6 mb-8 shadow-xl border-2 border-terracotta-300">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4 flex-1">
                 <div className="bg-white rounded-full p-3 shadow-lg">
-                  <Star className="w-8 h-8 text-orange-600 fill-orange-600" />
+                  <Star className="w-8 h-8 text-terracotta fill-terracotta" />
                 </div>
                 <div className="text-left">
                   <h3 className="text-2xl font-bold text-white mb-1">Stand Out with Featured Listings</h3>
-                  <p className="text-orange-50 text-sm md:text-base">Get top placement, verified badge, enhanced profile, and priority support for just $29/month</p>
+                  <p className="text-white/90 text-sm md:text-base">Get top placement, verified badge, enhanced profile, and priority support for just $29/month</p>
                 </div>
               </div>
               <Link 
                 to="/featured-listings" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-orange-600 rounded-lg font-bold hover:bg-orange-50 transition-colors shadow-lg hover:shadow-xl whitespace-nowrap"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-terracotta rounded-lg font-bold hover:bg-terracotta-50 transition-colors shadow-lg hover:shadow-xl whitespace-nowrap"
               >
                 <Star className="w-5 h-5" />
                 View Featured Plans
@@ -947,7 +947,7 @@ export function Home() {
                     <div
                       key={listing.id}
                       className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all border-l-4 overflow-hidden ${
-                        listing.is_featured ? 'border-orange-500 bg-orange-50' : 'border-primary-500'
+                        listing.is_featured ? 'border-terracotta bg-white' : 'border-primary-500'
                       }`}
                     >
                       <div className="p-4 sm:p-6">
@@ -967,8 +967,8 @@ export function Home() {
                                   }}
                                 />
                               </div>
-                              <div className="absolute -bottom-1 left-0 right-0 bg-orange-600 px-2 py-0.5 text-center rounded-b-xl">
-                                <span className="text-orange-900 font-bold text-[10px] sm:text-xs">FEATURED</span>
+                              <div className="absolute -bottom-1 left-0 right-0 bg-terracotta px-2 py-0.5 text-center rounded-b-xl">
+                                <span className="text-white font-bold text-[10px] sm:text-xs">FEATURED</span>
                               </div>
                             </div>
                           )}
@@ -979,7 +979,7 @@ export function Home() {
                               <h4 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{listing.practice_name}</h4>
                               {listing.is_featured && (
                                 <>
-                                  <Star className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 fill-orange-600 flex-shrink-0" />
+                                  <Star className="w-4 h-4 sm:w-5 sm:h-5 text-terracotta fill-terracotta flex-shrink-0" />
                                   <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap">
                                     Verified
                                   </span>

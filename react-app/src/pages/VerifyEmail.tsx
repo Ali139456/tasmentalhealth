@@ -251,12 +251,12 @@ export function VerifyEmail() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-50">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
-          <AlertCircle className="w-16 h-16 text-orange-600 mx-auto mb-4" />
+          <AlertCircle className="w-16 h-16 text-terracotta mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Verification Failed</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           {isExpired && (
-            <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-              <p className="text-sm text-orange-800 mb-3">
+            <div className="mb-6 p-4 bg-terracotta-50 border border-terracotta-200 rounded-lg">
+              <p className="text-sm text-terracotta-800 mb-3">
                 Verification links expire after 24 hours for security reasons.
               </p>
               <button

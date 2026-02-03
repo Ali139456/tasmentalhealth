@@ -193,8 +193,8 @@ export function ResourceDetail() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-primary-50/20">
         <div className="text-center bg-white rounded-2xl shadow-xl p-12 max-w-md">
-          <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <BookOpen className="w-10 h-10 text-orange-600" />
+          <div className="w-20 h-20 bg-terracotta-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <BookOpen className="w-10 h-10 text-terracotta" />
           </div>
           <h1 className="text-3xl font-bold mb-4 text-gray-900">Article Not Found</h1>
           <p className="text-gray-600 mb-6">The article you're looking for doesn't exist.</p>

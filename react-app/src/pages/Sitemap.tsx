@@ -4,10 +4,10 @@ import { Map, ArrowRight, Home, Heart, BookOpen, Calendar, Star, Shield, FileTex
 export function Sitemap() {
   const mainPages = [
     { path: '/', title: 'Home', description: 'Find mental health professionals across Tasmania', icon: Home, color: 'from-primary-500 to-primary-600' },
-    { path: '/crisis-support', title: 'Crisis Support', description: '24/7 crisis support and safety planning resources', icon: Heart, color: 'from-orange-500 to-orange-600' },
+    { path: '/crisis-support', title: 'Crisis Support', description: '24/7 crisis support and safety planning resources', icon: Heart, color: 'from-terracotta to-terracotta-600' },
     { path: '/resources', title: 'Resources & Guides', description: 'Mental health resources and educational content', icon: BookOpen, color: 'from-blue-500 to-blue-600' },
     { path: '/events', title: 'Events', description: 'Upcoming mental health events and workshops', icon: Calendar, color: 'from-purple-500 to-purple-600' },
-    { path: '/get-listed', title: 'Get Listed', description: 'List your practice in our directory', icon: Star, color: 'from-orange-500 to-orange-600' },
+    { path: '/get-listed', title: 'Get Listed', description: 'List your practice in our directory', icon: Star, color: 'from-terracotta to-terracotta-600' },
     { path: '/featured-listings', title: 'Featured Listings', description: 'Premium featured listings for professionals', icon: Star, color: 'from-orange-500 to-orange-600' },
   ]
 
@@ -39,7 +39,7 @@ export function Sitemap() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6 shadow-2xl">
               <Map className="w-10 h-10 text-white" />
-              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-orange-300 animate-pulse" />
+              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-terracotta-300 animate-pulse" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Site Map

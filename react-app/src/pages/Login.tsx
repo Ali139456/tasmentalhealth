@@ -362,7 +362,7 @@ export function Login() {
           
           <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-orange-50 border-l-4 border-orange-500 text-orange-700 px-4 py-3 rounded-lg flex items-start gap-3 shadow-md">
+              <div className="bg-terracotta-50 border-l-4 border-terracotta text-terracotta-700 px-4 py-3 rounded-lg flex items-start gap-3 shadow-md">
                 <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
                 <span className="text-sm font-medium">{error}</span>
               </div>

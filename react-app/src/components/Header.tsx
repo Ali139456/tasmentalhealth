@@ -15,8 +15,8 @@ export function Header() {
   const [searchExpanded, setSearchExpanded] = useState(false)
 
   // Get button colors from settings, with fallbacks
-  const adminButtonBg = settings['button_color_admin'] || '#DC2626'
-  const adminButtonHover = settings['button_color_admin_hover'] || '#B91C1C'
+  const adminButtonBg = settings['button_color_admin'] || '#E2725B'
+  const adminButtonHover = settings['button_color_admin_hover'] || '#D85A3F'
   const adminButtonText = settings['button_color_admin_text'] || '#FFFFFF'
   const primaryButtonBg = settings['button_color_primary'] || '#39B8A6'
   const primaryButtonHover = settings['button_color_primary_hover'] || '#2E9385'
@@ -166,7 +166,7 @@ export function Header() {
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="px-4 py-2 text-gray-700 rounded-xl text-sm font-semibold hover:text-orange-600 hover:bg-orange-50 transition-all flex items-center gap-2"
+                  className="px-4 py-2 text-gray-700 rounded-xl text-sm font-semibold hover:text-terracotta hover:bg-terracotta-50 transition-all flex items-center gap-2"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out
@@ -355,7 +355,7 @@ export function Header() {
                 )}
                 <button
                   onClick={handleSignOut}
-                  className="block w-full text-left px-4 py-3 text-gray-700 rounded-xl text-base font-semibold hover:bg-orange-50 hover:text-orange-600"
+                  className="block w-full text-left px-4 py-3 text-gray-700 rounded-xl text-base font-semibold hover:bg-terracotta-50 hover:text-terracotta"
                 >
                   Sign Out
                 </button>

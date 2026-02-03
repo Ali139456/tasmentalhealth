@@ -41,7 +41,7 @@ export function TermsOfService() {
       number: '6', 
       icon: AlertCircle, 
       title: 'Limitation of Liability', 
-      color: 'from-orange-500 to-orange-600',
+      color: 'from-terracotta to-terracotta-600',
       content: 'The Tasmanian Mental Health Directory, its operators, and affiliates shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use the directory or any information contained therein.'
     },
     { 
@@ -55,7 +55,7 @@ export function TermsOfService() {
       number: '8', 
       icon: AlertCircle, 
       title: 'Termination', 
-      color: 'from-orange-500 to-orange-600',
+      color: 'from-terracotta to-terracotta-600',
       content: 'We reserve the right to terminate or suspend access to the directory at any time, without prior notice, for conduct that we believe violates these Terms of Service or is harmful to other users, us, or third parties.'
     },
     { 
@@ -97,7 +97,7 @@ export function TermsOfService() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6 shadow-2xl">
               <FileText className="w-10 h-10 text-white" />
-              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-orange-300 animate-pulse" />
+              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-terracotta-300 animate-pulse" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Terms of Service

@@ -718,8 +718,8 @@ export function Admin() {
   const getStatusBadge = (status: string) => {
     const badges = {
       approved: { icon: CheckCircle, color: 'text-green-600 bg-green-50', label: 'Approved' },
-      pending: { icon: Clock, color: 'text-orange-600 bg-orange-50', label: 'Pending' },
-      rejected: { icon: XCircle, color: 'text-orange-600 bg-orange-50', label: 'Rejected' },
+      pending: { icon: Clock, color: 'text-terracotta bg-terracotta-50', label: 'Pending' },
+      rejected: { icon: XCircle, color: 'text-terracotta bg-terracotta-50', label: 'Rejected' },
       needs_changes: { icon: AlertCircle, color: 'text-blue-600 bg-blue-50', label: 'Needs Changes' }
     }
 
@@ -1245,10 +1245,10 @@ export function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/20 to-gray-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-terracotta-50/20 to-gray-100 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-200 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-terracotta-200 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gray-300 rounded-full blur-3xl"></div>
       </div>
       <div className="absolute inset-0 opacity-5">
@@ -1268,7 +1268,7 @@ export function Admin() {
             onClick={() => handleTabChange('listings')}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'listings'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1278,7 +1278,7 @@ export function Admin() {
             onClick={() => handleTabChange('users')}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'users'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1288,7 +1288,7 @@ export function Admin() {
             onClick={() => handleTabChange('subscriptions')}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'subscriptions'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1298,7 +1298,7 @@ export function Admin() {
             onClick={() => handleTabChange('articles')}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'articles'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1308,7 +1308,7 @@ export function Admin() {
             onClick={() => handleTabChange('content')}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'content'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1321,7 +1321,7 @@ export function Admin() {
             }}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'analytics'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1331,7 +1331,7 @@ export function Admin() {
             onClick={() => handleTabChange('events')}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'events'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1341,7 +1341,7 @@ export function Admin() {
             onClick={() => handleTabChange('mailinglist')}
             className={`flex-1 px-6 py-3 font-semibold rounded-lg transition-all ${
               activeTab === 'mailinglist'
-                ? 'bg-orange-600 text-white shadow-md'
+                ? 'bg-terracotta text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             }`}
           >
@@ -1360,7 +1360,7 @@ export function Admin() {
                   placeholder="Search listings..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-terracotta bg-white shadow-sm"
                 />
               </div>
               <button
@@ -1388,7 +1388,7 @@ export function Admin() {
                   URL.revokeObjectURL(url)
                   toast.success('Directory list downloaded successfully')
                 }}
-                className="px-4 py-3 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700 transition-colors shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap"
+                className="px-4 py-3 bg-terracotta text-white rounded-xl font-semibold hover:bg-terracotta-600 transition-colors shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap"
               >
                 <FileSpreadsheet className="w-5 h-5" />
                 Download CSV
@@ -1445,12 +1445,12 @@ export function Admin() {
                             onClick={() => handleToggleFeatured(listing.id, !listing.is_featured)}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors ${
                               listing.is_featured
-                                ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                                ? 'bg-terracotta-100 text-terracotta-700 hover:bg-terracotta-200'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                             title={listing.is_featured ? 'Remove from Featured' : 'Set as Featured'}
                           >
-                            <Star className={`w-4 h-4 ${listing.is_featured ? 'fill-orange-600 text-orange-600' : ''}`} />
+                            <Star className={`w-4 h-4 ${listing.is_featured ? 'fill-terracotta text-yellow-500' : ''}`} />
                             {listing.is_featured ? 'Featured' : 'Not Featured'}
                           </button>
                         </td>
@@ -1472,7 +1472,7 @@ export function Admin() {
                                     const reason = prompt('Rejection reason:')
                                     if (reason) handleListingAction(listing.id, 'reject', reason)
                                   }}
-                                  className="px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors font-semibold text-xs"
+                                  className="px-3 py-1.5 bg-terracotta-100 text-terracotta-700 rounded-lg hover:bg-terracotta-200 transition-colors font-semibold text-xs"
                                 >
                                   Reject
                                 </button>
@@ -1532,7 +1532,7 @@ export function Admin() {
                             onClick={() => setCurrentListingsPage(page)}
                             className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                               currentListingsPage === page
-                                ? 'bg-orange-600 text-white'
+                                ? 'bg-terracotta text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
                             }`}
                           >
@@ -1568,7 +1568,7 @@ export function Admin() {
                   placeholder="Search users by email or role..."
                   value={userSearchQuery}
                   onChange={(e) => setUserSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-terracotta bg-white shadow-sm"
                 />
               </div>
             </div>
@@ -1600,7 +1600,7 @@ export function Admin() {
                               type="email"
                               value={editingUserEmail}
                               onChange={(e) => setEditingUserEmail(e.target.value)}
-                              className="px-3 py-1.5 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white w-full"
+                              className="px-3 py-1.5 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-terracotta bg-white w-full"
                             />
                           ) : (
                             <span className="text-sm font-semibold text-gray-900">{userItem.email}</span>
@@ -1611,7 +1611,7 @@ export function Admin() {
                             <select
                               value={editingRole}
                               onChange={(e) => setEditingRole(e.target.value as 'admin' | 'lister' | 'public')}
-                              className="px-3 py-1.5 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+                              className="px-3 py-1.5 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-terracotta bg-white"
                             >
                               <option value="admin">Admin</option>
                               <option value="lister">Lister</option>
@@ -1619,7 +1619,7 @@ export function Admin() {
                             </select>
                           ) : (
                             <span className={`px-3 py-1.5 text-xs font-bold rounded-full ${
-                              userItem.role === 'admin' ? 'bg-orange-100 text-orange-800' :
+                              userItem.role === 'admin' ? 'bg-terracotta-100 text-terracotta-800' :
                               userItem.role === 'lister' ? 'bg-blue-100 text-blue-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
@@ -1634,7 +1634,7 @@ export function Admin() {
                                 type="checkbox"
                                 checked={editingUserVerified}
                                 onChange={(e) => setEditingUserVerified(e.target.checked)}
-                                className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                                className="w-4 h-4 text-terracotta border-gray-300 rounded focus:ring-terracotta"
                               />
                               <span className="text-xs font-semibold text-gray-700">
                                 {editingUserVerified ? 'Verified' : 'Pending'}
@@ -1646,7 +1646,7 @@ export function Admin() {
                                 Verified
                               </span>
                             ) : (
-                              <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-orange-100 text-orange-800">
+                              <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-terracotta-100 text-terracotta-800">
                                 Pending
                               </span>
                             )
@@ -1714,7 +1714,7 @@ export function Admin() {
                                 <button
                                   onClick={() => handleDeleteUser(userItem.id, userItem.email)}
                                   disabled={deletingUserId === userItem.id || userItem.id === user?.id}
-                                  className="px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                  className="px-3 py-1.5 bg-terracotta-100 text-terracotta-700 rounded-lg hover:bg-terracotta-200 transition-colors font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                                   title={userItem.id === user?.id ? "Cannot delete your own account" : "Delete user"}
                                 >
                                   {deletingUserId === userItem.id ? (
@@ -1761,7 +1761,7 @@ export function Admin() {
                             onClick={() => setCurrentUsersPage(page)}
                             className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                               currentUsersPage === page
-                                ? 'bg-orange-600 text-white'
+                                ? 'bg-terracotta text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
                             }`}
                           >
@@ -1939,7 +1939,7 @@ export function Admin() {
                             setImagePreview(null)
                             setArticleFormData(prev => ({ ...prev, image_url: '' }))
                           }}
-                          className="absolute top-1 right-1 p-1 bg-orange-500 text-white rounded-full hover:bg-orange-600"
+                          className="absolute top-1 right-1 p-1 bg-terracotta text-white rounded-full hover:bg-terracotta"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -2108,7 +2108,7 @@ export function Admin() {
                                 Published
                               </span>
                             ) : (
-                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-700">
+                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-terracotta-100 text-terracotta-700">
                                 Draft
                               </span>
                             )}
@@ -2130,7 +2130,7 @@ export function Admin() {
                               </button>
                               <button
                                 onClick={() => handleDeleteArticle(article.id, article.title)}
-                                className="text-orange-600 hover:text-orange-900 transition-colors"
+                                className="text-terracotta hover:text-terracotta-900 transition-colors"
                                 title="Delete"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -2182,8 +2182,8 @@ export function Admin() {
                 analyticsData.topListings.length === 0 && 
                 analyticsData.topLinks.length === 0 && 
                 analyticsData.avgTimeOnPage.length === 0 ? (
-              <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-8 text-center">
-                <BarChart3 className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+              <div className="bg-terracotta-50 border-2 border-terracotta-200 rounded-xl p-8 text-center">
+                <BarChart3 className="w-12 h-12 text-terracotta mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-gray-900 mb-2">No Analytics Data Yet</h3>
                 <p className="text-gray-600 mb-4">
                   The analytics table needs to be created in your Supabase database.
@@ -2493,7 +2493,7 @@ export function Admin() {
                                   }
                                 }
                               }}
-                              className="text-orange-600 hover:text-orange-900"
+                              className="text-terracotta hover:text-terracotta-900"
                             >
                               <Trash2 className="w-4 h-4 inline" />
                             </button>
@@ -3109,7 +3109,7 @@ export function Admin() {
                               onClick={() => setCurrentMailingListPage(page)}
                               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                                 currentMailingListPage === page
-                                  ? 'bg-orange-600 text-white'
+                                  ? 'bg-terracotta text-white'
                                   : 'text-gray-700 hover:bg-gray-100'
                               }`}
                             >
@@ -3677,7 +3677,7 @@ function ContentManagementSection() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-orange-600" />
+        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-terracotta" />
         <p className="text-gray-600">Loading content settings...</p>
       </div>
     )
@@ -3694,7 +3694,7 @@ function ContentManagementSection() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-3 bg-terracotta text-white rounded-lg font-semibold hover:bg-terracotta-600 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {saving ? (
               <>
@@ -3718,7 +3718,7 @@ function ContentManagementSection() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                 activeCategory === cat
-                  ? 'bg-red-600 text-white'
+                  ? 'bg-terracotta text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -3757,7 +3757,7 @@ function ContentManagementSection() {
                           type="text"
                           value={editedValues[setting.setting_key] || setting.value}
                           onChange={(e) => handleValueChange(setting.setting_key, e.target.value)}
-                          className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                          className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-terracotta"
                           placeholder={setting.value}
                         />
                       </div>
@@ -3773,7 +3773,7 @@ function ContentManagementSection() {
                             <button
                               type="button"
                               onClick={() => handleRemoveBackgroundImage(setting.setting_key)}
-                              className="absolute top-2 right-2 p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors shadow-lg"
+                              className="absolute top-2 right-2 p-2 bg-terracotta text-white rounded-full hover:bg-terracotta transition-colors shadow-lg"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -3785,11 +3785,11 @@ function ContentManagementSection() {
                             accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                             onChange={(e) => handleBackgroundImageUpload(e, setting.setting_key)}
                             disabled={uploadingImages[setting.setting_key]}
-                            className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-terracotta disabled:opacity-50 disabled:cursor-not-allowed"
                           />
                           {uploadingImages[setting.setting_key] && (
                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                              <Loader2 className="w-5 h-5 animate-spin text-orange-600" />
+                              <Loader2 className="w-5 h-5 animate-spin text-terracotta" />
                             </div>
                           )}
                         </div>
@@ -3798,7 +3798,7 @@ function ContentManagementSection() {
                           value={editedValues[setting.setting_key] || setting.value}
                           onChange={(e) => handleValueChange(setting.setting_key, e.target.value)}
                           placeholder="Or enter image URL directly"
-                          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-terracotta"
                         />
                         <p className="text-xs text-gray-500">Max size: 5MB. Recommended: 1920x1080px or larger for backgrounds</p>
                       </div>
@@ -3807,7 +3807,7 @@ function ContentManagementSection() {
                         type="text"
                         value={editedValues[setting.setting_key] || setting.value}
                         onChange={(e) => handleValueChange(setting.setting_key, e.target.value)}
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-terracotta"
                         placeholder="e.g., text-xl sm:text-2xl md:text-3xl"
                       />
                     ) : (
@@ -3815,7 +3815,7 @@ function ContentManagementSection() {
                         value={editedValues[setting.setting_key] || setting.value}
                         onChange={(e) => handleValueChange(setting.setting_key, e.target.value)}
                         rows={setting.setting_type === 'seo' || setting.setting_type === 'description' ? 3 : 2}
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-y"
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracotta focus:border-terracotta resize-y"
                         placeholder={setting.value}
                       />
                     )}

@@ -42,7 +42,7 @@ export function PrivacyPolicy() {
     { 
       icon: Shield, 
       title: 'No Warranty', 
-      color: 'from-orange-500 to-orange-600',
+      color: 'from-terracotta to-terracotta-600',
       content: 'The Directory does not warrant, guarantee or make any representation regarding the use, or the results of the use, of the directory in terms of correctness, accuracy, reliability, functionality or otherwise.'
     },
     { 
@@ -60,7 +60,7 @@ export function PrivacyPolicy() {
     { 
       icon: AlertTriangle, 
       title: 'Reporting Misuse', 
-      color: 'from-orange-500 to-orange-600',
+      color: 'from-terracotta to-terracotta-600',
       content: 'The subscriber must advise the directory administrators immediately if there is reason to suspect that the directory is being used contrary to the purpose.'
     },
     { 
@@ -111,7 +111,7 @@ export function PrivacyPolicy() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6 shadow-2xl">
               <Shield className="w-10 h-10 text-white" />
-              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-orange-300 animate-pulse" />
+              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-terracotta-300 animate-pulse" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Privacy Policy & Terms
