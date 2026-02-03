@@ -103,6 +103,7 @@ export function CrisisSupport() {
       })
       .join('\n')
 
+    const logoUrl = window.location.origin + '/images/tashmanian-logo.png'
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -115,6 +116,15 @@ export function CrisisSupport() {
               padding: 40px;
               max-width: 800px;
               margin: 0 auto;
+            }
+            .print-header {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .print-logo {
+              max-height: 60px;
+              width: auto;
+              margin-bottom: 15px;
             }
             .print-section {
               margin-bottom: 30px;
@@ -132,14 +142,20 @@ export function CrisisSupport() {
             }
             @media print {
               body { padding: 20px; }
+              .print-logo {
+                max-height: 50px;
+              }
             }
           </style>
         </head>
         <body>
-          <h1 style="color: #39B8A6; text-align: center; margin-bottom: 30px;">My Safety Plan</h1>
-          <p style="text-align: center; color: #666; margin-bottom: 40px;">
-            Based on the Stanley-Brown Safety Planning Intervention
-          </p>
+          <div class="print-header">
+            <img src="${logoUrl}" alt="Tasmanian Mental Health Directory" class="print-logo" onerror="this.style.display='none'">
+            <h1 style="color: #39B8A6; text-align: center; margin-bottom: 10px; margin-top: 0;">My Safety Plan</h1>
+            <p style="text-align: center; color: #666; margin-bottom: 0;">
+              Based on the Stanley-Brown Safety Planning Intervention
+            </p>
+          </div>
           ${printContent}
         </body>
       </html>
@@ -152,7 +168,7 @@ export function CrisisSupport() {
     }, 250)
   }
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (!printRef.current) return
 
     // Check if there's any content to download
@@ -167,27 +183,69 @@ export function CrisisSupport() {
 
     try {
       const pdf = new jsPDF('p', 'mm', 'a4')
-    const pageWidth = pdf.internal.pageSize.getWidth()
-    const pageHeight = pdf.internal.pageSize.getHeight()
-    const margin = 20
-    let yPosition = margin
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const margin = 20
+      let yPosition = margin
 
-    // Title
-    pdf.setFontSize(20)
-    pdf.setTextColor(57, 184, 166) // primary-500 color
-    pdf.text('My Safety Plan', pageWidth / 2, yPosition, { align: 'center' })
-    yPosition += 10
+      // Load logo once for reuse on all pages
+      let logoData: { img: HTMLImageElement; width: number; height: number } | null = null
+      try {
+        const logoUrl = '/images/tashmanian-logo.png'
+        const img = new Image()
+        img.crossOrigin = 'anonymous'
+        
+        await new Promise((resolve) => {
+          img.onload = () => {
+            logoData = { img, width: img.width, height: img.height }
+            resolve(null)
+          }
+          img.onerror = () => {
+            console.warn('Could not load logo for PDF, continuing without it')
+            resolve(null)
+          }
+          img.src = logoUrl
+        })
+      } catch (error) {
+        console.warn('Error loading logo, continuing without it:', error)
+      }
 
-    pdf.setFontSize(12)
-    pdf.setTextColor(100, 100, 100)
-    pdf.text('Based on the Stanley-Brown Safety Planning Intervention', pageWidth / 2, yPosition, { align: 'center' })
-    yPosition += 15
+      // Helper function to add logo to current page
+      const addLogoToPage = () => {
+        if (logoData) {
+          try {
+            const logoHeight = 15
+            const logoWidth = (logoData.width / logoData.height) * logoHeight
+            const logoX = (pageWidth - logoWidth) / 2
+            pdf.addImage(logoData.img, 'PNG', logoX, margin, logoWidth, logoHeight)
+            return logoHeight + 8
+          } catch (error) {
+            console.error('Error adding logo to PDF page:', error)
+          }
+        }
+        return 0
+      }
+
+      // Add logo to first page header
+      const logoOffset = addLogoToPage()
+      yPosition = margin + logoOffset
+
+      // Title
+      pdf.setFontSize(20)
+      pdf.setTextColor(57, 184, 166) // primary-500 color
+      pdf.text('My Safety Plan', pageWidth / 2, yPosition, { align: 'center' })
+      yPosition += 10
+
+      pdf.setFontSize(12)
+      pdf.setTextColor(100, 100, 100)
+      pdf.text('Based on the Stanley-Brown Safety Planning Intervention', pageWidth / 2, yPosition, { align: 'center' })
+      yPosition += 15
 
     // Sections
     sections.forEach((section) => {
       if (yPosition > pageHeight - 40) {
         pdf.addPage()
-        yPosition = margin
+        yPosition = margin + addLogoToPage()
       }
 
       const items = safetyPlan[section.key].filter(item => item.text.trim())
@@ -207,7 +265,7 @@ export function CrisisSupport() {
       items.forEach((item, itemIndex) => {
         if (yPosition > pageHeight - 30) {
           pdf.addPage()
-          yPosition = margin
+          yPosition = margin + addLogoToPage()
         }
         pdf.setFontSize(11)
         pdf.setTextColor(0, 0, 0)
