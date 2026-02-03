@@ -110,6 +110,7 @@ function AppRoutes() {
       <Route path="/sitemap" element={<Layout><Sitemap /></Layout>} />
       <Route path="/featured-listings" element={<Layout><FeaturedListings /></Layout>} />
       <Route path="/listing/:id" element={<Layout><ListingDetail /></Layout>} />
+      <Route path="/page/:slug" element={<Layout><CustomPage /></Layout>} />
       <Route
         path="/dashboard"
         element={

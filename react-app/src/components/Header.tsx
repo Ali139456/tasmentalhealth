@@ -109,7 +109,7 @@ export function Header() {
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
                 }`}
               >
-                Resources
+                {settings['header_nav_resources'] || 'Resources'}
               </Link>
               <Link
                 to="/events"
@@ -119,7 +119,7 @@ export function Header() {
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50/50'
                 }`}
               >
-                Events
+                {settings['header_nav_events'] || 'Events'}
               </Link>
             </div>
 
@@ -212,7 +212,7 @@ export function Header() {
                       <Search className={`absolute left-4 text-gray-400 transition-colors duration-300 ${searchFocused ? 'text-primary-500' : ''} w-5 h-5`} />
                       <input
                         type="text"
-                        placeholder="Search entire site..."
+                        placeholder={settings['header_search_placeholder'] || 'Search entire site...'}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleSearchKeyDown}
