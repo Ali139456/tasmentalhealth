@@ -314,7 +314,7 @@ export function Header() {
                 isActive('/resources') ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:bg-primary-50/50'
               }`}
             >
-              Resources
+              {settings['header_nav_resources'] || 'Resources'}
             </Link>
             <Link
               to="/events"
@@ -323,7 +323,7 @@ export function Header() {
                 isActive('/events') ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:bg-primary-50/50'
               }`}
             >
-              Events
+              {settings['header_nav_events'] || 'Events'}
             </Link>
             {user ? (
               <>
