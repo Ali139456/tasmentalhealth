@@ -1179,9 +1179,6 @@ export function Admin() {
         body: JSON.stringify({ userId }),
       })
 
-      console.log('Function response status:', response.status)
-      console.log('Function response ok:', response.ok)
-
       // Check if function doesn't exist (404) or CORS issue
       if (response.status === 404) {
         throw new Error('Edge Function not found. Please deploy the admin-delete-user function to Supabase.')
