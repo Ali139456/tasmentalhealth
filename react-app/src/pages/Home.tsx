@@ -1306,7 +1306,7 @@ export function Home() {
           {/* Content */}
           <div className="text-base sm:text-lg text-gray-700 leading-relaxed space-y-6">
             <p>
-                    {settings['home_description_connecting'] || "Welcome to Tasmania's premier resource for mental wellbeing. Our mission is to bridge the gap between those seeking help and the dedicated professionals who provide it. Whether you are searching for experienced psychologists in Hobart, compassionate counsellors in Tasmania, or specialised psychiatrists in Launceston, our directory is designed to help you find the right support close to home."}
+                    {settings['home_description_connecting'] || "Welcome to Tasmania's premier resource for mental wellbeing. Our mission is to bridge the gap between those seeking help and the dedicated professionals who provide it. Whether you are searching for experienced psychologists in Hobart, compassionate counsellors in Tasmania, or specialised psychiatrists in Launceston, Devonport, Burnie, Ulverstone, Kingston, Glenorchy, New Norfolk, Sorell, George Town, Smithton, Wynyard, Latrobe, Penguin, etc., our directory is designed to help you find the right support close to home."}
                   </p>
             
                   <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">
@@ -1316,7 +1316,7 @@ export function Home() {
                     {settings['home_description_comprehensive'] || "We understand that mental health needs are diverse. That's why we list a wide range of professionals. From sleep therapy in Hobart for those struggling with insomnia, to anxiety counselling in Tasmania for stress management, and trauma-informed care for deeper healing. You can also find a social worker in Tasmania who specialises in complex case management and family support."}
                   </p>
             <p>
-                    Our directory covers all major regions, ensuring access to mental health support in Tasmania whether you are in the city centres of Hobart and Launceston, or in regional hubs like Devonport, Burnie, and Ulverstone.
+                    Our directory covers all major regions, ensuring access to mental health support in Tasmania whether you are in the city centres of Hobart and Launceston, or in regional hubs like Devonport, Burnie, Ulverstone, Kingston, Glenorchy, New Norfolk, Sorell, George Town, Smithton, Wynyard, Latrobe, Penguin, etc.
                   </p>
             
                   <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900">
