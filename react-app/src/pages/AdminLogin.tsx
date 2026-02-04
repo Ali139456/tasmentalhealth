@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { Mail, Lock, AlertCircle, Shield, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, AlertCircle, Shield, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 
 export function AdminLogin() {
   const [email, setEmail] = useState('info@tasmentalhealthdirectory.com.au')
