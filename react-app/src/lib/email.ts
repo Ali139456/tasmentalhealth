@@ -99,12 +99,6 @@ export interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions) {
   try {
-    // Send email via Edge Function
-      to: options.to,
-      subject: options.subject,
-      hasHtml: !!options.html
-    })
-
     // Option 1: Use Supabase Edge Function (recommended)
     const { data, error } = await supabase.functions.invoke('send-email', {
       body: options
