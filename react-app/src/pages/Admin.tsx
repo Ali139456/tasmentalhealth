@@ -1164,11 +1164,6 @@ export function Admin() {
       const functionUrl = `${supabaseUrl}/functions/v1/admin-delete-user`
 
       // Call admin-delete-user function
-        functionUrl,
-        userId,
-        hasSession: !!session
-      })
-
       const response = await fetch(functionUrl, {
         method: 'POST',
         headers: {
