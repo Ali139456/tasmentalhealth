@@ -25,7 +25,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-3 sm:mb-4">
-              The trusted directory connecting Tasmanians with verified psychologists, counsellors, and mental health social workers. Find support in Hobart, Launceston, Devonport, Burnie and rural Tasmania.
+              The trusted directory connecting Tasmanians with verified psychologists, counsellors, and mental health social workers. Find support in Hobart, Launceston, Devonport, Burnie, Ulverstone, Kingston, Glenorchy, New Norfolk, Sorell, George Town, Smithton, Wynyard, Latrobe, Penguin, and rural Tasmania.
             </p>
           </div>
 

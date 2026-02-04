@@ -36,7 +36,7 @@ export function FeaturedListings() {
             <div className="bg-gradient-to-br from-primary-50 to-white p-6 rounded-2xl shadow-lg border border-primary-100">
               <h3 className="text-xl font-bold mb-3 text-gray-900">Verified Badge</h3>
               <p className="text-gray-700">
-                Stand out with a 'Verified Professional' badge that builds instant trust with potential clients in Launceston, Devonport & Burnie.
+                Stand out with a 'Verified Professional' badge that builds instant trust with potential clients across Tasmania, including Hobart, Launceston, Devonport, Burnie, Ulverstone, Kingston, Glenorchy, New Norfolk, Sorell, George Town, Smithton, Wynyard, Latrobe, Penguin, etc.
               </p>
             </div>
 

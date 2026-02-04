@@ -420,7 +420,7 @@ export function Home() {
               <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                 <li className="flex items-start gap-2 sm:gap-3">
                   <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700 text-sm sm:text-base">Locate specialists near you: Easily search for psychiatrists in Launceston, Devonport, or Burnie.</span>
+                  <span className="text-gray-700 text-sm sm:text-base">Locate specialists near you: Easily search for psychiatrists in Hobart, Launceston, Devonport, Burnie, Ulverstone, Kingston, Glenorchy, New Norfolk, Sorell, George Town, Smithton, Wynyard, Latrobe, Penguin, etc.</span>
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3">
                   <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600 mt-0.5 flex-shrink-0" />
