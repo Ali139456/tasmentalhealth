@@ -94,7 +94,6 @@ export function SitemapXML() {
         
         // This component should be used with a route that returns XML
         // For now, we'll just log it - you'll need to set up a server route
-        console.log('Sitemap XML generated')
       } catch (error) {
         console.error('Error generating sitemap:', error)
       }

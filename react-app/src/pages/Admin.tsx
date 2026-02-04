@@ -1163,7 +1163,7 @@ export function Admin() {
 
       const functionUrl = `${supabaseUrl}/functions/v1/admin-delete-user`
 
-      console.log('Calling admin-delete-user function:', {
+      // Call admin-delete-user function
         functionUrl,
         userId,
         hasSession: !!session
@@ -1203,7 +1203,6 @@ export function Admin() {
 
       // Parse response to check email status
       const result = await response.json()
-      console.log('Function response data:', result)
       
       await fetchData()
       await fetchCounts()
@@ -2621,7 +2620,6 @@ export function Admin() {
 
                                 // Send emails in background (don't wait)
                                 Promise.all(emailPromises).then(() => {
-                                  console.log(`Event notifications sent to ${subscribers.length} subscribers`)
                                 }).catch(err => {
                                   console.error('Error sending event notifications:', err)
                                 })

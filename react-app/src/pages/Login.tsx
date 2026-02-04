@@ -85,8 +85,7 @@ export function Login() {
                   appUrl: window.location.origin
                 })
                 
-                console.log('Sending welcome email to:', authData.user.email)
-                const emailResult = await Promise.race([
+                await Promise.race([
                   sendEmail({
                     to: authData.user.email,
                     subject: template.subject,
@@ -95,13 +94,7 @@ export function Login() {
                   new Promise((_, reject) => 
                     setTimeout(() => reject(new Error('Email timeout')), 10000)
                   )
-                ]) as any
-                
-                if (emailResult?.success) {
-                  console.log('Welcome email sent successfully')
-                } else {
-                  console.error('Failed to send welcome email:', emailResult?.error)
-                }
+                ]).catch(() => {})
               } catch (err) {
                 console.error('Error sending welcome email:', err)
                 // Don't block signup if email fails
@@ -139,7 +132,6 @@ export function Login() {
                       setTimeout(() => reject(new Error('Admin email timeout')), 10000)
                     )
                   ])
-                  console.log('Admin notification sent for new user signup')
                 }
               } catch (err) {
                 console.error('Error sending admin notification:', err)

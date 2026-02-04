@@ -44,7 +44,6 @@ export function useContentSettings() {
           table: 'site_content_settings'
         },
         (payload) => {
-          console.log('Content settings changed:', payload)
           // Refetch settings immediately when any change occurs
           fetchSettings()
         }

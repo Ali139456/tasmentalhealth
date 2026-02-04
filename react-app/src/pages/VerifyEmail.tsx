@@ -68,7 +68,6 @@ export function VerifyEmail() {
           return
         }
 
-        console.log('Verifying email with token:', token.substring(0, 20) + '...', 'type:', type)
 
         // Verify the token using Supabase
         // Magiclink tokens from generateLink should be used as token_hash
@@ -82,7 +81,6 @@ export function VerifyEmail() {
 
         // Try with token_hash first (this is the correct format for magiclink)
         if (type === 'magiclink' || type === 'email' || !type) {
-          console.log('Attempting verification with token_hash...')
           const result1 = await supabase.auth.verifyOtp({
             token_hash: token,
             type: 'email',
@@ -93,7 +91,6 @@ export function VerifyEmail() {
             verificationError = null
           } else if (userEmail) {
             // If token_hash fails and we have email, try with plain token + email
-            console.log('Token_hash failed, trying plain token with email...', result1.error?.message)
             const result2 = await supabase.auth.verifyOtp({
               token: token,
               type: 'email',
@@ -132,12 +129,10 @@ export function VerifyEmail() {
 
         // If verification failed, check if user already has a session (Supabase might have auto-verified via redirect)
         if (verificationError) {
-          console.log('OTP verification failed, checking for existing session...')
           const { data: { session }, error: sessionError } = await supabase.auth.getSession()
           
           if (session?.user && !sessionError) {
             // User is already authenticated (Supabase auto-verified via redirect)
-            console.log('User already has session, email may already be verified')
             verificationData = { user: session.user }
             verificationError = null
           } else {
@@ -147,7 +142,6 @@ export function VerifyEmail() {
         }
 
         if (verificationData?.user) {
-          console.log('Email verified successfully:', verificationData.user.email)
           
           // Prevent duplicate processing
           if (hasVerified) {

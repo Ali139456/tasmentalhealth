@@ -519,7 +519,6 @@ export function GetListed() {
               html: adminTemplate.html
             })
           ))
-          console.log('Admin notification sent for new listing')
         }
       } catch (err) {
         console.error('Error sending admin notification:', err)

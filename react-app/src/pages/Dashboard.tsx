@@ -69,7 +69,6 @@ export function Dashboard() {
             filter: `user_id=eq.${user.id}`, // Only listen to this user's listings
           },
           (payload) => {
-            console.log('Listing change detected:', payload)
             // Refresh data when any change is detected
             fetchData()
             
@@ -369,7 +368,6 @@ export function Dashboard() {
         throw new Error(error.message || 'Failed to send password reset email')
       }
 
-      console.log('Password reset email sent:', data)
 
       toast.success('Password reset email sent! Please check your inbox and click the link to change your password.')
       setShowPasswordModal(false)
@@ -577,7 +575,6 @@ export function Dashboard() {
               <button
                 onClick={async () => {
                   try {
-                    console.log('Sending verification email to:', user.email)
                     // Always use our custom Edge Function for reliable email delivery
                     const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
                       body: { email: user.email || '' }
@@ -597,7 +594,6 @@ export function Dashboard() {
                         toast.success('Verification email sent! Check your inbox.')
                       }
                     } else {
-                      console.log('Verification email sent successfully:', data)
                       toast.success('Verification email sent! Check your inbox.')
                     }
                   } catch (error: any) {

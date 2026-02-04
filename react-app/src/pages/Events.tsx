@@ -192,7 +192,6 @@ export function Events() {
           filter: 'is_published=eq.true'
         },
         (payload) => {
-          console.log('Event change detected:', payload)
           fetchEvents()
         }
       )

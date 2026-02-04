@@ -99,7 +99,7 @@ export interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions) {
   try {
-    console.log('Attempting to send email via Edge Function:', {
+    // Send email via Edge Function
       to: options.to,
       subject: options.subject,
       hasHtml: !!options.html
@@ -115,7 +115,6 @@ export async function sendEmail(options: EmailOptions) {
       throw error
     }
 
-    console.log('Email sent successfully via Edge Function:', data)
     return { success: true, data }
 
     // Option 2: Use custom API endpoint
