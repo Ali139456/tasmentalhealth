@@ -191,7 +191,7 @@ export function Events() {
           table: 'events',
           filter: 'is_published=eq.true'
         },
-        (payload) => {
+        (_payload) => {
           fetchEvents()
         }
       )

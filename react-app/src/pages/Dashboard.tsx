@@ -356,7 +356,7 @@ export function Dashboard() {
         ? `${appUrl}/reset-password`
         : `${window.location.origin}/reset-password`
       
-      const { data, error } = await supabase.functions.invoke('password-reset', {
+      const { error } = await supabase.functions.invoke('password-reset', {
         body: {
           email: user.email,
           redirectUrl: redirectUrl,
@@ -576,7 +576,7 @@ export function Dashboard() {
                 onClick={async () => {
                   try {
                     // Always use our custom Edge Function for reliable email delivery
-                    const { data, error: functionError } = await supabase.functions.invoke('send-verification-email', {
+                    const { error: functionError } = await supabase.functions.invoke('send-verification-email', {
                       body: { email: user.email || '' }
                     })
                     

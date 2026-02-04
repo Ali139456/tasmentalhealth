@@ -43,7 +43,7 @@ export function useContentSettings() {
           schema: 'public',
           table: 'site_content_settings'
         },
-        (payload) => {
+        (_payload) => {
           // Refetch settings immediately when any change occurs
           fetchSettings()
         }
