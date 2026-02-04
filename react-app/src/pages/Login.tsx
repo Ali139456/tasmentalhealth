@@ -14,6 +14,7 @@ export function Login() {
   const [success, setSuccess] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { refreshUser } = useAuth()
