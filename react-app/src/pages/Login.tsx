@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { sendEmail, getEmailTemplate, isValidEmail, isValidPassword, getAdminEmails } from '../lib/email'
-import { Mail, Lock, AlertCircle, LogIn, ArrowRight, Shield, ArrowLeft, Sparkles, UserPlus, CheckCircle } from 'lucide-react'
+import { Mail, Lock, AlertCircle, LogIn, ArrowRight, Shield, ArrowLeft, Sparkles, UserPlus, CheckCircle, Eye, EyeOff } from 'lucide-react'
 
 export function Login() {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -14,6 +14,7 @@ export function Login() {
   const [success, setSuccess] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { refreshUser } = useAuth()
